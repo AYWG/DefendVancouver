@@ -4,3 +4,18 @@ project(DefendVancouver)
 set(CMAKE_CXX_STANDARD 11)
 
 add_executable(DefendVancouver main.cpp)
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+add_subdirectory("C:\\Users\\Tanwin Nun\\Documents\\UBC\\CPSC 436D\\DefendVancouver\\DefendVancouver\\glfw-3.2.1")
+
+target_link_libraries(DefendVancouver glfw)
+
+find_package(OpenGL REQUIRED)
+
+#[[target_include_directories(DefendVancouver ${OPENGL_INCLUDE_DIR})]]
+target_link_libraries(DefendVancouver ${OPENGL_gl_LIBRARY})
+
+target_link_libraries(DefendVancouver ${OPENGL_glu_LIBRARY})
