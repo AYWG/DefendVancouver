@@ -1,5 +1,6 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
+using namespace std;
 
 int main() {
 
@@ -24,8 +25,10 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    while(window != nullptr){
-
+    while (!glfwWindowShouldClose(window))
+    {
+        glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
 }
