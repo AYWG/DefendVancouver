@@ -213,12 +213,15 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
     playerCenter = m_player.get_position();
-    mousePos = {xpos, ypos};
+    auto x_pos = static_cast<float>(xpos);
+    auto y_pos = static_cast<float>(ypos);
+    mousePos = {x_pos, y_pos};
     aimDir = {mousePos.x - playerCenter.x, mousePos.y - playerCenter.y};
-    aimDirNorm = {aimDir.x / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2)),
-                       aimDir.y / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2))};
+    aimDirNorm = {static_cast<float>(aimDir.x / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2))),
+                  static_cast<float>(aimDir.y / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2)))};
 
-    m_player.set_rotation((atan2(aimDirNorm.x, -aimDirNorm.y)));
+    float rotation_angle = (atan2(aimDirNorm.x, -aimDirNorm.y));
+    m_player.set_rotation(rotation_angle);
     //m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
 
 
