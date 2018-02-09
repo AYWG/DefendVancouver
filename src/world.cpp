@@ -29,6 +29,7 @@ World::~World() {
 // World initialization
 bool World::init(vec2 screen) {
 
+    return m_player.init();
 }
 
 // Releases all the associated resources

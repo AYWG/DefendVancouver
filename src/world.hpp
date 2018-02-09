@@ -38,7 +38,7 @@ private:
 
     player m_player;
 
-    float  m_plyr_speed;
+
 
 };
 
