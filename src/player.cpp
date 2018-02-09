@@ -3,13 +3,14 @@
 //
 
 #include <vector>
+#include <iostream>
 #include "player.hpp"
 #include "common.hpp"
 
 Texture player::player_texture;
 
 
-
+using namespace std;
 bool player::init() {
     //load texture
     if(!player_texture.is_valid())
@@ -70,6 +71,8 @@ bool player::init() {
 
 
 
+
+
     return true;
 
 }
@@ -96,8 +99,70 @@ void player::update(float ms){
 
 // Renders the salmon
 void player::draw(const mat3& projection){
+    transform_begin();
 
-    transform_translate({m_position.x, m_position.y});
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // SALMON TRANSFORMATION CODE HERE
+
+    // see Transformations and Rendering in the specification pdf
+    // the following functions are available:
+    // transform_translate()
+    // transform_rotate()
+    // transform_scale()
+
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
+    transform_translate({ m_position.x, m_position.y});
+    transform_rotate(-m_rotation);
+    transform_scale(m_scale);
+
+    //transform_translate(get_position());
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+    transform_end();
+
+    // Setting shaders
+    glUseProgram(effect.program);
+
+    // Enabling alpha channel for textures
+    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
+
+    // Getting uniform locations
+    GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
+    GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
+    GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+    GLint light_up_uloc = glGetUniformLocation(effect.program, "light_up");
+
+    // Setting vertices and indices
+    glBindVertexArray(mesh.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+
+    // Input data location as in the vertex buffer
+    GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
+    GLint in_color_loc = glGetAttribLocation(effect.program, "in_color");
+    glEnableVertexAttribArray(in_position_loc);
+    glEnableVertexAttribArray(in_color_loc);
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(vec3));
+
+    // Setting uniform values to the currently bound program
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
+
+    // !!! Salmon Color
+
+        float color[] = { 1.f, 1.f, 1.f };
+
+        glUniform3fv(color_uloc, 1, color);
+        glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+
+
+
+
+    // Drawing!
+    glDrawElements(GL_TRIANGLES,(GLsizei)m_num_indices, GL_UNSIGNED_SHORT, nullptr);
 
 }
 

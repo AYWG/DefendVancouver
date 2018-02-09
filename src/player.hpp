@@ -41,6 +41,7 @@ private:
     bool m_move_lft;
     bool m_move_rht;
     bool m_isMove;
+    size_t m_num_indices;
 
 
 };

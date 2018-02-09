@@ -1,50 +1,60 @@
-//
-// Created by Tanwin Nun on 2018-02-07.
-//
-
 #pragma once
+
+// internal
+#include "common.hpp"
+#include "player.hpp"
+
 
 // stlib
 #include <vector>
 #include <random>
-#include "common.hpp"
-#include "player.hpp"
 
-class World {
+
+
+// Container for all our entities and game logic. Individual rendering / update is 
+// deferred to the relative update() methods
+class World
+{
 public:
-    World();
+	World();
+	~World();
 
-    ~World();
+	// Creates a window, sets up events and begins the game
+	bool init(vec2 screen);
 
-    // Creates a window, sets up events and begins the game
-    bool init(vec2 screen);
+	// Releases all associated resources
+	void destroy();
 
-    // Releases all associated resources
-    void destroy();
+	// Steps the game ahead by ms milliseconds
+	bool update(float ms);
 
-    // Steps the game ahead by ms milliseconds
-    bool update(float ms);
+	// Renders our scene
+	void draw();
 
-    // Renders our scene
-    void draw();
-
-    // Should the game be over ?
-    bool is_over() const;
+	// Should the game be over ?
+	bool is_over()const;
 
 private:
 
-    // Window hjandle
-    GLFWwindow* m_window;
+
+	// !!! INPUT CALLBACK FUNCTIONS
+	void on_key(GLFWwindow*, int key, int, int action, int mod);
+	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
+
+private:
+	// Window hjandle
+	GLFWwindow* m_window;
+
+	// Number of fish eaten by the salmon, displayed in the window title
+	unsigned int m_points;
+
+	// Game entities
+	player m_player;
 
 
-    //keyback functions
-    void on_key(GLFWwindow*, int key, int, int action, int mod);
-    void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
+	float m_current_speed;
 
-    player m_player;
-
-
-
+	// C++ rng
+	std::default_random_engine m_rng;
+	std::uniform_real_distribution<float> m_dist; // default 0..1
 };
-
-
