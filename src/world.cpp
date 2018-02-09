@@ -212,6 +212,10 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
+    vec2 defDir = { 1.f, 0.f };
+    vec2 angChng = { xpos, ypos };
+
+    m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
 
 
 

@@ -26,6 +26,12 @@ public:
     //UPDATE
     void update(float ms);
 
+    //get position
+    vec2 get_position()const;
+
+    //set rotation
+    void set_rotation(float radians);
+
 
     void isMoveUp(bool moveUp);
     void isMoveDwn(bool moveDwn);

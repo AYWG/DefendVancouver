@@ -69,6 +69,8 @@ bool player::init() {
     m_rotation = 0.f;
     m_position.x = 50;
     m_position.y = 50;
+    set_rotation(1.571f);
+
 
 
 
@@ -145,6 +147,16 @@ void player::draw(const mat3& projection){
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
+
+vec2 player::get_position()const{
+    return m_position;
+}
+
+
+void player::set_rotation(float radians)
+{
+    m_rotation = radians;
 }
 
 void player::move(vec2 off)
