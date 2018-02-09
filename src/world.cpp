@@ -212,10 +212,14 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
-    vec2 defDir = { 1.f, 0.f };
-    vec2 angChng = { xpos, ypos };
+    playerCenter = m_player.get_position();
+    mousePos = {xpos, ypos};
+    aimDir = {mousePos.x - playerCenter.x, mousePos.y - playerCenter.y};
+    aimDirNorm = {aimDir.x / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2)),
+                       aimDir.y / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2))};
 
-    m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
+    m_player.set_rotation((atan2(aimDirNorm.x, -aimDirNorm.y)));
+    //m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
 
 
 

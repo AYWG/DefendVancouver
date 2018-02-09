@@ -34,6 +34,11 @@ public:
 	// Should the game be over ?
 	bool is_over()const;
 
+    vec2 playerCenter;
+    vec2 mousePos;
+    vec2 aimDir;
+    vec2 aimDirNorm;
+
 private:
 
 
