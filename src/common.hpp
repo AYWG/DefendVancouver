@@ -11,6 +11,7 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
+
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
 // audio_path("audio.ogg") -> data/audio/audio.ogg
 #ifdef _MSC_VER

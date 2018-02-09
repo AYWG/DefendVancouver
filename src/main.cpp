@@ -1,52 +1,51 @@
+// internal
+#include "common.hpp"
 #include "world.hpp"
 
+#define GL3W_IMPLEMENTATION
+
+// stlib
+#include <chrono>
 #include <iostream>
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
 
+using Clock = std::chrono::high_resolution_clock;
 
-
-
-
-
-
-
+// Global
 World world;
+const int width = 1200;
+const int height = 800;
+const char* title = "Your Title Here";
 
-using namespace std;
-
-int main() {
-
-
-    /*if (!glfwInit()) {
-        // Handle initialization failure
+// Entry point
+int main(int argc, char* argv[])
+{
+    // Initializing world (after renderer.init().. sorry)
+    if (!world.init({ (float)width, (float)height }))
+    {
+        // Time to read the error message
+        std::cout << "Press any key to exit" << std::endl;
+        std::cin.get();
+        return EXIT_FAILURE;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    GLFWwindow *window = glfwCreateWindow(1280, 720, "DefendVancouver", NULL, NULL);
+    auto t = Clock::now();
 
-    int w, h;
-
-    glfwGetFramebufferSize(window, &w, &h);
-
-    glViewport(0, 0, w, h);
-    glDepthRange(0.00001, 10);
-    const float clear_color[3] = {0.3f, 0.3f, 0.8f};
-    glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
-    glClearDepth(1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-*/
-    //player m_plyr;
-    //m_plyr.init();
-
-    world.init({1280,720});
-
-
-   /* while (!glfwWindowShouldClose(window)) {
-        glfwSwapBuffers(window);
+    // variable timestep loop.. can be improved (:
+    while (!world.is_over())
+    {
+        // Processes system messages, if this wasn't present the window would become unresponsive
         glfwPollEvents();
-    }
-*/
 
+        // Calculating elapsed times in milliseconds from the previous iteration
+        auto now = Clock::now();
+        float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
+        t = now;
+
+        world.update(elapsed_sec);
+        world.draw();
+    }
+
+    world.destroy();
+
+    return EXIT_SUCCESS;
 }

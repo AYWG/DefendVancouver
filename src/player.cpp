@@ -14,7 +14,7 @@ bool player::init() {
     //load texture
     if(!player_texture.is_valid())
     {
-        if(!player_texture.load_from_file(textures_path("player.png")))
+        if(!player_texture.load_from_file(textures_path("fish.png")))
         {
             fprintf(stderr, "Failed to load player texture!");
             return false;
