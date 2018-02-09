@@ -18,35 +18,35 @@ namespace {
 
 }
 
-world::world() {
+World::World() {
 
 }
 
-world::~world() {
+World::~World() {
 
 }
 
 // World initialization
-bool world::init(vec2 screen) {
+bool World::init(vec2 screen) {
 
 }
 
 // Releases all the associated resources
-void world::destroy() {
+void World::destroy() {
 
 }
 
 // Update our game world
-bool world::update(float elapsed_ms) {
+bool World::update(float elapsed_ms) {
 
 }
 
 // Render our game world
-void world::draw() {
+void World::draw() {
 
 }
 
 // Should the game be over ?
-bool world::is_over() const {
+bool World::is_over() const {
 
 }

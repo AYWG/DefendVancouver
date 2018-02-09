@@ -9,11 +9,11 @@
 #include <random>
 #include "common.hpp"
 
-class world {
+class World {
 public:
-    world();
+    World();
 
-    ~world();
+    ~World();
 
     // Creates a window, sets up events and begins the game
     bool init(vec2 screen);
