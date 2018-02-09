@@ -4,7 +4,7 @@ project(DefendVancouver)
 set(CMAKE_CXX_STANDARD 11)
 
 
-add_executable(DefendVancouver src/main.cpp src/world.cpp src/world.hpp gl3w/include/GL/gl3w.h gl3w/include/GL/glcorearb.h  gl3w/src/gl3w.c stb-cmake/stb_image.h src/common.cpp src/common.hpp src/player.cpp src/player.hpp src/camera.cpp src/camera.hpp)
+add_executable(DefendVancouver src/main.cpp src/world.cpp src/world.hpp gl3w/include/GL/gl3w.h gl3w/include/GL/glcorearb.h  gl3w/src/gl3w.c stb-cmake/stb_image.h src/common.cpp src/common.hpp src/player.cpp src/player.hpp src/camera.cpp src/camera.hpp src/basicEnemy.cpp src/basicEnemy.hpp src/chaser.cpp src/chaser.hpp)
 
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)

@@ -1,4 +1,4 @@
-#version 330 
+#version 330
 // Input attributes
 in vec3 in_position;
 in vec3 in_color;
