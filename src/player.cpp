@@ -74,9 +74,79 @@ bool player::init() {
 
 }
 
+void player::update(float ms){
+    const float PLAYER_SPEED = 200.f;
+    float step = PLAYER_SPEED * (ms / 1000);
+
+    if (m_move_up) {
+
+        move({ (float)0.0, (float)-(step) });
+    }
+    if (m_move_dwn) {
+        move({ (float)0.0, (float)(step) });
+    }
+    if (m_move_rht) {
+        //m_isMove = true;
+        move({ (float)(step) , (float)0.0 });
+    }
+    if (m_move_lft) {
+        move({ (float)-(step) , (float)0.0 });
+    }
+}
+
 // Renders the salmon
 void player::draw(const mat3& projection){
 
     transform_translate({m_position.x, m_position.y});
 
+}
+
+void player::move(vec2 off)
+{
+    m_position.x += off.x; m_position.y += off.y;
+}
+
+bool player::is_move()const
+{
+    return m_isMove;
+}
+
+void player::isMoveUp(bool moveUp)
+{
+    if (moveUp) {
+        m_move_up = true;
+    }
+    else {
+        m_move_up = false;
+    }
+}
+
+void player::isMoveDwn(bool moveDwn)
+{
+    if (moveDwn) {
+        m_move_dwn = true;
+    }
+    else {
+        m_move_dwn = false;
+    }
+}
+
+void player::isMoveRht(bool moveRht)
+{
+    if (moveRht) {
+        m_move_rht = true;
+    }
+    else {
+        m_move_rht = false;
+    }
+}
+
+void player::isMoveLft(bool moveLft)
+{
+    if (moveLft) {
+        m_move_lft = true;
+    }
+    else {
+        m_move_lft = false;
+    }
 }

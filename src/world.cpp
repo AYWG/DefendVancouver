@@ -40,6 +40,8 @@ void World::destroy() {
 // Update our game world
 bool World::update(float elapsed_ms) {
 
+    m_player.update(elapsed_ms);
+
 }
 
 // Render our game world
@@ -50,7 +52,7 @@ void World::draw() {
     // Getting size of window
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
-    
+
 
     // Clearing backbuffer
     glViewport(0, 0, w, h);
@@ -81,11 +83,40 @@ bool World::is_over() const {
 
 }
 
-void on_key(GLFWwindow*, int key, int, int action, int mod){
+void World::on_key(GLFWwindow*, int key, int, int action, int mod){
+
+    m_player.isMoveUp(false);
+    m_player.isMoveDwn(false);
+    m_player.isMoveLft(false);
+    m_player.isMoveRht(false);
+
+    //moving up and down
+    if ((action == GLFW_REPEAT || action == GLFW_PRESS) && key == GLFW_KEY_W) {
+        m_player.is_move();
+        m_player.isMoveUp(true);
+    }
+
+
+    if ((action == GLFW_REPEAT || action == GLFW_PRESS) && key == GLFW_KEY_S) {
+        m_player.is_move();
+        m_player.isMoveDwn(true);
+    }
+    //
+    //moving right and left
+    if ((action == GLFW_REPEAT || action == GLFW_PRESS) && key == GLFW_KEY_D) {
+        m_player.is_move();
+        m_player.isMoveRht(true);
+    }
+    if ((action == GLFW_REPEAT || action == GLFW_PRESS) && key == GLFW_KEY_A) {
+        m_player.is_move();
+        m_player.isMoveLft(true);
+    }
+
+
 
 }
 
 
-void on_mouse_move(GLFWwindow* window, double xpos, double ypos){
+void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos){
 
 }
