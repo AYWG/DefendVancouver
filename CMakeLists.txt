@@ -13,6 +13,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory("glfw-3.2.1")
 
+
 target_link_libraries(DefendVancouver glfw)
 target_link_libraries(DefendVancouver gl3w)
 

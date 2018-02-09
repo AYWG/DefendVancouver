@@ -29,6 +29,32 @@ World::~World() {
 // World initialization
 bool World::init(vec2 screen) {
 
+    if (!glfwInit()) {
+        // Handle initialization failure
+    }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
+
+    int w, h;
+
+    glfwGetFramebufferSize(m_window, &w, &h);
+
+    glViewport(0, 0, w, h);
+    glDepthRange(0.00001, 10);
+    const float clear_color[3] = {0.3f, 0.3f, 0.8f};
+    glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
+    glClearDepth(1.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    m_window = glfwCreateWindow(1280, 720, "DefendVancouver", NULL, NULL);
+
+    while (!glfwWindowShouldClose(m_window)) {
+        glfwSwapBuffers(m_window);
+        glfwPollEvents();
+    }
+
     return m_player.init();
 }
 
@@ -80,7 +106,7 @@ void World::draw() {
 
 // Should the game be over ?
 bool World::is_over() const {
-
+   return glfwWindowShouldClose(m_window);
 }
 
 void World::on_key(GLFWwindow*, int key, int, int action, int mod){
