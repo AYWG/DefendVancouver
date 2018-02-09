@@ -29,13 +29,18 @@ World::~World() {
 // World initialization
 bool World::init(vec2 screen) {
 
-   /* if (!glfwInit()) {
+    if (!glfwInit()) {
         // Handle initialization failure
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    //GLFWwindow *window = glfwCreateWindow(1280, 720, "DefendVancouver", NULL, NULL);
+    m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
 
+
+    // Load OpenGL function pointers
+    gl3wInit();
 
     int w, h;
 
@@ -48,57 +53,15 @@ bool World::init(vec2 screen) {
     glClearDepth(1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_window = glfwCreateWindow(1280, 720, "DefendVancouver", NULL, NULL);
-
-    gl3wInit();
 
     while (!glfwWindowShouldClose(m_window)) {
         glfwSwapBuffers(m_window);
         glfwPollEvents();
     }
 
-    return m_player.init();*/
 
-    //-------------------------------------------------------------------------
-    // GLFW / OGL Initialization
-    // Core Opengl 3.
-    //glfwSetErrorCallback(glfw_err_cb);
-    if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize GLFW");
-        return false;
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-#if __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-    glfwWindowHint(GLFW_RESIZABLE, 0);
-    m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
     if (m_window == nullptr)
         return false;
-
-   glfwMakeContextCurrent(m_window);
-    glfwSwapInterval(1); // vsync
-
-    // Load OpenGL function pointers
-    gl3wInit();
-
-/*    // Setting callbacks to member functions (that's why the redirect is needed)
-    //
-    //
-    // Input is handled using GLFW, for more info see
-    // http://www.glfw.org/docs/latest/input_guide.html
-    glfwSetWindowUserPointer(m_window, this);
-    auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((World*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-    auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_
-            (wnd, _0, _1); };
-    glfwSetKeyCallback(m_window, key_redirect);
-    glfwSetCursorPosCallback(m_window, cursor_pos_redirect);*/
-
 
 
 
