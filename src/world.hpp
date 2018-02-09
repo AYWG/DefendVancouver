@@ -32,6 +32,11 @@ public:
     bool is_over() const;
 
 private:
+
+    // Window hjandle
+    GLFWwindow* m_window;
+
+
     //keyback functions
     void on_key(GLFWwindow*, int key, int, int action, int mod);
     void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
