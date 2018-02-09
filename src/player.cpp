@@ -11,11 +11,12 @@ Texture player::player_texture;
 
 
 using namespace std;
+
 bool player::init() {
     //load texture
     if(!player_texture.is_valid())
     {
-        if(!player_texture.load_from_file(textures_path("fish.png")))
+        if(!player_texture.load_from_file(textures_path("player.png")))
         {
             fprintf(stderr, "Failed to load player texture!");
             return false;
@@ -99,27 +100,12 @@ void player::update(float ms){
 
 // Renders the salmon
 void player::draw(const mat3& projection){
+    // Transformation code, see Rendering and Transformation in the template specification for more info
+    // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform_begin();
-
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // SALMON TRANSFORMATION CODE HERE
-
-    // see Transformations and Rendering in the specification pdf
-    // the following functions are available:
-    // transform_translate()
-    // transform_rotate()
-    // transform_scale()
-
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
-    transform_translate({ m_position.x, m_position.y});
-    transform_rotate(-m_rotation);
+    transform_translate(m_position);
+    transform_rotate(m_rotation);
     transform_scale(m_scale);
-
-    //transform_translate(get_position());
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
     transform_end();
 
     // Setting shaders
@@ -127,13 +113,12 @@ void player::draw(const mat3& projection){
 
     // Enabling alpha channel for textures
     glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
 
-    // Getting uniform locations
+    // Getting uniform locations for glUniform* calls
     GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-    GLint light_up_uloc = glGetUniformLocation(effect.program, "light_up");
 
     // Setting vertices and indices
     glBindVertexArray(mesh.vao);
@@ -142,28 +127,24 @@ void player::draw(const mat3& projection){
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-    GLint in_color_loc = glGetAttribLocation(effect.program, "in_color");
+    GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
-    glEnableVertexAttribArray(in_color_loc);
-    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-    glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(vec3));
+    glEnableVertexAttribArray(in_texcoord_loc);
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+
+    // Enabling and binding texture to slot 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, player_texture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-
-    // !!! Salmon Color
-
-        float color[] = { 1.f, 1.f, 1.f };
-
-        glUniform3fv(color_uloc, 1, color);
-        glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
-
-
-
+    float color[] = { 1.f, 1.f, 1.f };
+    glUniform3fv(color_uloc, 1, color);
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
     // Drawing!
-    glDrawElements(GL_TRIANGLES,(GLsizei)m_num_indices, GL_UNSIGNED_SHORT, nullptr);
-
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
 void player::move(vec2 off)
