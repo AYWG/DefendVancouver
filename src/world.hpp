@@ -8,6 +8,7 @@
 #include <vector>
 #include <random>
 #include "common.hpp"
+#include "player.hpp"
 
 class World {
 public:
@@ -29,6 +30,16 @@ public:
 
     // Should the game be over ?
     bool is_over() const;
+
+private:
+    //keyback functions
+    void on_key(GLFWwindow*, int key, int, int action, int mod);
+    void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
+
+    player m_player;
+
+    float  m_plyr_speed;
+
 };
 
 
