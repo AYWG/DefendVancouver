@@ -5,28 +5,25 @@
 #include "common.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
+
 #include "../stb-cmake/stb_image.h"
 
 // stlib
 #include <vector>
 #include <sstream>
 
-void gl_flush_errors()
-{
+void gl_flush_errors() {
     while (glGetError() != GL_NO_ERROR);
 }
 
-bool gl_has_errors()
-{
+bool gl_has_errors() {
     GLenum error = glGetError();
 
     if (error == GL_NO_ERROR) return false;
 
-    while (error != GL_NO_ERROR)
-    {
-        const char* error_str = "";
-        switch (error)
-        {
+    while (error != GL_NO_ERROR) {
+        const char *error_str = "";
+        switch (error) {
             case GL_INVALID_OPERATION:
                 error_str = "INVALID_OPERATION";
                 break;
@@ -51,21 +48,18 @@ bool gl_has_errors()
     return true;
 }
 
-float dot(vec2 l, vec2 r)
-{
+float dot(vec2 l, vec2 r) {
     return l.x * r.x + l.y * r.y;
 }
 
-float dot(vec3 l, vec3 r)
-{
+float dot(vec3 l, vec3 r) {
     return l.x * r.x + l.y * r.y + l.z * r.z;
 }
 
-mat3 mul(const mat3 & l, const mat3 & r)
-{
-    mat3 l_t = { { l.c0.x, l.c1.x, l.c2.x},
-                 { l.c0.y, l.c1.y, l.c2.y } ,
-                 { l.c0.z, l.c1.z, l.c2.z } };
+mat3 mul(const mat3 &l, const mat3 &r) {
+    mat3 l_t = {{l.c0.x, l.c1.x, l.c2.x},
+                {l.c0.y, l.c1.y, l.c2.y},
+                {l.c0.z, l.c1.z, l.c2.z}};
 
     mat3 ret;
     ret.c0.x = dot(l_t.c0, r.c0);
@@ -82,28 +76,24 @@ mat3 mul(const mat3 & l, const mat3 & r)
     return ret;
 }
 
-vec2 normalize(vec2 v)
-{
+vec2 normalize(vec2 v) {
     float m = sqrtf(dot(v, v));
-    return { v.x / m, v.y / m };
+    return {v.x / m, v.y / m};
 }
 
-Texture::Texture()
-{
+Texture::Texture() {
 
 }
 
-Texture::~Texture()
-{
+Texture::~Texture() {
     if (id != 0) glDeleteTextures(1, &id);
 }
 
-bool Texture::load_from_file(const char* path)
-{
+bool Texture::load_from_file(const char *path) {
     if (path == nullptr)
         return false;
 
-    stbi_uc* data = stbi_load(path, &width, &height, NULL, 4);
+    stbi_uc *data = stbi_load(path, &width, &height, NULL, 4);
     if (data == NULL)
         return false;
 
@@ -117,20 +107,16 @@ bool Texture::load_from_file(const char* path)
     return !gl_has_errors();
 }
 
-bool Texture::is_valid()const
-{
+bool Texture::is_valid() const {
     return id != 0;
 }
 
-namespace
-{
-    bool gl_compile_shader(GLuint shader)
-    {
+namespace {
+    bool gl_compile_shader(GLuint shader) {
         glCompileShader(shader);
         GLint success = 0;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if (success == GL_FALSE)
-        {
+        if (success == GL_FALSE) {
             GLint log_len;
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_len);
             std::vector<char> log(log_len);
@@ -145,16 +131,14 @@ namespace
     }
 }
 
-bool Effect::load_from_file(const char* vs_path, const char* fs_path)
-{
+bool Effect::load_from_file(const char *vs_path, const char *fs_path) {
     gl_flush_errors();
 
     // Opening files
     std::ifstream vs_is(vs_path);
     std::ifstream fs_is(fs_path);
 
-    if (!vs_is.good() || !fs_is.good())
-    {
+    if (!vs_is.good() || !fs_is.good()) {
         fprintf(stderr, "Failed to load shader files %s, %s", vs_path, fs_path);
         return false;
     }
@@ -165,10 +149,10 @@ bool Effect::load_from_file(const char* vs_path, const char* fs_path)
     fs_ss << fs_is.rdbuf();
     std::string vs_str = vs_ss.str();
     std::string fs_str = fs_ss.str();
-    const char* vs_src = vs_str.c_str();
-    const char* fs_src = fs_str.c_str();
-    GLsizei vs_len = (GLsizei)vs_str.size();
-    GLsizei fs_len = (GLsizei)fs_str.size();
+    const char *vs_src = vs_str.c_str();
+    const char *fs_src = fs_str.c_str();
+    GLsizei vs_len = (GLsizei) vs_str.size();
+    GLsizei fs_len = (GLsizei) fs_str.size();
 
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vs_src, &vs_len);
@@ -180,8 +164,7 @@ bool Effect::load_from_file(const char* vs_path, const char* fs_path)
     if (!gl_compile_shader(vertex))
         return false;
 
-    if (!gl_compile_shader(fragment))
-    {
+    if (!gl_compile_shader(fragment)) {
         glDeleteShader(vertex);
         return false;
     }
@@ -194,8 +177,7 @@ bool Effect::load_from_file(const char* vs_path, const char* fs_path)
     {
         GLint is_linked = 0;
         glGetProgramiv(program, GL_LINK_STATUS, &is_linked);
-        if (is_linked == GL_FALSE)
-        {
+        if (is_linked == GL_FALSE) {
             GLint log_len;
             glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_len);
             std::vector<char> log(log_len);
@@ -207,8 +189,7 @@ bool Effect::load_from_file(const char* vs_path, const char* fs_path)
         }
     }
 
-    if (gl_has_errors())
-    {
+    if (gl_has_errors()) {
         release();
         fprintf(stderr, "OpenGL errors occured while compiling Effect");
         return false;
@@ -217,39 +198,41 @@ bool Effect::load_from_file(const char* vs_path, const char* fs_path)
     return true;
 }
 
-void Effect::release()
-{
+void Effect::release() {
     glDeleteProgram(program);
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 }
 
-void Renderable::transform_begin()
-{
-    transform = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
+void Renderable::transform_begin() {
+    transform = {{1.f, 0.f, 0.f},
+                 {0.f, 1.f, 0.f},
+                 {0.f, 0.f, 1.f}};
 }
 
-void Renderable::transform_scale(vec2 scale)
-{
-    mat3 S = { { scale.x, 0.f, 0.f },{ 0.f, scale.y, 0.f },{ 0.f, 0.f, 1.f } };
+void Renderable::transform_scale(vec2 scale) {
+    mat3 S = {{scale.x, 0.f,     0.f},
+              {0.f,     scale.y, 0.f},
+              {0.f,     0.f,     1.f}};
     transform = mul(transform, S);
 }
 
-void Renderable::transform_rotate(float radians)
-{
+void Renderable::transform_rotate(float radians) {
     float c = cosf(radians);
     float s = sinf(radians);
-    mat3 R = { { c, s, 0.f },{ -s, c, 0.f },{ 0.f, 0.f, 1.f } };
+    mat3 R = {{c,   s,   0.f},
+              {-s,  c,   0.f},
+              {0.f, 0.f, 1.f}};
     transform = mul(transform, R);
 }
 
-void Renderable::transform_translate(vec2 offset)
-{
-    mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ offset.x, offset.y, 1.f } };
+void Renderable::transform_translate(vec2 offset) {
+    mat3 T = {{1.f,      0.f,      0.f},
+              {0.f,      1.f,      0.f},
+              {offset.x, offset.y, 1.f}};
     transform = mul(transform, T);
 }
 
-void Renderable::transform_end()
-{
+void Renderable::transform_end() {
     //
 }

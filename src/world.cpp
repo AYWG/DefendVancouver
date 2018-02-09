@@ -14,47 +14,39 @@
 
 
 // Same as static in c, local to compilation unit
-namespace
-{
+namespace {
 
 }
 
-world::world() :
-{
+world::world() {
 
 }
 
-world::~world()
-{
+world::~world() {
 
 }
 
 // World initialization
-bool world::init(vec2 screen)
-{
+bool world::init(vec2 screen) {
 
 }
 
 // Releases all the associated resources
-void world::destroy()
-{
+void world::destroy() {
 
 }
 
 // Update our game world
-bool world::update(float elapsed_ms)
-{
+bool world::update(float elapsed_ms) {
 
 }
 
 // Render our game world
-void world::draw()
-{
+void world::draw() {
 
 }
 
 // Should the game be over ?
-bool world::is_over()const
-{
+bool world::is_over() const {
 
 }

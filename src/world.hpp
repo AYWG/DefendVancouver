@@ -2,9 +2,6 @@
 // Created by Tanwin Nun on 2018-02-07.
 //
 
-#ifndef DEFENDVANCOUVER_WORLD_HPP
-#define DEFENDVANCOUVER_WORLD_HPP
-
 #pragma once
 
 // stlib
@@ -15,6 +12,7 @@
 class world {
 public:
     world();
+
     ~world();
 
     // Creates a window, sets up events and begins the game
@@ -30,8 +28,7 @@ public:
     void draw();
 
     // Should the game be over ?
-    bool is_over()const;
+    bool is_over() const;
 };
 
 
-#endif //DEFENDVANCOUVER_WORLD_HPP
