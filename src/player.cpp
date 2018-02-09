@@ -67,8 +67,8 @@ bool player::init() {
     m_scale.x = -0.4f;
     m_scale.y = 0.4f;
     m_rotation = 0.f;
-    m_position.x = 50;
-    m_position.y = 50;
+    m_position.x = 600;
+    m_position.y = 400;
     set_rotation(1.571f);
 
 
