@@ -5,7 +5,7 @@
 #pragma once
 
 
-class camera {
+class Camera {
 
 };
 
