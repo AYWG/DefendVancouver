@@ -168,16 +168,16 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
     {
         if (action == GLFW_PRESS)
         {
-            m_player.set_velocity(m_player.get_max_speed(), player::DIRECTION::UP);
-            m_player.set_flying(true, player::DIRECTION::UP);
+            m_player.set_velocity(m_player.get_max_speed(), Player::DIRECTION::UP);
+            m_player.set_flying(true, Player::DIRECTION::UP);
         }
         else if (action == GLFW_RELEASE)
         {
             if (!m_is_advanced_mode)
             {
-                m_player.set_velocity(0.f, player::DIRECTION::UP);
+                m_player.set_velocity(0.f, Player::DIRECTION::UP);
             }
-            m_player.set_flying(false, player::DIRECTION::UP);
+            m_player.set_flying(false, Player::DIRECTION::UP);
         }
     }
 
@@ -185,16 +185,16 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
     {
         if (action == GLFW_PRESS)
         {
-            m_player.set_velocity(m_player.get_max_speed(), player::DIRECTION::DOWN);
-            m_player.set_flying(true, player::DIRECTION::DOWN);
+            m_player.set_velocity(m_player.get_max_speed(), Player::DIRECTION::DOWN);
+            m_player.set_flying(true, Player::DIRECTION::DOWN);
         }
         else if (action == GLFW_RELEASE)
         {
             if (!m_is_advanced_mode)
             {
-                m_player.set_velocity(0.f, player::DIRECTION::DOWN);
+                m_player.set_velocity(0.f, Player::DIRECTION::DOWN);
             }
-            m_player.set_flying(false, player::DIRECTION::DOWN);
+            m_player.set_flying(false, Player::DIRECTION::DOWN);
         }
     }
 
@@ -202,16 +202,16 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
     {
         if (action == GLFW_PRESS)
         {
-            m_player.set_velocity(m_player.get_max_speed(), player::DIRECTION::LEFT);
-            m_player.set_flying(true, player::DIRECTION::LEFT);
+            m_player.set_velocity(m_player.get_max_speed(), Player::DIRECTION::LEFT);
+            m_player.set_flying(true, Player::DIRECTION::LEFT);
         }
         else if (action == GLFW_RELEASE)
         {
             if (!m_is_advanced_mode)
             {
-                m_player.set_velocity(0.f, player::DIRECTION::LEFT);
+                m_player.set_velocity(0.f, Player::DIRECTION::LEFT);
             }
-            m_player.set_flying(false, player::DIRECTION::LEFT);
+            m_player.set_flying(false, Player::DIRECTION::LEFT);
         }
     }
 
@@ -219,16 +219,16 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
     {
         if (action == GLFW_PRESS)
         {
-            m_player.set_velocity(m_player.get_max_speed(), player::DIRECTION::RIGHT);
-            m_player.set_flying(true, player::DIRECTION::RIGHT);
+            m_player.set_velocity(m_player.get_max_speed(), Player::DIRECTION::RIGHT);
+            m_player.set_flying(true, Player::DIRECTION::RIGHT);
         }
         else if (action == GLFW_RELEASE)
         {
             if (!m_is_advanced_mode)
             {
-                m_player.set_velocity(0.f, player::DIRECTION::RIGHT);
+                m_player.set_velocity(0.f, Player::DIRECTION::RIGHT);
             }
-            m_player.set_flying(false, player::DIRECTION::RIGHT);
+            m_player.set_flying(false, Player::DIRECTION::RIGHT);
         }
     }
 

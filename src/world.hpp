@@ -54,7 +54,7 @@ private:
 	unsigned int m_points;
 
 	// Game entities
-	player m_player;
+	Player m_player;
 
 
 	float m_current_speed;
