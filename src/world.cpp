@@ -228,7 +228,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
 
 
-    if (key == GLFW_KEY_UP)
+    if (key == GLFW_KEY_W)
     {
         if (action == GLFW_PRESS)
         {
@@ -245,7 +245,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
         }
     }
 
-    if (key == GLFW_KEY_DOWN)
+    if (key == GLFW_KEY_S)
     {
         if (action == GLFW_PRESS)
         {
@@ -262,7 +262,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
         }
     }
 
-    if (key == GLFW_KEY_LEFT)
+    if (key == GLFW_KEY_A)
     {
         if (action == GLFW_PRESS)
         {
@@ -279,7 +279,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
         }
     }
 
-    if (key == GLFW_KEY_RIGHT)
+    if (key == GLFW_KEY_D)
     {
         if (action == GLFW_PRESS)
         {
