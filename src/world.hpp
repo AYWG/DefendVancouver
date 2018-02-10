@@ -7,6 +7,7 @@
 #include "bomber.hpp"
 #include "chaser.hpp"
 #include "background.hpp"
+#include "pbullet.hpp"
 
 // stlib
 #include <vector>
@@ -63,6 +64,8 @@ private:
 	// Game entities
 	Player m_player;
 	BasicEnemy m_basEnemy;
+    Pbullet m_pbullet;
+
 	std::vector<BasicEnemy> m_basEnemies;
 
 

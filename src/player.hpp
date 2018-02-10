@@ -35,6 +35,7 @@ public:
     //set rotation
     void set_rotation(float radians);
 
+
     void set_velocity(float velocity, DIRECTION dir);
 
     void swap_velocity(DIRECTION dir1, DIRECTION dir2);
@@ -46,6 +47,7 @@ public:
 private:
     vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
+    vec2 up_position;
     float m_rotation; // in radians
     bool m_isMove;
     float m_velocity[NUM_DIRECTIONS];
