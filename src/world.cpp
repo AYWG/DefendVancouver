@@ -195,7 +195,7 @@ void World::draw()
 	// Drawing entities
 
     m_background.draw(projection_2D);
-    m_pbullet.draw(projection_2D);
+   // m_pbullet.draw(projection_2D);
 	m_player.draw(projection_2D);
 
    // m_basEnemy.draw(projection_2D);
@@ -230,107 +230,85 @@ bool World::spawn_basicEnemy()
 }
 
 // On key callback
-void World::on_key(GLFWwindow*, int key, int, int action, int mod)
-{
+void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 
 
-    if (key == GLFW_KEY_W)
-    {
-        if (action == GLFW_PRESS)
-        {
+    if (key == GLFW_KEY_W) {
+        if (action == GLFW_PRESS) {
             m_player.set_velocity(m_player.get_max_speed(), Player::DIRECTION::UP);
             m_player.set_flying(true, Player::DIRECTION::UP);
-        }
-        else if (action == GLFW_RELEASE)
-        {
-            if (!m_is_advanced_mode)
-            {
+        } else if (action == GLFW_RELEASE) {
+            if (!m_is_advanced_mode) {
                 m_player.set_velocity(0.f, Player::DIRECTION::UP);
             }
             m_player.set_flying(false, Player::DIRECTION::UP);
         }
     }
 
-    if (key == GLFW_KEY_S)
-    {
-        if (action == GLFW_PRESS)
-        {
+    if (key == GLFW_KEY_S) {
+        if (action == GLFW_PRESS) {
             m_player.set_velocity(m_player.get_max_speed(), Player::DIRECTION::DOWN);
             m_player.set_flying(true, Player::DIRECTION::DOWN);
-        }
-        else if (action == GLFW_RELEASE)
-        {
-            if (!m_is_advanced_mode)
-            {
+        } else if (action == GLFW_RELEASE) {
+            if (!m_is_advanced_mode) {
                 m_player.set_velocity(0.f, Player::DIRECTION::DOWN);
             }
             m_player.set_flying(false, Player::DIRECTION::DOWN);
         }
     }
 
-    if (key == GLFW_KEY_A)
-    {
-        if (action == GLFW_PRESS)
-        {
+    if (key == GLFW_KEY_A) {
+        if (action == GLFW_PRESS) {
             m_player.set_velocity(m_player.get_max_speed(), Player::DIRECTION::LEFT);
             m_player.set_flying(true, Player::DIRECTION::LEFT);
-        }
-        else if (action == GLFW_RELEASE)
-        {
-            if (!m_is_advanced_mode)
-            {
+        } else if (action == GLFW_RELEASE) {
+            if (!m_is_advanced_mode) {
                 m_player.set_velocity(0.f, Player::DIRECTION::LEFT);
             }
             m_player.set_flying(false, Player::DIRECTION::LEFT);
         }
     }
 
-    if (key == GLFW_KEY_D)
-    {
-        if (action == GLFW_PRESS)
-        {
+    if (key == GLFW_KEY_D) {
+        if (action == GLFW_PRESS) {
             m_player.set_velocity(m_player.get_max_speed(), Player::DIRECTION::RIGHT);
             m_player.set_flying(true, Player::DIRECTION::RIGHT);
-        }
-        else if (action == GLFW_RELEASE)
-        {
-            if (!m_is_advanced_mode)
-            {
+        } else if (action == GLFW_RELEASE) {
+            if (!m_is_advanced_mode) {
                 m_player.set_velocity(0.f, Player::DIRECTION::RIGHT);
             }
             m_player.set_flying(false, Player::DIRECTION::RIGHT);
         }
+
+
+
+
+        // Resetting game
+        if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
+            int w, h;
+            glfwGetWindowSize(m_window, &w, &h);
+ 
+            m_player.init();
+
+            m_current_speed = 1.f;
+
+            if (key == GLFW_KEY_A) {
+                m_is_advanced_mode = true;
+            }
+            if (key == GLFW_KEY_B) {
+                m_is_advanced_mode = false;
+            }
+        }
+
+
+        // Control the current speed with `<` `>`
+        if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
+            m_current_speed -= 0.1f;
+        if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
+            m_current_speed += 0.1f;
+
+        m_current_speed = fmax(0.f, m_current_speed);
     }
-
-
-
-	// Resetting game
-	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
-	{
-		int w, h;
-		glfwGetWindowSize(m_window, &w, &h);
-
-		m_player.init();
-
-		m_current_speed = 1.f;
-
-        if (key == GLFW_KEY_A)
-        {
-            m_is_advanced_mode = true;
-        }
-        if (key == GLFW_KEY_B)
-        {
-            m_is_advanced_mode = false;
-        }
-	}
-
-	// Control the current speed with `<` `>`
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
-		m_current_speed -= 0.1f;
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-		m_current_speed += 0.1f;
-
-	m_current_speed = fmax(0.f, m_current_speed);
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
