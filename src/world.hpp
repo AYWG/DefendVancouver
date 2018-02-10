@@ -3,6 +3,7 @@
 // internal
 #include "common.hpp"
 #include "player.hpp"
+#include "BEnemy.hpp"
 
 
 // stlib
@@ -55,6 +56,8 @@ private:
 
 	// Game entities
 	Player m_player;
+
+	BEnemy m_basicEnemy;
 
 
 	float m_current_speed;
