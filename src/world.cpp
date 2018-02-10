@@ -1,6 +1,7 @@
 // Header
 #include "world.hpp"
 
+
 // stlib
 #include <string.h>
 #include <cassert>
@@ -44,6 +45,7 @@ bool World::init(vec2 screen)
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
 	glfwSetErrorCallback(glfw_err_cb);
+
 	if (!glfwInit())
 	{
 		fprintf(stderr, "Failed to initialize GLFW");
@@ -77,10 +79,14 @@ bool World::init(vec2 screen)
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 
+
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
     m_basEnemy.init();
 
+
+
+	m_background.init();
 
 	return m_player.init();
 	//return true;
@@ -126,6 +132,20 @@ bool World::update(float elapsed_ms)
     for (auto& bEnemy : m_basEnemies)
         bEnemy.update(elapsed_ms * m_current_speed);
 
+    // Removing out of screen bEnemy
+    auto benemy_it = m_basEnemies.begin();
+    while (benemy_it != m_basEnemies.end())
+    {
+        float w = benemy_it->get_bounding_box().x / 2;
+        if (benemy_it->get_position().x + w < 0.f)
+        {
+            benemy_it = m_basEnemies.erase(benemy_it);
+            continue;
+        }
+
+        ++benemy_it;
+    }
+
 
 	return true;
 }
@@ -169,11 +189,16 @@ void World::draw()
 
 	// Drawing entities
 
+    m_background.draw(projection_2D);
+
 	m_player.draw(projection_2D);
    // m_basEnemy.draw(projection_2D);
 
     for (auto& bEnemy : m_basEnemies)
         bEnemy.draw(projection_2D);
+
+
+
 
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -316,8 +341,5 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
     float rotation_angle = (atan2(aimDirNorm.x, -aimDirNorm.y));
     m_player.set_rotation(rotation_angle);
     //m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
-
-
-
 
 }

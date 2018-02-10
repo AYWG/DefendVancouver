@@ -6,6 +6,7 @@
 #include "basicEnemy.hpp"
 #include "bomber.hpp"
 #include "chaser.hpp"
+#include "background.hpp"
 
 // stlib
 #include <vector>
@@ -58,6 +59,7 @@ private:
 	// Number of fish eaten by the salmon, displayed in the window title
 	unsigned int m_points;
 
+	background m_background;
 	// Game entities
 	Player m_player;
 	BasicEnemy m_basEnemy;
@@ -73,4 +75,5 @@ private:
 	// C++ rng
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_dist; // default 0..1
+    static Texture world_texture;
 };

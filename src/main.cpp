@@ -14,7 +14,7 @@ using Clock = std::chrono::high_resolution_clock;
 World world;
 const int width = 1200;
 const int height = 800;
-const char* title = "Your Title Here";
+const char* title = "DefendVancouver";
 
 // Entry point
 int main(int argc, char* argv[])

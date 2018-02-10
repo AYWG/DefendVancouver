@@ -1,45 +1,42 @@
 //
-// Created by Shrey Swades Nayak on 2018-02-08.
+// Created by Anun Ganbat on 2018-02-09.
 //
-
-#include "BasicEnemy.hpp"
-
-#include <cmath>
+#include <vector>
 #include <iostream>
+#include "background.hpp"
+#include "common.hpp"
 
-Texture BasicEnemy::basicEnemy_texture;
+Texture background::background_texture;
 
-bool BasicEnemy::init() {
+using namespace std;
 
-    //Load texture
-    if (!basicEnemy_texture.is_valid())
-    {
-        if (!basicEnemy_texture.load_from_file(textures_path("basicEnemy.png")))
-        {
-            fprintf(stderr, "Failed to load turtle texture!");
-            return false;
+bool background::init() {
+        //load texture
+        if(!background_texture.is_valid()){
+            if(!background_texture.load_from_file(textures_path("1.png")))
+            {
+                fprintf(stderr, "Failed to load background texture!");
+                return false;
+            }
         }
-    }
 
-    //center of texture
-    float width = basicEnemy_texture.width * 0.1f;
-    float height = basicEnemy_texture.height * 0.1f;
+        // The position corresponds to the center of the texture
+        float wr = background_texture.width * 0.5f;
+        float hr = background_texture.height * 0.5f;
 
-    TexturedVertex vertices[4];
-    vertices[0].position = { -width, +height, -0.01f };
-    vertices[0].texcoord = { 0.f, 1.f };
-    vertices[1].position = { +width, +height, -0.01f };
-    vertices[1].texcoord = { 1.f, 1.f };
-    vertices[2].position = { +width, -height, -0.01f };
-    vertices[2].texcoord = { 1.f, 0.f };
-    vertices[3].position = { -width, -height, -0.01f };
-    vertices[3].texcoord = { 0.f, 0.f };
+        TexturedVertex vertices[4];
+        vertices[0].position = { -wr, +hr, -0.01f };
+        vertices[0].texcoord = { 0.f, 1.f };
+        vertices[1].position = { +wr, +hr, -0.01f };
+        vertices[1].texcoord = { 1.f, 1.f,  };
+        vertices[2].position = { +wr, -hr, -0.01f };
+        vertices[2].texcoord = { 1.f, 0.f };
+        vertices[3].position = { -wr, -hr, -0.01f };
+        vertices[3].texcoord = { 0.f, 0.f };
 
-    // counterclockwise as it's the default opengl front winding direction
     uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
-
-    // Clearing errors
-    gl_flush_errors();
+        // Clearing errors
+        gl_flush_errors();
 
     // Vertex Buffer creation
     glGenBuffers(1, &mesh.vbo);
@@ -59,37 +56,22 @@ bool BasicEnemy::init() {
     // Loading shaders
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
-
-    // Setting initial values, scale is negative to make it face the opposite way
-    // 1.0 would be as big as the original texture
-    m_scale.x = 0.4f;
-    m_scale.y = 0.4f;
-    m_rotation = 0.f;
-
+    b_scale.x = -2.1f;
+    b_scale.y = 2.2f;
+    b_position.x = 600;
+    b_position.y = 400;
 
     return true;
 }
 
-void BasicEnemy::destroy(){
-
-}
-
-void BasicEnemy::update(float ms){
-    const float BENEMY_SPEED = 200.f;
-    float step = -BENEMY_SPEED * (ms / 1000);
-    m_pos.x += step;
-
-
-}
-
-void BasicEnemy::draw(const mat3& projection){
-    transform_begin();
-    transform_translate(m_pos);
-    transform_rotate(m_rotation);
-    transform_scale(m_scale);
-    transform_end();
-
+void background::draw(const mat3& projection){
+    // Transformation code, see Rendering and Transformation in the template specification for more info
+    // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
+    transform_begin();
+    transform_translate(b_position);
+    transform_scale(b_scale);
+    transform_end();
     glUseProgram(effect.program);
 
     // Enabling alpha channel for textures
@@ -116,7 +98,7 @@ void BasicEnemy::draw(const mat3& projection){
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, basicEnemy_texture.id);
+    glBindTexture(GL_TEXTURE_2D, background_texture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -127,20 +109,11 @@ void BasicEnemy::draw(const mat3& projection){
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
-
-vec2 BasicEnemy::get_position()const{
-    return m_pos;
+vec2 background::get_position()const{
+    return b_position;
 }
 
-void BasicEnemy::set_position(vec2 position){
-    m_pos = position;
-}
-
-// Returns the local bounding coordinates scaled by the current size of the turtle
-vec2 BasicEnemy::get_bounding_box()const
+void background::set_position(vec2 position)
 {
-    // fabs is to avoid negative scale due to the facing direction
-    return { std::fabs(m_scale.x) * basicEnemy_texture.width, std::fabs(m_scale.y) * basicEnemy_texture.height };
+    b_position = position;
 }
-
-//vec2 get_bounding_box()const;
