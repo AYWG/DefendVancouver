@@ -72,11 +72,6 @@ bool Player::init() {
     m_max_speed = 200.f;
     set_rotation(1.571f);
 
-
-
-
-
-
     return true;
 
 }

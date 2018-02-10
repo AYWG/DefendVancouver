@@ -61,9 +61,9 @@ bool BasicEnemy::init() {
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture
-    curr_scale.x = 0.4f;
-    curr_scale.y = 0.4f;
-    curr_rotation = 0.f;
+    m_scale.x = 0.4f;
+    m_scale.y = 0.4f;
+    m_rotation = 0.f;
 
     return true;
 }
@@ -78,9 +78,9 @@ void BasicEnemy::update(float ms){
 
 void BasicEnemy::draw(const mat3& projection){
     transform_begin();
-    transform_translate(curr_pos);
-    transform_rotate(curr_rotation);
-    transform_scale(curr_scale);
+    transform_translate(m_pos);
+    transform_rotate(m_rotation);
+    transform_scale(m_scale);
     transform_end();
 
     // Setting shaders
@@ -123,11 +123,11 @@ void BasicEnemy::draw(const mat3& projection){
 }
 
 vec2 BasicEnemy::get_position()const{
-    return curr_pos;
+    return m_pos;
 }
 
 void BasicEnemy::set_position(vec2 position){
-    curr_pos = position;
+    m_pos = position;
 }
 
 //vec2 get_bounding_box()const;

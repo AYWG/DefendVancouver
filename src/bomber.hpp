@@ -28,8 +28,8 @@ public:
 
 private:
 
-    vec2 curr_pos;
-    vec2 curr_scale;
-    float curr_rotation;
+    vec2 m_pos;
+    vec2 m_scale;
+    float m_rotation;
 
 };
