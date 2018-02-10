@@ -7,12 +7,12 @@
 #include "player.hpp"
 #include "common.hpp"
 
-Texture player::player_texture;
+Texture Player::player_texture;
 
 
 using namespace std;
 
-bool player::init() {
+bool Player::init() {
     //load texture
     if(!player_texture.is_valid())
     {
@@ -81,8 +81,8 @@ bool player::init() {
 
 }
 
-void player::update(float ms){
-    
+void Player::update(float ms){
+
     float x_step = (m_velocity[RIGHT] - m_velocity[LEFT]) * (ms / 1000);
     float y_step = (m_velocity[DOWN] - m_velocity[UP]) * (ms / 1000);
     move({ x_step, y_step });
@@ -96,7 +96,7 @@ void player::update(float ms){
 }
 
 // Renders the salmon
-void player::draw(const mat3& projection){
+void Player::draw(const mat3& projection){
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform_begin();
@@ -144,39 +144,39 @@ void player::draw(const mat3& projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 player::get_position()const{
+vec2 Player::get_position()const{
     return m_position;
 }
 
 
-void player::set_rotation(float radians)
+void Player::set_rotation(float radians)
 {
     m_rotation = radians;
 }
 
-void player::move(vec2 off)
+void Player::move(vec2 off)
 {
     m_position.x += off.x; m_position.y += off.y;
 }
 
-bool player::is_move()const
+bool Player::is_move()const
 {
     return m_isMove;
 }
 
 
-void player::set_velocity(float velocity, DIRECTION dir)
+void Player::set_velocity(float velocity, DIRECTION dir)
 {
     m_velocity[dir] = velocity;
 }
 
 
-void player::set_flying(bool is_flying, DIRECTION dir)
+void Player::set_flying(bool is_flying, DIRECTION dir)
 {
     m_is_flying[dir] = is_flying;
 }
 
-float player::get_max_speed()const
+float Player::get_max_speed()const
 {
     return m_max_speed;
 }

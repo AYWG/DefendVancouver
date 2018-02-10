@@ -7,7 +7,7 @@
 #define NUM_DIRECTIONS 4
 #include "common.hpp"
 
-class player : public Renderable{
+class Player : public Renderable{
 
     static Texture player_texture;
 
@@ -35,12 +35,6 @@ public:
     //set rotation
     void set_rotation(float radians);
 
-
-    void isMoveUp(bool moveUp);
-    void isMoveDwn(bool moveDwn);
-    void isMoveLft(bool moveLft);
-    void isMoveRht(bool moveRht);
-
     void set_velocity(float velocity, DIRECTION dir);
 
     void swap_velocity(DIRECTION dir1, DIRECTION dir2);
@@ -53,10 +47,6 @@ private:
     vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     float m_rotation; // in radians
-    bool m_move_up;
-    bool m_move_dwn;
-    bool m_move_lft;
-    bool m_move_rht;
     bool m_isMove;
     float m_velocity[NUM_DIRECTIONS];
     bool m_is_flying[NUM_DIRECTIONS];
