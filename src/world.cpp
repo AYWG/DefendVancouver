@@ -83,12 +83,14 @@ bool World::init(vec2 screen)
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
     m_basEnemy.init();
+    m_player.init();
+    m_pbullet.init();
 
 
 
-	m_background.init();
+	//m_background.init();
 
-	return m_player.init();
+	return m_background.init();
 	//return true;
 }
 
@@ -111,6 +113,9 @@ bool World::update(float elapsed_ms)
 
 	// faster based on current
 	m_player.update(elapsed_ms);
+
+    //bullet
+    m_pbullet.set_position(m_player.get_position());
 
     //basicEnemySpawning
     m_next_benemy_spawn -= elapsed_ms * m_current_speed;
@@ -190,8 +195,9 @@ void World::draw()
 	// Drawing entities
 
     m_background.draw(projection_2D);
-
+    m_pbullet.draw(projection_2D);
 	m_player.draw(projection_2D);
+
    // m_basEnemy.draw(projection_2D);
 
     for (auto& bEnemy : m_basEnemies)
