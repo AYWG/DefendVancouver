@@ -62,8 +62,8 @@ bool BasicEnemy::init() {
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture
-    m_scale.x = 0.4f;
-    m_scale.y = 0.4f;
+    m_scale.x = 0.2f;
+    m_scale.y = 0.2f;
     m_rotation = 0.f;
 
 
@@ -77,7 +77,7 @@ void BasicEnemy::destroy(){
 void BasicEnemy::update(float ms){
     const float BENEMY_SPEED = 200.f;
     float step = -BENEMY_SPEED * (ms / 1000);
-    m_pos.x += step;
+    m_pos.y -= step;
 
 
 }

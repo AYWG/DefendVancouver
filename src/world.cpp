@@ -123,8 +123,8 @@ bool World::update(float elapsed_ms)
         BasicEnemy& new_bEnemy = m_basEnemies.back();
 
         // Setting random initial position
-        new_bEnemy.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
-        //new_bEnemy.set_position({ 50 + m_dist(m_rng) * (screen.x - 100), screen.y + 150  });
+       // new_bEnemy.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
+        new_bEnemy.set_position({ 50 + m_dist(m_rng) * (screen.x), screen.y - 800  });
         // Next spawn
         m_next_benemy_spawn = (BENEMY_DELAY_MS / 2) + m_dist(m_rng) * (BENEMY_DELAY_MS / 2);
     }
@@ -137,7 +137,7 @@ bool World::update(float elapsed_ms)
     while (benemy_it != m_basEnemies.end())
     {
         float w = benemy_it->get_bounding_box().x / 2;
-        if (benemy_it->get_position().x + w < 0.f)
+        if (benemy_it->get_position().y + w > screen.y)
         {
             benemy_it = m_basEnemies.erase(benemy_it);
             continue;
