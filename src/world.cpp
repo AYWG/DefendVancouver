@@ -287,7 +287,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
         if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
             int w, h;
             glfwGetWindowSize(m_window, &w, &h);
- 
+
             m_player.init();
 
             m_current_speed = 1.f;

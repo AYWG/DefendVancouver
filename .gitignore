@@ -49,3 +49,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 .idea
+
+# OTHER
+.DS_Store
