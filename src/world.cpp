@@ -1,6 +1,7 @@
 // Header
 #include "world.hpp"
 
+
 // stlib
 #include <string.h>
 #include <cassert>
@@ -12,6 +13,8 @@
 // Same as static in c, local to compilation unit
 namespace
 {
+    const size_t MAX_BASENEMIES = 15;
+    const size_t BENEMY_DELAY_MS = 2000;
 
 	namespace
 	{
@@ -23,7 +26,8 @@ namespace
 }
 
 World::World() :
-	m_points(0)
+	m_points(0),
+    m_next_benemy_spawn(0.f)
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -78,6 +82,8 @@ bool World::init(vec2 screen)
 
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
+    m_basEnemy.init();
+
 
 
 	m_background.init();
@@ -103,9 +109,42 @@ bool World::update(float elapsed_ms)
 
 
 
-	// Updating all entities, making the turtle and fish
 	// faster based on current
 	m_player.update(elapsed_ms);
+
+    //basicEnemySpawning
+    m_next_benemy_spawn -= elapsed_ms * m_current_speed;
+    if(m_basEnemies.size() <= MAX_BASENEMIES && m_next_benemy_spawn){
+        ////////////////////TODO////////////////
+        if(!spawn_basicEnemy()){
+            return false;
+        }
+
+        BasicEnemy& new_bEnemy = m_basEnemies.back();
+
+        // Setting random initial position
+       // new_bEnemy.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
+        new_bEnemy.set_position({ 50 + m_dist(m_rng) * (screen.x), screen.y - 800  });
+        // Next spawn
+        m_next_benemy_spawn = (BENEMY_DELAY_MS / 2) + m_dist(m_rng) * (BENEMY_DELAY_MS / 2);
+    }
+
+    for (auto& bEnemy : m_basEnemies)
+        bEnemy.update(elapsed_ms * m_current_speed);
+
+    // Removing out of screen bEnemy
+    auto benemy_it = m_basEnemies.begin();
+    while (benemy_it != m_basEnemies.end())
+    {
+        float w = benemy_it->get_bounding_box().x / 2;
+        if (benemy_it->get_position().y + w > screen.y)
+        {
+            benemy_it = m_basEnemies.erase(benemy_it);
+            continue;
+        }
+
+        ++benemy_it;
+    }
 
 
 	return true;
@@ -150,8 +189,17 @@ void World::draw()
 
 	// Drawing entities
 
+    m_background.draw(projection_2D);
+
 	m_player.draw(projection_2D);
-	m_background.draw(projection_2D); /////////////
+   // m_basEnemy.draw(projection_2D);
+
+    for (auto& bEnemy : m_basEnemies)
+        bEnemy.draw(projection_2D);
+
+
+
+
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
@@ -162,14 +210,25 @@ bool World::is_over()const
 	return glfwWindowShouldClose(m_window);
 }
 
-
+// Creates a new turtle and if successfull adds it to the list of turtles
+bool World::spawn_basicEnemy()
+{
+    BasicEnemy basicEnemy;
+    if (basicEnemy.init())
+    {
+        m_basEnemies.emplace_back(basicEnemy);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn turtle");
+    return false;
+}
 
 // On key callback
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
 
 
-    if (key == GLFW_KEY_UP)
+    if (key == GLFW_KEY_W)
     {
         if (action == GLFW_PRESS)
         {
@@ -186,7 +245,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
         }
     }
 
-    if (key == GLFW_KEY_DOWN)
+    if (key == GLFW_KEY_S)
     {
         if (action == GLFW_PRESS)
         {
@@ -203,7 +262,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
         }
     }
 
-    if (key == GLFW_KEY_LEFT)
+    if (key == GLFW_KEY_A)
     {
         if (action == GLFW_PRESS)
         {
@@ -220,7 +279,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
         }
     }
 
-    if (key == GLFW_KEY_RIGHT)
+    if (key == GLFW_KEY_D)
     {
         if (action == GLFW_PRESS)
         {

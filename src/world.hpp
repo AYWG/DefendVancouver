@@ -37,6 +37,7 @@ public:
 	// Should the game be over ?
 	bool is_over()const;
 
+
     vec2 playerCenter;
     vec2 mousePos;
     vec2 aimDir;
@@ -44,6 +45,8 @@ public:
 
 private:
 
+	//spawn basic enemy
+	bool spawn_basicEnemy();
 
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
@@ -59,7 +62,13 @@ private:
 	background m_background;
 	// Game entities
 	Player m_player;
+	BasicEnemy m_basEnemy;
+	std::vector<BasicEnemy> m_basEnemies;
 
+
+
+
+	float m_next_benemy_spawn;
 	float m_current_speed;
 	bool m_is_advanced_mode;
 
