@@ -76,8 +76,7 @@ bool World::init(vec2 screen)
 
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
-
-    m_basicEnemy.init();
+    m_basEnemy.init();
 
 
 	return m_player.init();
@@ -149,7 +148,7 @@ void World::draw()
 	// Drawing entities
 
 	m_player.draw(projection_2D);
-    m_basicEnemy.draw(projection_2D);
+    m_basEnemy.draw(projection_2D);
 
 	// Presenting
 	glfwSwapBuffers(m_window);

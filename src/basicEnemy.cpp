@@ -1,34 +1,37 @@
 //
-// Created by gowth on 2018-02-09.
+// Created by Shrey Swades Nayak on 2018-02-08.
 //
-#include <vector>
-#include <iostream>
-#include "BEnemy.hpp"
 
-Texture BEnemy::basicEnemy_texture;
+#include "BasicEnemy.hpp"
 
-bool BEnemy::init() {
-    if(!basicEnemy_texture.is_valid())
+#include <cmath>
+
+Texture BasicEnemy::basicEnemy_texture;
+
+bool BasicEnemy::init() {
+
+    //Load texture
+    if (!basicEnemy_texture.is_valid())
     {
-        if(!basicEnemy_texture.load_from_file(textures_path("pixelStitch-basic.png")))
+        if (!basicEnemy_texture.load_from_file(textures_path("pixelStitch-basic.png")))
         {
-            fprintf(stderr, "Failed to load player texture!");
+            fprintf(stderr, "Failed to load turtle texture!");
             return false;
         }
     }
 
-    // The position corresponds to the center of the texture
-    float wr = basicEnemy_texture.width * 0.5f;
-    float hr = basicEnemy_texture.height * 0.5f;
+    //center of texture
+    float width = basicEnemy_texture.width * 0.5f;
+    float height = basicEnemy_texture.height * 0.5f;
 
     TexturedVertex vertices[4];
-    vertices[0].position = { -wr, +hr, -0.01f };
+    vertices[0].position = { -width, +height, -0.01f };
     vertices[0].texcoord = { 0.f, 1.f };
-    vertices[1].position = { +wr, +hr, -0.01f };
-    vertices[1].texcoord = { 1.f, 1.f,  };
-    vertices[2].position = { +wr, -hr, -0.01f };
+    vertices[1].position = { +width, +height, -0.01f };
+    vertices[1].texcoord = { 1.f, 1.f };
+    vertices[2].position = { +width, -height, -0.01f };
     vertices[2].texcoord = { 1.f, 0.f };
-    vertices[3].position = { -wr, -hr, -0.01f };
+    vertices[3].position = { -width, -height, -0.01f };
     vertices[3].texcoord = { 0.f, 0.f };
 
     // counterclockwise as it's the default opengl front winding direction
@@ -58,23 +61,26 @@ bool BEnemy::init() {
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture
-    m_scale.x = -0.4f;
+    m_scale.x = 0.4f;
     m_scale.y = 0.4f;
     m_rotation = 0.f;
-    m_position.x = 600;
-    m_position.y = 400;
-    m_max_speed = 200.f;
-
+    m_pos.x = 600;
+    m_pos.y = 400;
 
     return true;
 }
 
-// Renders the salmon
-void BEnemy::draw(const mat3& projection){
-    // Transformation code, see Rendering and Transformation in the template specification for more info
-    // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+void BasicEnemy::destroy(){
+
+}
+
+void BasicEnemy::update(float ms){
+
+}
+
+void BasicEnemy::draw(const mat3& projection){
     transform_begin();
-    transform_translate(m_position);
+    transform_translate(m_pos);
     transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
@@ -117,3 +123,13 @@ void BEnemy::draw(const mat3& projection){
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
+
+vec2 BasicEnemy::get_position()const{
+    return m_pos;
+}
+
+void BasicEnemy::set_position(vec2 position){
+    m_pos = position;
+}
+
+//vec2 get_bounding_box()const;
