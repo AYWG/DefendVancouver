@@ -41,6 +41,7 @@ bool World::init(vec2 screen)
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
 	glfwSetErrorCallback(glfw_err_cb);
+
 	if (!glfwInit())
 	{
 		fprintf(stderr, "Failed to initialize GLFW");
@@ -74,8 +75,12 @@ bool World::init(vec2 screen)
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 
+
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
+
+
+	m_background.init();
 
 	return m_player.init();
 	//return true;
@@ -146,7 +151,7 @@ void World::draw()
 	// Drawing entities
 
 	m_player.draw(projection_2D);
-
+	m_background.draw(projection_2D); /////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
@@ -277,8 +282,5 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
     float rotation_angle = (atan2(aimDirNorm.x, -aimDirNorm.y));
     m_player.set_rotation(rotation_angle);
     //m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
-
-
-
 
 }
