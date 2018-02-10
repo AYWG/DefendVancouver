@@ -4,10 +4,30 @@
 
 #include "camera.hpp"
 
-void Camera::move(vec2 newPos) {
-    m_pos = newPos;
+void Camera::setSize(vec2 size) {
+    m_size = size;
 }
 
-vec2 Camera::getOrigin() {
-    return {m_pos.x - (m_size.x / 2.f), m_pos.y - (m_size.y / 2)};
+vec2 Camera::getFocusPoint() const {
+    return m_focusPoint;
+}
+
+void Camera::setFocusPoint(vec2 focusPoint) {
+    m_focusPoint = focusPoint;
+}
+
+float Camera::getLeftBoundary() const {
+    return m_focusPoint.x - (m_size.x / 2);
+}
+
+float Camera::getRightBoundary() const {
+    return m_focusPoint.x + (m_size.x / 2);
+}
+
+float Camera::getTopBoundary() const {
+    return m_focusPoint.y - (m_size.y / 2);
+}
+
+float Camera::getBottomBoundary() const {
+    return m_focusPoint.y + (m_size.y / 2);
 }
