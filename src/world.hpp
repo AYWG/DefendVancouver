@@ -3,7 +3,9 @@
 // internal
 #include "common.hpp"
 #include "player.hpp"
-
+#include "basicEnemy.hpp"
+#include "bomber.hpp"
+#include "chaser.hpp"
 
 // stlib
 #include <vector>
@@ -55,7 +57,6 @@ private:
 
 	// Game entities
 	Player m_player;
-
 
 	float m_current_speed;
 	bool m_is_advanced_mode;
