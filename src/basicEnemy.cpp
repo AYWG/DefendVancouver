@@ -5,6 +5,7 @@
 #include "BasicEnemy.hpp"
 
 #include <cmath>
+#include <iostream>
 
 Texture BasicEnemy::basicEnemy_texture;
 
@@ -13,7 +14,7 @@ bool BasicEnemy::init() {
     //Load texture
     if (!basicEnemy_texture.is_valid())
     {
-        if (!basicEnemy_texture.load_from_file(textures_path("pixelStitch-basic.png")))
+        if (!basicEnemy_texture.load_from_file(textures_path("basicEnemy.png")))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
@@ -21,8 +22,8 @@ bool BasicEnemy::init() {
     }
 
     //center of texture
-    float width = basicEnemy_texture.width * 0.5f;
-    float height = basicEnemy_texture.height * 0.5f;
+    float width = basicEnemy_texture.width * 0.1f;
+    float height = basicEnemy_texture.height * 0.1f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -width, +height, -0.01f };
@@ -64,8 +65,7 @@ bool BasicEnemy::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
     m_rotation = 0.f;
-    m_pos.x = 600;
-    m_pos.y = 400;
+
 
     return true;
 }
@@ -75,6 +75,10 @@ void BasicEnemy::destroy(){
 }
 
 void BasicEnemy::update(float ms){
+    const float BENEMY_SPEED = 200.f;
+    float step = -BENEMY_SPEED * (ms / 1000);
+    m_pos.x += step;
+
 
 }
 
