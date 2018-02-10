@@ -69,6 +69,7 @@ bool player::init() {
     m_rotation = 0.f;
     m_position.x = 600;
     m_position.y = 400;
+    m_max_speed = 200.f;
     set_rotation(1.571f);
 
 
@@ -81,22 +82,16 @@ bool player::init() {
 }
 
 void player::update(float ms){
-    const float PLAYER_SPEED = 200.f;
-    float step = PLAYER_SPEED * (ms / 1000);
+    
+    float x_step = (m_velocity[RIGHT] - m_velocity[LEFT]) * (ms / 1000);
+    float y_step = (m_velocity[DOWN] - m_velocity[UP]) * (ms / 1000);
+    move({ x_step, y_step });
 
-    if (m_move_up) {
-
-        move({ (float)0.0, (float)-(step) });
-    }
-    if (m_move_dwn) {
-        move({ (float)0.0, (float)(step) });
-    }
-    if (m_move_rht) {
-        //m_isMove = true;
-        move({ (float)(step) , (float)0.0 });
-    }
-    if (m_move_lft) {
-        move({ (float)-(step) , (float)0.0 });
+    for (int dir = 0; dir < NUM_DIRECTIONS; dir++)
+    {
+        if (!m_is_flying[dir] && m_velocity[dir] > 0) {
+            m_velocity[dir] = std::max(0.f, m_velocity[dir] - 5.f);
+        }
     }
 }
 
@@ -169,42 +164,20 @@ bool player::is_move()const
     return m_isMove;
 }
 
-void player::isMoveUp(bool moveUp)
+
+void player::set_velocity(float velocity, DIRECTION dir)
 {
-    if (moveUp) {
-        m_move_up = true;
-    }
-    else {
-        m_move_up = false;
-    }
+    m_velocity[dir] = velocity;
 }
 
-void player::isMoveDwn(bool moveDwn)
+
+void player::set_flying(bool is_flying, DIRECTION dir)
 {
-    if (moveDwn) {
-        m_move_dwn = true;
-    }
-    else {
-        m_move_dwn = false;
-    }
+    m_is_flying[dir] = is_flying;
 }
 
-void player::isMoveRht(bool moveRht)
+float player::get_max_speed()const
 {
-    if (moveRht) {
-        m_move_rht = true;
-    }
-    else {
-        m_move_rht = false;
-    }
+    return m_max_speed;
 }
 
-void player::isMoveLft(bool moveLft)
-{
-    if (moveLft) {
-        m_move_lft = true;
-    }
-    else {
-        m_move_lft = false;
-    }
-}

@@ -74,6 +74,9 @@ bool World::init(vec2 screen)
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 
+    m_current_speed = 1.f;
+    m_is_advanced_mode = false;
+
 	return m_player.init();
 	//return true;
 }
@@ -123,7 +126,7 @@ void World::draw()
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
 	const float clear_color[3] = { 0.3f, 0.3f, 0.8f };
-	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
+	glClearColor(clear_color[0], clear_color[0], clear_color[0], 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -160,32 +163,74 @@ bool World::is_over()const
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
 
-	m_player.isMoveUp(false);
-	m_player.isMoveDwn(false);
-	m_player.isMoveLft(false);
-	m_player.isMoveRht(false);
 
-	//moving up and down
-	if ((action == GLFW_REPEAT || action == GLFW_PRESS) && key == GLFW_KEY_W) {
-		m_player.is_move();
-		m_player.isMoveUp(true);
-	}
+    if (key == GLFW_KEY_UP)
+    {
+        if (action == GLFW_PRESS)
+        {
+            m_player.set_velocity(m_player.get_max_speed(), player::DIRECTION::UP);
+            m_player.set_flying(true, player::DIRECTION::UP);
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            if (!m_is_advanced_mode)
+            {
+                m_player.set_velocity(0.f, player::DIRECTION::UP);
+            }
+            m_player.set_flying(false, player::DIRECTION::UP);
+        }
+    }
 
+    if (key == GLFW_KEY_DOWN)
+    {
+        if (action == GLFW_PRESS)
+        {
+            m_player.set_velocity(m_player.get_max_speed(), player::DIRECTION::DOWN);
+            m_player.set_flying(true, player::DIRECTION::DOWN);
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            if (!m_is_advanced_mode)
+            {
+                m_player.set_velocity(0.f, player::DIRECTION::DOWN);
+            }
+            m_player.set_flying(false, player::DIRECTION::DOWN);
+        }
+    }
 
-	if ((action == GLFW_REPEAT || action == GLFW_PRESS) && key == GLFW_KEY_S) {
-		m_player.is_move();
-		m_player.isMoveDwn(true);
-	}
-	//
-	//moving right and left
-	if ((action == GLFW_REPEAT || action == GLFW_PRESS) && key == GLFW_KEY_D) {
-		m_player.is_move();
-		m_player.isMoveRht(true);
-	}
-	if ((action == GLFW_REPEAT || action == GLFW_PRESS) && key == GLFW_KEY_A) {
-		m_player.is_move();
-		m_player.isMoveLft(true);
-	}
+    if (key == GLFW_KEY_LEFT)
+    {
+        if (action == GLFW_PRESS)
+        {
+            m_player.set_velocity(m_player.get_max_speed(), player::DIRECTION::LEFT);
+            m_player.set_flying(true, player::DIRECTION::LEFT);
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            if (!m_is_advanced_mode)
+            {
+                m_player.set_velocity(0.f, player::DIRECTION::LEFT);
+            }
+            m_player.set_flying(false, player::DIRECTION::LEFT);
+        }
+    }
+
+    if (key == GLFW_KEY_RIGHT)
+    {
+        if (action == GLFW_PRESS)
+        {
+            m_player.set_velocity(m_player.get_max_speed(), player::DIRECTION::RIGHT);
+            m_player.set_flying(true, player::DIRECTION::RIGHT);
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            if (!m_is_advanced_mode)
+            {
+                m_player.set_velocity(0.f, player::DIRECTION::RIGHT);
+            }
+            m_player.set_flying(false, player::DIRECTION::RIGHT);
+        }
+    }
 
 
 
@@ -198,6 +243,15 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		m_player.init();
 
 		m_current_speed = 1.f;
+
+        if (key == GLFW_KEY_A)
+        {
+            m_is_advanced_mode = true;
+        }
+        if (key == GLFW_KEY_B)
+        {
+            m_is_advanced_mode = false;
+        }
 	}
 
 	// Control the current speed with `<` `>`

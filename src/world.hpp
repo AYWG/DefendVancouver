@@ -58,6 +58,7 @@ private:
 
 
 	float m_current_speed;
+	bool m_is_advanced_mode;
 
 	// C++ rng
 	std::default_random_engine m_rng;

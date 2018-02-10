@@ -4,6 +4,7 @@
 
 #pragma once
 
+#define NUM_DIRECTIONS 4
 #include "common.hpp"
 
 class player : public Renderable{
@@ -11,6 +12,8 @@ class player : public Renderable{
     static Texture player_texture;
 
 public:
+    typedef enum { UP, DOWN, LEFT, RIGHT } DIRECTION;
+
     //init ship
     bool init();
 
@@ -38,6 +41,14 @@ public:
     void isMoveLft(bool moveLft);
     void isMoveRht(bool moveRht);
 
+    void set_velocity(float velocity, DIRECTION dir);
+
+    void swap_velocity(DIRECTION dir1, DIRECTION dir2);
+
+    void set_flying(bool is_flying, DIRECTION dir);
+
+    float get_max_speed()const;
+
 private:
     vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
@@ -47,6 +58,9 @@ private:
     bool m_move_lft;
     bool m_move_rht;
     bool m_isMove;
+    float m_velocity[NUM_DIRECTIONS];
+    bool m_is_flying[NUM_DIRECTIONS];
+    float m_max_speed;
     size_t m_num_indices;
 
 
