@@ -5,23 +5,26 @@
 #pragma once
 
 #define NUM_DIRECTIONS 4
+
 #include "common.hpp"
 
-class Player : public Renderable{
+class Player : public Renderable {
 
     static Texture player_texture;
 
 public:
-    typedef enum { UP, DOWN, LEFT, RIGHT } DIRECTION;
+    typedef enum {
+        UP, DOWN, LEFT, RIGHT
+    } DIRECTION;
 
     //init ship
     bool init();
 
     //move
-    bool is_move()const;
+    bool is_move() const;
 
     // Renders the salmon
-    void draw(const mat3& projection)override;
+    void draw(const mat3 &projection) override;
 
     //move
     void move(vec2 off);
@@ -30,7 +33,7 @@ public:
     void update(float ms);
 
     //get position
-    vec2 get_position()const;
+    vec2 get_position() const;
 
     //set rotation
     void set_rotation(float radians);
@@ -42,7 +45,7 @@ public:
 
     void set_flying(bool is_flying, DIRECTION dir);
 
-    float get_max_speed()const;
+    float get_max_speed() const;
 
 private:
     vec2 m_position; // Window coordinates
