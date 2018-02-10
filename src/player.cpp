@@ -7,12 +7,12 @@
 #include "player.hpp"
 #include "common.hpp"
 
-Texture player::player_texture;
+Texture Player::player_texture;
 
 
 using namespace std;
 
-bool player::init() {
+bool Player::init() {
     //load texture
     if(!player_texture.is_valid())
     {
@@ -69,6 +69,7 @@ bool player::init() {
     m_rotation = 0.f;
     m_position.x = 600;
     m_position.y = 400;
+    m_max_speed = 200.f;
     set_rotation(1.571f);
 
 
@@ -80,28 +81,22 @@ bool player::init() {
 
 }
 
-void player::update(float ms){
-    const float PLAYER_SPEED = 200.f;
-    float step = PLAYER_SPEED * (ms / 1000);
+void Player::update(float ms){
 
-    if (m_move_up) {
+    float x_step = (m_velocity[RIGHT] - m_velocity[LEFT]) * (ms / 1000);
+    float y_step = (m_velocity[DOWN] - m_velocity[UP]) * (ms / 1000);
+    move({ x_step, y_step });
 
-        move({ (float)0.0, (float)-(step) });
-    }
-    if (m_move_dwn) {
-        move({ (float)0.0, (float)(step) });
-    }
-    if (m_move_rht) {
-        //m_isMove = true;
-        move({ (float)(step) , (float)0.0 });
-    }
-    if (m_move_lft) {
-        move({ (float)-(step) , (float)0.0 });
+    for (int dir = 0; dir < NUM_DIRECTIONS; dir++)
+    {
+        if (!m_is_flying[dir] && m_velocity[dir] > 0) {
+            m_velocity[dir] = std::max(0.f, m_velocity[dir] - 5.f);
+        }
     }
 }
 
 // Renders the salmon
-void player::draw(const mat3& projection){
+void Player::draw(const mat3& projection){
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     transform_begin();
@@ -149,62 +144,40 @@ void player::draw(const mat3& projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 player::get_position()const{
+vec2 Player::get_position()const{
     return m_position;
 }
 
 
-void player::set_rotation(float radians)
+void Player::set_rotation(float radians)
 {
     m_rotation = radians;
 }
 
-void player::move(vec2 off)
+void Player::move(vec2 off)
 {
     m_position.x += off.x; m_position.y += off.y;
 }
 
-bool player::is_move()const
+bool Player::is_move()const
 {
     return m_isMove;
 }
 
-void player::isMoveUp(bool moveUp)
+
+void Player::set_velocity(float velocity, DIRECTION dir)
 {
-    if (moveUp) {
-        m_move_up = true;
-    }
-    else {
-        m_move_up = false;
-    }
+    m_velocity[dir] = velocity;
 }
 
-void player::isMoveDwn(bool moveDwn)
+
+void Player::set_flying(bool is_flying, DIRECTION dir)
 {
-    if (moveDwn) {
-        m_move_dwn = true;
-    }
-    else {
-        m_move_dwn = false;
-    }
+    m_is_flying[dir] = is_flying;
 }
 
-void player::isMoveRht(bool moveRht)
+float Player::get_max_speed()const
 {
-    if (moveRht) {
-        m_move_rht = true;
-    }
-    else {
-        m_move_rht = false;
-    }
+    return m_max_speed;
 }
 
-void player::isMoveLft(bool moveLft)
-{
-    if (moveLft) {
-        m_move_lft = true;
-    }
-    else {
-        m_move_lft = false;
-    }
-}

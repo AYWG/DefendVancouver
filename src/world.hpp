@@ -54,10 +54,11 @@ private:
 	unsigned int m_points;
 
 	// Game entities
-	player m_player;
+	Player m_player;
 
 
 	float m_current_speed;
+	bool m_is_advanced_mode;
 
 	// C++ rng
 	std::default_random_engine m_rng;
