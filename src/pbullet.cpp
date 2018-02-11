@@ -72,6 +72,18 @@ bool Pbullet::init() {
     return true;
 }
 
+void Pbullet::update(float ms){
+    m_velocity = 0.0f;
+
+    float x_step = m_velocity * (ms / 1000);
+    float y_step = m_velocity * (ms / 1000);
+    fireBullet({ x_step, y_step });
+
+
+
+}
+
+
 void Pbullet::draw(const mat3& projection){
     transform_begin();
     transform_translate(m_position);
@@ -121,4 +133,12 @@ void Pbullet::set_position(vec2 position){
     m_position = position;
 
 }
+
+void Pbullet::fireBullet(vec2 aimDir) {
+    //fires bullee at aimDir
+    m_position.x += aimDir.x;
+    m_position.y += aimDir.y;
+}
+
+
 

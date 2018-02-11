@@ -43,6 +43,7 @@ public:
     vec2 mousePos;
     vec2 aimDir;
     vec2 aimDirNorm;
+	bool is_shot = false;
 
 private:
 
@@ -71,9 +72,11 @@ private:
 
 
 
+
 	float m_next_benemy_spawn;
 	float m_current_speed;
 	bool m_is_advanced_mode;
+	vec2 mouseAimDir;
 
 	// C++ rng
 	std::default_random_engine m_rng;
