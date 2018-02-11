@@ -39,7 +39,7 @@ World::~World()
 }
 
 // World initialization
-bool World::init(vec2 screen)
+bool World::init(vec2 screenSize, vec2 worldSize)
 {
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
@@ -60,7 +60,7 @@ bool World::init(vec2 screen)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "DefendVancouver", nullptr, nullptr);
+	m_window = glfwCreateWindow((int)screenSize.x, (int)screenSize.y, "DefendVancouver", nullptr, nullptr);
 	if (m_window == nullptr)
 		return false;
 
@@ -79,6 +79,8 @@ bool World::init(vec2 screen)
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 
+    m_size = worldSize;
+    m_camera.setSize(screenSize);
 
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
@@ -86,10 +88,8 @@ bool World::init(vec2 screen)
     m_player.init();
     m_pbullet.init();
 
-
-
 	//m_background.init();
-
+    m_camera.setFocusPoint(m_player.get_position());
 	return m_background.init();
 	//return true;
 }
@@ -113,6 +113,15 @@ bool World::update(float elapsed_ms)
 
 	// faster based on current
 	m_player.update(elapsed_ms);
+
+    vec2 playerPos = m_player.get_position();
+    // update camera
+    if (playerPos.x - screen.x / 2 >= 0 && playerPos.x + screen.x / 2 <= m_size.x) {
+        m_camera.setFocusPoint({playerPos.x, m_camera.getFocusPoint().y});
+    }
+    if (playerPos.y - screen.y / 2 >= 0 && playerPos.y + screen.y / 2 <= m_size.y) {
+        m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
+    }
 
     //bullet
     m_pbullet.set_position(m_player.get_position());
@@ -181,10 +190,10 @@ void World::draw()
 
 	// Fake projection matrix, scales with respect to window coordinates
 	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
-	float left = 0.f;// *-0.5;
-	float top = 0.f;// (float)h * -0.5;
-	float right = (float)w;// *0.5;
-	float bottom = (float)h;// *0.5;
+	float left = m_camera.getLeftBoundary();
+    float top = m_camera.getTopBoundary();
+	float right = m_camera.getRightBoundary();
+	float bottom = m_camera.getBottomBoundary();
 
 	float sx = 2.f / (right - left);
 	float sy = 2.f / (top - bottom);
