@@ -56,8 +56,8 @@ bool background::init() {
     // Loading shaders
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
-    b_scale.x = -0.8f;
-    b_scale.y = 0.8f;
+    b_scale.x = -2.2f;
+    b_scale.y = 2.2f;
     b_position.x = 616;
     b_position.y = 365;
 
