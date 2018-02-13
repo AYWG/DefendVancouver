@@ -80,10 +80,6 @@ private:
     std::uniform_real_distribution<float> m_dist; // default 0..1
     static Texture world_texture;
 
-
-	float m_next_benemy_spawn;
-	float m_current_speed;
-	bool m_is_advanced_mode;
 	vec2 mouseAimDir;
     vec2 m_size;
 
