@@ -5,7 +5,7 @@ Project for CPSC 436D
 ## Members:
 * Andy Wong (x4j0b)
 * Gowtham Mohan (i2k0b)
-* Tanwin Nun ()
+* Tanwin Nun (f8x8)
 * Shrey Nayak (v0z9a)
 * Anun Ganbat (e5e0b)
 
