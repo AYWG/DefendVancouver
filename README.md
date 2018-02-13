@@ -17,7 +17,7 @@ Project for CPSC 436D
   * Bullet animation graphics
   * Bomb animation graphics
 * Implemented basic player movement
-  * Player can move with UP, DOWN, LEFT, RIGHT arrow keys
+  * Player can move with W, A, S, D arrow keys
   * Player faces the cursor on the screen
 * Implemented side scrolling
   * The camera tracks the player as they move around the world
