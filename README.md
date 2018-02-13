@@ -7,7 +7,7 @@ Project for CPSC 436D
 * Gowtham Mohan (i2k0b)
 * Tanwin Nun ()
 * Shrey Nayak (v0z9a)
-* Anun Ganbat ()
+* Anun Ganbat (e5e0b)
 
 ## Basic Graphics milestone features:
 * Created all assets for the game
