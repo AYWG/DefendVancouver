@@ -13,7 +13,7 @@ using namespace std;
 bool background::init() {
         //load texture
         if(!background_texture.is_valid()){
-            if(!background_texture.load_from_file(textures_path("1.png")))
+            if(!background_texture.load_from_file(textures_path("skyline.png")))
             {
                 fprintf(stderr, "Failed to load background texture!");
                 return false;
@@ -56,10 +56,10 @@ bool background::init() {
     // Loading shaders
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
-    b_scale.x = -0.8f;
-    b_scale.y = 0.8f;
-    b_position.x = 616;
-    b_position.y = 365;
+    b_scale.x = 1.0f;
+    b_scale.y = 1.0f;
+    b_position.x = 0;
+    b_position.y = 750;
 
     return true;
 }

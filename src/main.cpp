@@ -2,7 +2,6 @@
 #include "common.hpp"
 #include "world.hpp"
 
-#define GL3W_IMPLEMENTATION
 
 // stlib
 #include <chrono>
@@ -12,15 +11,18 @@ using Clock = std::chrono::high_resolution_clock;
 
 // Global
 World world;
-const int width = 1200;
-const int height = 800;
+const int screenWidth = 1200;
+const int screenHeight = 800;
+
+const int worldWidth = 5000;
+const int worldHeight = 1000;
 const char* title = "DefendVancouver";
 
 // Entry point
 int main(int argc, char* argv[])
 {
     // Initializing world (after renderer.init().. sorry)
-    if (!world.init({ (float)width, (float)height }))
+    if (!world.init({(float) screenWidth, (float) screenHeight}, {(float) worldWidth, (float) worldHeight}))
     {
         // Time to read the error message
         std::cout << "Press any key to exit" << std::endl;

@@ -8,35 +8,35 @@
 #include "chaser.hpp"
 #include "background.hpp"
 #include "pbullet.hpp"
+#include "camera.hpp"
 
 // stlib
 #include <vector>
 #include <random>
 
 
-
-// Container for all our entities and game logic. Individual rendering / update is 
+// Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
-class World
-{
+class World {
 public:
-	World();
-	~World();
+    World();
 
-	// Creates a window, sets up events and begins the game
-	bool init(vec2 screen);
+    ~World();
 
-	// Releases all associated resources
-	void destroy();
+    // Creates a window, sets up events and begins the game
+    bool init(vec2 screenSize, vec2 worldSize);
 
-	// Steps the game ahead by ms milliseconds
-	bool update(float ms);
+    // Releases all associated resources
+    void destroy();
 
-	// Renders our scene
-	void draw();
+    // Steps the game ahead by ms milliseconds
+    bool update(float ms);
 
-	// Should the game be over ?
-	bool is_over()const;
+    // Renders our scene
+    void draw();
+
+    // Should the game be over ?
+    bool is_over() const;
 
 
     vec2 playerCenter;
@@ -47,39 +47,41 @@ public:
 
 private:
 
-	//spawn basic enemy
-	bool spawn_basicEnemy();
+    //spawn basic enemy
+    bool spawn_basicEnemy();
 
-	// !!! INPUT CALLBACK FUNCTIONS
-	void on_key(GLFWwindow*, int key, int, int action, int mod);
-	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
+    // !!! INPUT CALLBACK FUNCTIONS
+    void on_key(GLFWwindow *, int key, int, int action, int mod);
+
+    void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
 
 private:
-	// Window hjandle
-	GLFWwindow* m_window;
+    // Window hjandle
+    GLFWwindow *m_window;
 
-	// Number of fish eaten by the salmon, displayed in the window title
-	unsigned int m_points;
+    // Number of fish eaten by the salmon, displayed in the window title
+    unsigned int m_points;
 
-	background m_background;
-	// Game entities
-	Player m_player;
-	BasicEnemy m_basEnemy;
+    background m_background;
+    // Game entities
+    Player m_player;
+    BasicEnemy m_basEnemy;
     Pbullet m_pbullet;
 
-	std::vector<BasicEnemy> m_basEnemies;
+    std::vector<BasicEnemy> m_basEnemies;
 
 
+    float m_next_benemy_spawn;
+    float m_current_speed;
+    bool m_is_advanced_mode;
 
-
-
-	float m_next_benemy_spawn;
-	float m_current_speed;
-	bool m_is_advanced_mode;
-	vec2 mouseAimDir;
-
-	// C++ rng
-	std::default_random_engine m_rng;
-	std::uniform_real_distribution<float> m_dist; // default 0..1
+    // C++ rng
+    std::default_random_engine m_rng;
+    std::uniform_real_distribution<float> m_dist; // default 0..1
     static Texture world_texture;
+
+	vec2 mouseAimDir;
+    vec2 m_size;
+
+    Camera m_camera;
 };
