@@ -338,7 +338,9 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
-    playerCenter = m_player.get_position();
+    playerCenter = { m_player.get_position().x - m_camera.getLeftBoundary(), m_player.get_position().y - m_camera.getTopBoundary() };
+
+
     auto x_pos = static_cast<float>(xpos);
     auto y_pos = static_cast<float>(ypos);
     mousePos = {x_pos, y_pos};
