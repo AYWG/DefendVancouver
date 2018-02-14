@@ -59,7 +59,7 @@ bool background::init() {
     b_scale.x = 1.0f;
     b_scale.y = 1.0f;
     b_position.x = 0;
-    b_position.y = 518;
+    b_position.y = 750;
 
     return true;
 }
