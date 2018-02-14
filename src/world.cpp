@@ -116,10 +116,10 @@ bool World::update(float elapsed_ms)
 
     vec2 playerPos = m_player.get_position();
     // update camera
-    if (playerPos.x - screen.x / 2 >= 0 && playerPos.x + screen.x / 2 <= m_size.x) {
+    if (((playerPos.x - screen.x / 5 >= 0) && (playerPos.x - 6 * screen.x / 5 <= 0)) && playerPos.x + screen.x / 2 <= m_size.x) {
         m_camera.setFocusPoint({playerPos.x, m_camera.getFocusPoint().y});
     }
-    if (playerPos.y - screen.y / 2 >= 0 && playerPos.y + screen.y / 2 <= m_size.y) {
+    if (playerPos.y - screen.y / 3 >= 0 && playerPos.y - 3 * screen.y / 4 <= 0 && playerPos.y + screen.y / 2 <= m_size.y) {
         m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
     }
 
@@ -131,7 +131,7 @@ bool World::update(float elapsed_ms)
         m_pbullet.set_position(m_player.get_position());
     }
 
-    //basicEnemySpawning
+    /*//basicEnemySpawning
     m_next_benemy_spawn -= elapsed_ms * m_current_speed;
     if(m_basEnemies.size() <= MAX_BASENEMIES && m_next_benemy_spawn){
         ////////////////////TODO////////////////
@@ -163,7 +163,7 @@ bool World::update(float elapsed_ms)
         }
 
         ++benemy_it;
-    }
+    }*/
 
 
 	return true;
@@ -301,7 +301,6 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
     if (action == GLFW_PRESS && key == GLFW_KEY_SPACE){
         m_pbullet.fireBullet(mouseAimDir);
         is_shot = true;
-        std::cout<<"pressed";
     }
 
 
