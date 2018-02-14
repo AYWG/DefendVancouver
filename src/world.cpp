@@ -123,8 +123,13 @@ bool World::update(float elapsed_ms)
         m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
     }
 
+    m_pbullet.update(elapsed_ms);
+
     //bullet
-    m_pbullet.set_position(m_player.get_position());
+
+    if (!is_shot) {
+        m_pbullet.set_position(m_player.get_position());
+    }
 
     //basicEnemySpawning
     m_next_benemy_spawn -= elapsed_ms * m_current_speed;
@@ -183,8 +188,8 @@ void World::draw()
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	const float clear_color[3] = { 0.3f, 0.3f, 0.8f };
-	glClearColor(clear_color[0], clear_color[0], clear_color[0], 1.0);
+	const float clear_color[3] = { 0.04f, 0.02f, 0.11f };
+	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -204,7 +209,7 @@ void World::draw()
 	// Drawing entities
 
     m_background.draw(projection_2D);
-   // m_pbullet.draw(projection_2D);
+    m_pbullet.draw(projection_2D);
 	m_player.draw(projection_2D);
 
    // m_basEnemy.draw(projection_2D);
@@ -288,6 +293,16 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
             }
             m_player.set_flying(false, Player::DIRECTION::RIGHT);
         }
+    }
+
+    is_shot = false;
+
+    //SHOOTING
+    if (action == GLFW_PRESS && key == GLFW_KEY_SPACE){
+        m_pbullet.fireBullet(mouseAimDir);
+        is_shot = true;
+        std::cout<<"pressed";
+    }
 
 
 
@@ -318,12 +333,14 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 
         m_current_speed = fmax(0.f, m_current_speed);
     }
-}
+
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
-    playerCenter = m_player.get_position();
+    playerCenter = { m_player.get_position().x - m_camera.getLeftBoundary(), m_player.get_position().y - m_camera.getTopBoundary() };
+
+
     auto x_pos = static_cast<float>(xpos);
     auto y_pos = static_cast<float>(ypos);
     mousePos = {x_pos, y_pos};
@@ -332,6 +349,10 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
                   static_cast<float>(aimDir.y / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2)))};
 
     float rotation_angle = (atan2(aimDirNorm.x, -aimDirNorm.y));
+
+    mouseAimDir =   {aimDir.x, aimDir.y} ;
+
+
     m_player.set_rotation(rotation_angle);
     //m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
 

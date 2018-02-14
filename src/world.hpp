@@ -43,6 +43,7 @@ public:
     vec2 mousePos;
     vec2 aimDir;
     vec2 aimDirNorm;
+	bool is_shot = false;
 
 private:
 
@@ -79,6 +80,7 @@ private:
     std::uniform_real_distribution<float> m_dist; // default 0..1
     static Texture world_texture;
 
+	vec2 mouseAimDir;
     vec2 m_size;
 
     Camera m_camera;

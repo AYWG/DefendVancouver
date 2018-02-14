@@ -15,7 +15,11 @@ const int screenWidth = 1200;
 const int screenHeight = 800;
 
 const int worldWidth = 5000;
+<<<<<<< HEAD
 const int worldHeight = 3000;
+=======
+const int worldHeight = 1000;
+>>>>>>> master
 const char* title = "DefendVancouver";
 
 // Entry point
