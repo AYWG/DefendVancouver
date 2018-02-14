@@ -13,7 +13,7 @@ bool Pbullet::init() {
     //Load texture
     if (!pbullet_texture.is_valid())
     {
-        if (!pbullet_texture.load_from_file(textures_path("bullet.png")))
+        if (!pbullet_texture.load_from_file(textures_path("Player_bullet.png")))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
