@@ -1,9 +1,8 @@
 //
 // Created by gowth on 2018-02-09.
 //
-
-#include "common.hpp"
 #include "pbullet.hpp"
+
 
 
 Texture Pbullet::pbullet_texture;
@@ -84,7 +83,7 @@ void Pbullet::update(float ms){
 }
 
 
-void Pbullet::draw(const mat3& projection){
+void Pbullet::draw(const mat3 &projection){
     transform_begin();
     transform_translate(m_position);
     transform_scale(m_scale);
@@ -135,7 +134,7 @@ void Pbullet::set_position(vec2 position){
 }
 
 void Pbullet::fireBullet(vec2 aimDir) {
-    //fires bullee at aimDir
+    //fires bullet at aimDir
     m_position.x += aimDir.x;
     m_position.y += aimDir.y;
 }

@@ -23,6 +23,7 @@ public:
     //move
     bool is_move() const;
 
+    // Renders the salmon
     void draw(const mat3 &projection) override;
 
     //move

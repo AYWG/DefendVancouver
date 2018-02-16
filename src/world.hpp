@@ -1,13 +1,13 @@
 #pragma once
 
 // internal
+#include "pbullet.hpp"
 #include "common.hpp"
 #include "player.hpp"
 #include "basicEnemy.hpp"
 #include "bomber.hpp"
 #include "chaser.hpp"
 #include "background.hpp"
-#include "pbullet.hpp"
 #include "camera.hpp"
 
 // stlib
