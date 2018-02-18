@@ -13,7 +13,7 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-    const size_t MAX_BASENEMIES = 15;
+    const size_t MAX_BASENEMIES = 1;
     const size_t BENEMY_DELAY_MS = 2000;
 
 	namespace
