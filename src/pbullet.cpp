@@ -5,6 +5,7 @@
 
 
 
+
 Texture Pbullet::pbullet_texture;
 
 bool Pbullet::init() {
@@ -62,9 +63,9 @@ bool Pbullet::init() {
     // 1.0 would be as big as the original texture
     m_scale.x = 1.0f;
     m_scale.y = 1.0f;
-    m_position = m_player.get_position();
+    //m_position = m_player.get_position();
 
-   // m_position.x = 600;
+    //m_position.x = 600;
     //m_position.y = 400;
 
 
@@ -72,14 +73,12 @@ bool Pbullet::init() {
 }
 
 void Pbullet::update(float ms){
-    m_velocity = 0.0f;
+    m_velocity =   100.0f;
+
 
     float x_step = m_velocity * (ms / 1000);
     float y_step = m_velocity * (ms / 1000);
     fireBullet({ x_step, y_step });
-
-
-
 }
 
 

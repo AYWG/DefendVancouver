@@ -91,7 +91,6 @@ void Player::update(float ms) {
 
 }
 
-// Renders the salmon
 void Player::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT

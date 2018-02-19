@@ -14,7 +14,10 @@
 namespace
 {
     const size_t MAX_BASENEMIES = 1;
+    const size_t MAX_BULLET = 1;
     const size_t BENEMY_DELAY_MS = 2000;
+    const size_t PBULLET_DELAY_MS = 2000;
+
 
 	namespace
 	{
@@ -27,7 +30,8 @@ namespace
 
 World::World() :
 	m_points(0),
-    m_next_benemy_spawn(0.f)
+    m_next_benemy_spawn(0.f),
+    m_next_pbullet_spawn(0.f)
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -86,7 +90,7 @@ bool World::init(vec2 screenSize, vec2 worldSize)
     m_is_advanced_mode = false;
     m_basEnemy.init();
     m_player.init();
-    m_pbullet.init();
+    m_plbullet.init();
 
 	//m_background.init();
     m_camera.setFocusPoint(m_player.get_position());
@@ -103,37 +107,72 @@ void World::destroy()
 }
 
 // Update our game world
-bool World::update(float elapsed_ms)
-{
-	int w, h;
-	glfwGetFramebufferSize(m_window, &w, &h);
-	vec2 screen = { (float)w, (float)h };
+bool World::update(float elapsed_ms) {
+    int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+    vec2 screen = {(float) w, (float) h};
 
 
 
-	// faster based on current
-	m_player.update(elapsed_ms);
+    // faster based on current
+    m_player.update(elapsed_ms);
 
     vec2 playerPos = m_player.get_position();
     // update camera
-    if (((playerPos.x - screen.x / 5 >= 0) && (playerPos.x - 6 * screen.x / 5 <= 0)) && playerPos.x + screen.x / 2 <= m_size.x) {
+    if (((playerPos.x - screen.x / 5 >= 0) && (playerPos.x - 6 * screen.x / 5 <= 0)) &&
+        playerPos.x + screen.x / 2 <= m_size.x) {
         m_camera.setFocusPoint({playerPos.x, m_camera.getFocusPoint().y});
     }
-    if (playerPos.y - screen.y / 3 >= 0 && playerPos.y - 3 * screen.y / 4 <= 0 && playerPos.y + screen.y / 2 <= m_size.y) {
+    if (playerPos.y - screen.y / 3 >= 0 && playerPos.y - 3 * screen.y / 4 <= 0 &&
+        playerPos.y + screen.y / 2 <= m_size.y) {
         m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
     }
 
-    m_pbullet.update(elapsed_ms);
 
     //bullet
+    /////////////////BULLET/////////////////
+    /*    //m_next_pbullet_spawn -= elapsed_ms * m_plbullet.m_velocity;
 
-    if (!is_shot) {
-        m_pbullet.set_position(m_player.get_position());
+        if (!is_shot) {
+            //m_plbullet.set_position(m_player.get_position());
+        } else if (is_shot) {
+            m_plbullet.update(elapsed_ms * m_plbullet.m_velocity);
+            m_plbullet.fireBullet({m_plbullet.m_velocity * mouseAimDir.x, m_plbullet.m_velocity * mouseAimDir.y});
+            // Next spawn
+            //m_next_pbullet_spawn = (PBULLET_DELAY_MS / 2) + m_dist(m_rng) * (PBULLET_DELAY_MS / 2);
+        }*/
+    /////////////////BULLET/////////////////
+
+    m_next_pbullet_spawn -= elapsed_ms * m_plbullet.m_velocity;
+    // if(m_pbullet.size() <= MAX_BASENEMIES && m_next_pbullet_spawn) {
+    if (!spawn_playerBullet()) {
+        return false;
     }
+
+    Pbullet &new_pBullet = m_pbullet.back();
+
+    new_pBullet.set_position(m_player.get_position());
+
+    if (is_shot) {
+        std::cout << mouseAimDir.x << std::endl;
+        std::cout << mouseAimDir.y << std::endl;
+        //for (auto& pBullet : m_pbullet){
+        m_plbullet.update(elapsed_ms * m_plbullet.m_velocity);
+        //}
+        new_pBullet.fireBullet({new_pBullet.m_velocity * mouseAimDir.x, new_pBullet.m_velocity * mouseAimDir.y});
+
+    }
+//}
+
+
+
+
+
+
 
     //basicEnemySpawning
     m_next_benemy_spawn -= elapsed_ms * m_current_speed;
-    if(m_basEnemies.size() <= MAX_BASENEMIES && m_next_benemy_spawn){
+    if(m_basEnemies.size() <= MAX_BULLET && m_next_pbullet_spawn){
         ////////////////////TODO////////////////
         if(!spawn_basicEnemy()){
             return false;
@@ -208,13 +247,21 @@ void World::draw()
 	// Drawing entities
 
     m_background.draw(projection_2D);
-    m_pbullet.draw(projection_2D);
+
+    m_plbullet.draw(projection_2D);
+
 	m_player.draw(projection_2D);
 
    // m_basEnemy.draw(projection_2D);
 
     for (auto& bEnemy : m_basEnemies)
         bEnemy.draw(projection_2D);
+
+    if (is_shot) {
+        for (auto &bBullet : m_pbullet)
+            bBullet.draw(projection_2D);
+    }
+
 
 
 
@@ -229,13 +276,24 @@ bool World::is_over()const
 	return glfwWindowShouldClose(m_window);
 }
 
-// Creates a new turtle and if successfull adds it to the list of turtles
 bool World::spawn_basicEnemy()
 {
     BasicEnemy basicEnemy;
     if (basicEnemy.init())
     {
         m_basEnemies.emplace_back(basicEnemy);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn turtle");
+    return false;
+}
+
+bool World::spawn_playerBullet()
+{
+    Pbullet playerBullet;
+    if (playerBullet.init())
+    {
+        m_pbullet.emplace_back(playerBullet);
         return true;
     }
     fprintf(stderr, "Failed to spawn turtle");
@@ -297,9 +355,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
     is_shot = false;
 
     //SHOOTING
-    if (action == GLFW_PRESS && key == GLFW_KEY_SPACE){
-        m_pbullet.fireBullet(mouseAimDir);
+    if ( action==GLFW_RELEASE && key == GLFW_KEY_SPACE){
+        //m_pbullet.fireBullet({m_pbullet.m_velocity * mouseAimDir.x,m_pbullet.m_velocity * mouseAimDir.y });
+
         is_shot = true;
+
     }
 
 
@@ -343,15 +403,16 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
     auto y_pos = static_cast<float>(ypos);
     mousePos = {x_pos, y_pos};
     aimDir = {mousePos.x - playerCenter.x, mousePos.y - playerCenter.y};
+
     aimDirNorm = {static_cast<float>(aimDir.x / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2))),
-                  static_cast<float>(aimDir.y / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2)))};
+                   static_cast<float>(aimDir.y / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2)))};
+
 
     float rotation_angle = (atan2(aimDirNorm.x, -aimDirNorm.y));
 
-    mouseAimDir =   {aimDir.x, aimDir.y} ;
-
+    //mouseAimDir =   {aimDir.x, aimDir.y} ;
+    mouseAimDir = aimDirNorm;
 
     m_player.set_rotation(rotation_angle);
     //m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
-
 }

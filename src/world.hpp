@@ -39,16 +39,22 @@ public:
     bool is_over() const;
 
 
+
+
     vec2 playerCenter;
     vec2 mousePos;
     vec2 aimDir;
+    vec2 baimDir;
     vec2 aimDirNorm;
 	bool is_shot = false;
+    vec2 mouseAimDir;
 
 private:
 
     //spawn basic enemy
     bool spawn_basicEnemy();
+
+    bool spawn_playerBullet();
 
     // !!! INPUT CALLBACK FUNCTIONS
     void on_key(GLFWwindow *, int key, int, int action, int mod);
@@ -66,21 +72,23 @@ private:
     // Game entities
     Player m_player;
     BasicEnemy m_basEnemy;
-    Pbullet m_pbullet;
+    Pbullet m_plbullet;
 
     std::vector<BasicEnemy> m_basEnemies;
+    std::vector<Pbullet> m_pbullet;
 
 
     float m_next_benemy_spawn;
     float m_current_speed;
     bool m_is_advanced_mode;
+    float  m_next_pbullet_spawn;
 
     // C++ rng
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist; // default 0..1
     static Texture world_texture;
 
-	vec2 mouseAimDir;
+
     vec2 m_size;
 
     Camera m_camera;
