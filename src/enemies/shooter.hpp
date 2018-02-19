@@ -2,13 +2,13 @@
 // Created by Shrey Swades Nayak on 2018-02-08.
 //
 
-#include "common.hpp"
+#include "../common.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
-class BasicEnemy : public Renderable {
+class Shooter : public Renderable {
 
-    static Texture basicEnemy_texture;
+    static Texture shooterTexture;
 
 public:
 

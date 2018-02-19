@@ -13,8 +13,8 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-    const size_t MAX_BASENEMIES = 15;
-    const size_t BENEMY_DELAY_MS = 2000;
+    const size_t MAX_SHOOTERS = 15;
+    const size_t SHOOTER_DELAY_MS = 2000;
 
 	namespace
 	{
@@ -27,7 +27,7 @@ namespace
 
 World::World() :
 	m_points(0),
-    m_next_benemy_spawn(0.f)
+    m_next_shooter_spawn(0.f)
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -74,8 +74,10 @@ bool World::init(vec2 screenSize, vec2 worldSize)
 	// Input is handled using GLFW, for more info see
 	// http://www.glfw.org/docs/latest/input_guide.html
 	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((World*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
+	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) {
+        ((World *) glfwGetWindowUserPointer(wnd))->onKey(wnd, _0, _1, _2, _3); };
+	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) {
+        ((World *) glfwGetWindowUserPointer(wnd))->onMouseMove(wnd, _0, _1); };
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 
@@ -84,7 +86,7 @@ bool World::init(vec2 screenSize, vec2 worldSize)
 
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
-    m_basEnemy.init();
+    m_shooter.init();
     m_player.init();
     m_pbullet.init();
 
@@ -132,33 +134,33 @@ bool World::update(float elapsed_ms)
     }
 
     /*//basicEnemySpawning
-    m_next_benemy_spawn -= elapsed_ms * m_current_speed;
-    if(m_basEnemies.size() <= MAX_BASENEMIES && m_next_benemy_spawn){
+    m_next_shooter_spawn -= elapsed_ms * m_current_speed;
+    if(m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn){
         ////////////////////TODO////////////////
-        if(!spawn_basicEnemy()){
+        if(!spawnShooter()){
             return false;
         }
 
-        BasicEnemy& new_bEnemy = m_basEnemies.back();
+        Shooter& new_bEnemy = m_shooters.back();
 
         // Setting random initial position
        // new_bEnemy.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
         new_bEnemy.set_position({ 50 + m_dist(m_rng) * (screen.x), screen.y - 800  });
         // Next spawn
-        m_next_benemy_spawn = (BENEMY_DELAY_MS / 2) + m_dist(m_rng) * (BENEMY_DELAY_MS / 2);
+        m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
     }
 
-    for (auto& bEnemy : m_basEnemies)
+    for (auto& bEnemy : m_shooters)
         bEnemy.update(elapsed_ms * m_current_speed);
 
     // Removing out of screen bEnemy
-    auto benemy_it = m_basEnemies.begin();
-    while (benemy_it != m_basEnemies.end())
+    auto benemy_it = m_shooters.begin();
+    while (benemy_it != m_shooters.end())
     {
         float w = benemy_it->get_bounding_box().x / 2;
         if (benemy_it->get_position().y + w > screen.y)
         {
-            benemy_it = m_basEnemies.erase(benemy_it);
+            benemy_it = m_shooters.erase(benemy_it);
             continue;
         }
 
@@ -212,10 +214,10 @@ void World::draw()
     m_pbullet.draw(projection_2D);
 	m_player.draw(projection_2D);
 
-   // m_basEnemy.draw(projection_2D);
+   // m_shooter.draw(projection_2D);
 
-    for (auto& bEnemy : m_basEnemies)
-        bEnemy.draw(projection_2D);
+    for (auto& shooter : m_shooters)
+        shooter.draw(projection_2D);
 
 
 
@@ -230,21 +232,20 @@ bool World::is_over()const
 	return glfwWindowShouldClose(m_window);
 }
 
-// Creates a new turtle and if successfull adds it to the list of turtles
-bool World::spawn_basicEnemy()
+bool World::spawnShooter()
 {
-    BasicEnemy basicEnemy;
-    if (basicEnemy.init())
+    Shooter shooter;
+    if (shooter.init())
     {
-        m_basEnemies.emplace_back(basicEnemy);
+        m_shooters.emplace_back(shooter);
         return true;
     }
-    fprintf(stderr, "Failed to spawn turtle");
+    fprintf(stderr, "Failed to spawn shooter");
     return false;
 }
 
 // On key callback
-void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
+void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
 
     if (key == GLFW_KEY_W) {
@@ -334,7 +335,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
     }
 
 
-void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
+void World::onMouseMove(GLFWwindow *window, double xpos, double ypos)
 {
 
     playerCenter = { m_player.get_position().x - m_camera.getLeftBoundary(), m_player.get_position().y - m_camera.getTopBoundary() };

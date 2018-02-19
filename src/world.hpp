@@ -4,9 +4,9 @@
 #include "pbullet.hpp"
 #include "common.hpp"
 #include "player.hpp"
-#include "basicEnemy.hpp"
+#include "enemies/shooter.hpp"
 #include "bomber.hpp"
-#include "chaser.hpp"
+#include "enemies/chaser.hpp"
 #include "background.hpp"
 #include "camera.hpp"
 
@@ -47,13 +47,13 @@ public:
 
 private:
 
-    //spawn basic enemy
-    bool spawn_basicEnemy();
+    //spawn shooter
+    bool spawnShooter();
 
     // !!! INPUT CALLBACK FUNCTIONS
-    void on_key(GLFWwindow *, int key, int, int action, int mod);
+    void onKey(GLFWwindow *, int key, int, int action, int mod);
 
-    void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
+    void onMouseMove(GLFWwindow *window, double xpos, double ypos);
 
 private:
     // Window hjandle
@@ -65,13 +65,13 @@ private:
     background m_background;
     // Game entities
     Player m_player;
-    BasicEnemy m_basEnemy;
+    Shooter m_shooter;
     Pbullet m_pbullet;
 
-    std::vector<BasicEnemy> m_basEnemies;
+    std::vector<Shooter> m_shooters;
 
 
-    float m_next_benemy_spawn;
+    float m_next_shooter_spawn;
     float m_current_speed;
     bool m_is_advanced_mode;
 
