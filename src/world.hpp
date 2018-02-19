@@ -5,7 +5,7 @@
 #include "common.hpp"
 #include "player.hpp"
 #include "enemies/shooter.hpp"
-#include "bomber.hpp"
+#include "enemies/bomber.hpp"
 #include "enemies/chaser.hpp"
 #include "background.hpp"
 #include "camera.hpp"

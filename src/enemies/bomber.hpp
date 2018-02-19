@@ -2,7 +2,7 @@
 // Created by Shrey Swades Nayak on 2018-02-08.
 //
 
-#include "common.hpp"
+#include "../common.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
