@@ -133,7 +133,7 @@ bool World::update(float elapsed_ms)
         m_pbullet.set_position(m_player.get_position());
     }
 
-    /*//basicEnemySpawning
+    //basicEnemySpawning
     m_next_shooter_spawn -= elapsed_ms * m_current_speed;
     if(m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn){
         ////////////////////TODO////////////////
@@ -165,7 +165,7 @@ bool World::update(float elapsed_ms)
         }
 
         ++benemy_it;
-    }*/
+    }
 
 
 	return true;
