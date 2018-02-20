@@ -131,7 +131,7 @@ bool World::update(float elapsed_ms) {
 
     //bullet
     /////////////////BULLET/////////////////
-    /*    //m_next_pbullet_spawn -= elapsed_ms * m_plbullet.m_velocity;
+ /*       //m_next_pbullet_spawn -= elapsed_ms * m_plbullet.m_velocity;
 
         if (!is_shot) {
             //m_plbullet.set_position(m_player.get_position());
@@ -149,20 +149,28 @@ bool World::update(float elapsed_ms) {
         return false;
     }
 
-    Pbullet &new_pBullet = m_pbullet.back();
-
-    new_pBullet.set_position(m_player.get_position());
-
     if (is_shot) {
-        std::cout << mouseAimDir.x << std::endl;
-        std::cout << mouseAimDir.y << std::endl;
-        //for (auto& pBullet : m_pbullet){
-        m_plbullet.update(elapsed_ms * m_plbullet.m_velocity);
-        //}
-        new_pBullet.fireBullet({new_pBullet.m_velocity * mouseAimDir.x, new_pBullet.m_velocity * mouseAimDir.y});
+        Pbullet &new_pBullet = m_pbullet.back();
+        new_pBullet.set_position(m_player.get_position());
+    }
+    for (auto& pBullet : m_pbullet){
+        pBullet.update(elapsed_ms * m_plbullet.m_velocity);
+
+        if (is_shot) {
+            pBullet.fireBullet({pBullet.m_velocity * mouseAimDir.x , pBullet.m_velocity * mouseAimDir.y });
+            afterShot = {pBullet.m_velocity * mousePosition().x, pBullet.m_velocity * mousePosition().y};
+            //is_shoted = true;
+            
+        } else {
+            pBullet.fireBullet({afterShot.x, afterShot.y});
+
+        }
 
     }
-//}
+
+
+
+
 
 
 
@@ -207,6 +215,7 @@ bool World::update(float elapsed_ms) {
 	return true;
 }
 
+
 // Render our game world
 void World::draw()
 {
@@ -248,7 +257,7 @@ void World::draw()
 
     m_background.draw(projection_2D);
 
-    m_plbullet.draw(projection_2D);
+ //   m_plbullet.draw(projection_2D);
 
 	m_player.draw(projection_2D);
 
@@ -257,10 +266,13 @@ void World::draw()
     for (auto& bEnemy : m_basEnemies)
         bEnemy.draw(projection_2D);
 
-    if (is_shot) {
-        for (auto &bBullet : m_pbullet)
-            bBullet.draw(projection_2D);
-    }
+
+       for (auto &bBullet : m_pbullet) {
+          //  if(is_shot) {
+                bBullet.draw(projection_2D);
+          //  }
+           }
+
 
 
 
@@ -274,6 +286,16 @@ void World::draw()
 bool World::is_over()const
 {
 	return glfwWindowShouldClose(m_window);
+}
+
+
+vec2 const  World::mousePosition(){
+    return get_mousePos(aimDirNorm);
+}
+
+vec2 World::get_mousePos(vec2 mousePos) {
+    mousePos = mouseAimDir;
+    return  mousePos;
 }
 
 bool World::spawn_basicEnemy()
@@ -352,13 +374,16 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
         }
     }
 
-    is_shot = false;
+    //is_shot = false;
 
     //SHOOTING
-    if ( action==GLFW_RELEASE && key == GLFW_KEY_SPACE){
-        //m_pbullet.fireBullet({m_pbullet.m_velocity * mouseAimDir.x,m_pbullet.m_velocity * mouseAimDir.y });
-
-        is_shot = true;
+    if (key == GLFW_KEY_SPACE){
+        if (action == GLFW_PRESS){
+            is_shot = true;
+        }else if (action == GLFW_RELEASE){
+            is_shot = false;
+        }
+        //m_pbullet.fireBullet({m_pbullet.m_velocity * mouseAimDir.x,m_pbullet.m_velocity * mouseAimDir.y })w
 
     }
 

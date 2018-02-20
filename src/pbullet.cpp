@@ -73,7 +73,7 @@ bool Pbullet::init() {
 }
 
 void Pbullet::update(float ms){
-    m_velocity =   100.0f;
+    m_velocity =   10.0f;
 
 
     float x_step = m_velocity * (ms / 1000);
@@ -130,6 +130,18 @@ void Pbullet::draw(const mat3 &projection){
 void Pbullet::set_position(vec2 position){
     m_position = position;
 
+}
+
+vec2 Pbullet::get_position()  {
+    return m_position;
+
+}
+
+
+
+bool Pbullet::is_shoted(bool shot) {
+    is_Shotted = shot;
+    return is_Shotted;
 }
 
 void Pbullet::fireBullet(vec2 aimDir) {

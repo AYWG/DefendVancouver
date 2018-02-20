@@ -47,6 +47,7 @@ public:
     vec2 baimDir;
     vec2 aimDirNorm;
 	bool is_shot = false;
+    bool is_shoted = false;
     vec2 mouseAimDir;
 
 private:
@@ -56,10 +57,15 @@ private:
 
     bool spawn_playerBullet();
 
+    vec2 get_mousePos(vec2 mousePos);
+
     // !!! INPUT CALLBACK FUNCTIONS
     void on_key(GLFWwindow *, int key, int, int action, int mod);
 
     void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
+
+    vec2 const mousePosition();
+
 
 private:
     // Window hjandle
@@ -78,6 +84,7 @@ private:
     std::vector<Pbullet> m_pbullet;
 
 
+
     float m_next_benemy_spawn;
     float m_current_speed;
     bool m_is_advanced_mode;
@@ -90,6 +97,7 @@ private:
 
 
     vec2 m_size;
+    vec2 afterShot;
 
     Camera m_camera;
 };
