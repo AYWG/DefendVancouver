@@ -2,13 +2,13 @@
 // Created by Shrey Swades Nayak on 2018-02-08.
 //
 
-#include "common.hpp"
+#include "../common.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
-class Chaser : public Renderable {
+class Bomber : public Renderable {
 
-    static Texture chaser_texture;
+    static Texture bomber_texture;
 
 public:
 
@@ -28,8 +28,8 @@ public:
 
 private:
 
-    vec2 curr_pos;
-    vec2 curr_scale;
-    float curr_rotation;
+    vec2 m_pos;
+    vec2 m_scale;
+    float m_rotation;
 
 };

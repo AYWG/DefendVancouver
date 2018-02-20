@@ -2,13 +2,13 @@
 // Created by Shrey Swades Nayak on 2018-02-08.
 //
 
-#include "common.hpp"
+#include "../common.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
-class Bomber : public Renderable {
+class Shooter : public Renderable {
 
-    static Texture bomber_texture;
+    static Texture shooterTexture;
 
 public:
 
@@ -23,6 +23,10 @@ public:
     vec2 get_position()const;
 
     void set_position(vec2 position);
+
+    vec2 get_bounding_box()const;
+
+
 
 //    vec2 get_bounding_box()const;
 

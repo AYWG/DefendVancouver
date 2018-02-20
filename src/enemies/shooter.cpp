@@ -2,19 +2,19 @@
 // Created by Shrey Swades Nayak on 2018-02-08.
 //
 
-#include "BasicEnemy.hpp"
+#include "shooter.hpp"
 
 #include <cmath>
 #include <iostream>
 
-Texture BasicEnemy::basicEnemy_texture;
+Texture Shooter::shooterTexture;
 
-bool BasicEnemy::init() {
+bool Shooter::init() {
 
     //Load texture
-    if (!basicEnemy_texture.is_valid())
+    if (!shooterTexture.is_valid())
     {
-        if (!basicEnemy_texture.load_from_file(textures_path("basicEnemy.png")))
+        if (!shooterTexture.load_from_file(textures_path("shooter.png")))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
@@ -22,8 +22,8 @@ bool BasicEnemy::init() {
     }
 
     //center of texture
-    float width = basicEnemy_texture.width * 0.1f;
-    float height = basicEnemy_texture.height * 0.1f;
+    float width = shooterTexture.width * 0.1f;
+    float height = shooterTexture.height * 0.1f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -width, +height, -0.01f };
@@ -70,19 +70,19 @@ bool BasicEnemy::init() {
     return true;
 }
 
-void BasicEnemy::destroy(){
+void Shooter::destroy(){
 
 }
 
-void BasicEnemy::update(float ms){
-    const float BENEMY_SPEED = 200.f;
-    float step = -BENEMY_SPEED * (ms / 1000);
+void Shooter::update(float ms){
+    const float SHOOTER_SPEED = 200.f;
+    float step = -SHOOTER_SPEED * (ms / 1000);
     m_pos.y -= step;
 
 
 }
 
-void BasicEnemy::draw(const mat3& projection){
+void Shooter::draw(const mat3& projection){
     transform_begin();
     transform_translate(m_pos);
     transform_rotate(m_rotation);
@@ -116,7 +116,7 @@ void BasicEnemy::draw(const mat3& projection){
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, basicEnemy_texture.id);
+    glBindTexture(GL_TEXTURE_2D, shooterTexture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -128,19 +128,19 @@ void BasicEnemy::draw(const mat3& projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 BasicEnemy::get_position()const{
+vec2 Shooter::get_position()const{
     return m_pos;
 }
 
-void BasicEnemy::set_position(vec2 position){
+void Shooter::set_position(vec2 position){
     m_pos = position;
 }
 
 // Returns the local bounding coordinates scaled by the current size of the turtle
-vec2 BasicEnemy::get_bounding_box()const
+vec2 Shooter::get_bounding_box()const
 {
     // fabs is to avoid negative scale due to the facing direction
-    return { std::fabs(m_scale.x) * basicEnemy_texture.width, std::fabs(m_scale.y) * basicEnemy_texture.height };
+    return { std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height };
 }
 
 //vec2 get_bounding_box()const;

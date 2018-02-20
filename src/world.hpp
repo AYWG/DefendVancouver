@@ -4,9 +4,9 @@
 #include "pbullet.hpp"
 #include "common.hpp"
 #include "player.hpp"
-#include "basicEnemy.hpp"
-#include "bomber.hpp"
-#include "chaser.hpp"
+#include "enemies/shooter.hpp"
+#include "enemies/bomber.hpp"
+#include "enemies/chaser.hpp"
 #include "background.hpp"
 #include "camera.hpp"
 
@@ -52,17 +52,17 @@ public:
 
 private:
 
-    //spawn basic enemy
-    bool spawn_basicEnemy();
+    //spawn shooter
+    bool spawnShooter();
 
     bool spawn_playerBullet();
 
     vec2 get_mousePos(vec2 mousePos);
 
     // !!! INPUT CALLBACK FUNCTIONS
-    void on_key(GLFWwindow *, int key, int, int action, int mod);
+    void onKey(GLFWwindow *, int key, int, int action, int mod);
 
-    void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
+    void onMouseMove(GLFWwindow *window, double xpos, double ypos);
 
     vec2 const mousePosition();
 
@@ -77,15 +77,18 @@ private:
     background m_background;
     // Game entities
     Player m_player;
-    BasicEnemy m_basEnemy;
-    Pbullet m_plbullet;
 
-    std::vector<BasicEnemy> m_basEnemies;
     std::vector<Pbullet> m_pbullet;
 
 
+    Shooter m_shooter;
+    Pbullet m_plbullet;
 
-    float m_next_benemy_spawn;
+    std::vector<Shooter> m_shooters;
+
+
+
+    float m_next_shooter_spawn;
     float m_current_speed;
     bool m_is_advanced_mode;
     float  m_next_pbullet_spawn;
