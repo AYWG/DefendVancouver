@@ -78,7 +78,7 @@ void Bomber::update(float ms){
 
 void Bomber::draw(const mat3& projection){
     transform_begin();
-    transform_translate(m_pos);
+    transform_translate(m_position);
     transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
@@ -120,14 +120,6 @@ void Bomber::draw(const mat3& projection){
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-vec2 Bomber::get_position()const{
-    return m_pos;
-}
-
-void Bomber::set_position(vec2 position){
-    m_pos = position;
 }
 
 //vec2 get_bounding_box()const;

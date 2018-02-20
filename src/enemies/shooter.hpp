@@ -2,38 +2,27 @@
 // Created by Shrey Swades Nayak on 2018-02-08.
 //
 
+#pragma once
+
 #include "../common.hpp"
+#include "enemy.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
-class Shooter : public Renderable {
+class Shooter : public Enemy, public Renderable {
 
     static Texture shooterTexture;
 
 public:
 
-    bool init();
+    bool init() override;
 
-    void destroy();
+    void destroy() override;
 
-    void update(float ms);
+    void update(float ms) override;
 
-    void draw(const mat3& projection)override;
+    void draw(const mat3 &projection) override;
 
-    vec2 get_position()const;
-
-    void set_position(vec2 position);
-
-    vec2 get_bounding_box()const;
-
-
-
-//    vec2 get_bounding_box()const;
-
-private:
-
-    vec2 m_pos;
-    vec2 m_scale;
-    float m_rotation;
+    vec2 getBoundingBox() const override;
 
 };

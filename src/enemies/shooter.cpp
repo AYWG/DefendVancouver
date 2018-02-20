@@ -16,7 +16,7 @@ bool Shooter::init() {
     {
         if (!shooterTexture.load_from_file(textures_path("shooter_new.png")))
         {
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load shooter texture!");
             return false;
         }
     }
@@ -77,14 +77,14 @@ void Shooter::destroy(){
 void Shooter::update(float ms){
     const float SHOOTER_SPEED = 200.f;
     float step = -SHOOTER_SPEED * (ms / 1000);
-    m_pos.y -= step;
+    m_position.y -= step;
 
 
 }
 
 void Shooter::draw(const mat3& projection){
     transform_begin();
-    transform_translate(m_pos);
+    transform_translate(m_position);
     transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
@@ -128,19 +128,10 @@ void Shooter::draw(const mat3& projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Shooter::get_position()const{
-    return m_pos;
-}
-
-void Shooter::set_position(vec2 position){
-    m_pos = position;
-}
-
 // Returns the local bounding coordinates scaled by the current size of the turtle
-vec2 Shooter::get_bounding_box()const
+vec2 Shooter::getBoundingBox()const
 {
     // fabs is to avoid negative scale due to the facing direction
     return { std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height };
 }
 
-//vec2 get_bounding_box()const;
