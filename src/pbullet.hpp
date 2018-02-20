@@ -21,14 +21,15 @@ public:
     void update(float ms);
     float m_velocity;
     bool is_Shotted = false;
-    bool is_shoted(bool shot);
     vec2 get_position() const;
+    vec2 get_bounding_box() const;
 
 
 private:
     vec2 m_scale;
     vec2 m_position;
     Player m_player;
+
 
 
 

@@ -2,8 +2,7 @@
 // Created by gowth on 2018-02-09.
 //
 #include "pbullet.hpp"
-
-
+#include "../../../../../../../../cygwin64/lib/gcc/x86_64-pc-cygwin/6.4.0/include/c++/cmath"
 
 
 Texture Pbullet::pbullet_texture;
@@ -139,16 +138,14 @@ vec2 Pbullet::get_position()const  {
 
 
 
-bool Pbullet::is_shoted(bool shot) {
-    is_Shotted = shot;
-    return is_Shotted;
-}
-
 void Pbullet::fireBullet(vec2 aimDir) {
     //fires bullet at aimDir
     m_position.x += aimDir.x;
     m_position.y += aimDir.y;
 }
 
+vec2 Pbullet::get_bounding_box() const {
+    return { std::fabs(m_scale.x) * pbullet_texture.width, std::fabs(m_scale.y) * pbullet_texture.height};
+}
 
 

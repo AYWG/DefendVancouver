@@ -164,23 +164,24 @@ bool World::update(float elapsed_ms) {
     }
 
 
-    auto pshooter_it = m_pbullet.begin();
-    while (pshooter_it != m_pbullet.end()) {
-        if (pshooter_it->get_position().y >  m_camera.getBottomBoundary() ||
-            pshooter_it->get_position().y  <  m_camera.getTopBoundary() ||
-            pshooter_it->get_position().x > m_camera.getRightBoundary() ||
-            pshooter_it->get_position().x < m_camera.getLeftBoundary()) {
+
+    auto pbullet_it = m_pbullet.begin();
+
+
+
+
+    while (pbullet_it != m_pbullet.end()) {
+        if (pbullet_it->get_position().y >  m_camera.getBottomBoundary() ||
+            pbullet_it->get_position().y  <  m_camera.getTopBoundary() ||
+            pbullet_it->get_position().x > m_camera.getRightBoundary() ||
+            pbullet_it->get_position().x < m_camera.getLeftBoundary()) {
             // m_pbullet.pop_back();
-            pshooter_it = m_pbullet.erase(pshooter_it);
+            pbullet_it = m_pbullet.erase(pbullet_it);
             continue;
         }
-        ++pshooter_it;
+
+        ++pbullet_it;
     }
-
-
-
-
-
 
 
     //basicEnemySpawning
@@ -217,6 +218,26 @@ bool World::update(float elapsed_ms) {
 
         ++benemy_it;
     }
+/*
+
+    auto benemy_col = m_shooters.begin();
+    auto pbullet_col = m_pbullet.begin();
+    float boundBullet = pbullet_col->get_bounding_box().x/2;
+    float boundEnemy = benemy_col->get_bounding_box().x / 2;
+    while (pbullet_col != m_pbullet.end() && benemy_col != m_shooters.end()) {
+        if (pbullet_col->get_position().y + boundBullet <
+                benemy_col->get_position().y + boundEnemy){
+            std::cout<<"hit";
+            benemy_col = m_shooters.erase(benemy_col);
+            pbullet_col = m_pbullet.erase(pbullet_col);
+
+            continue;
+        }
+        ++benemy_col;
+        ++pbullet_col;
+    }
+*/
+
 
 	return true;
 }
