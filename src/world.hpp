@@ -49,6 +49,7 @@ public:
 	bool is_shot = false;
     bool is_shoted = false;
     vec2 mouseAimDir;
+    //static vec2 shotDir;
 
 private:
 
@@ -79,6 +80,7 @@ private:
     Player m_player;
 
     std::vector<Pbullet> m_pbullet;
+    std::vector<Pbullet> m_shotBullet;
 
 
     Shooter m_shooter;

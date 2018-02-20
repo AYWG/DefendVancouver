@@ -73,7 +73,7 @@ bool Pbullet::init() {
 }
 
 void Pbullet::update(float ms){
-    m_velocity =   10.0f;
+    m_velocity =   25.0f;
 
 
     float x_step = m_velocity * (ms / 1000);
@@ -132,7 +132,7 @@ void Pbullet::set_position(vec2 position){
 
 }
 
-vec2 Pbullet::get_position()  {
+vec2 Pbullet::get_position()const  {
     return m_position;
 
 }

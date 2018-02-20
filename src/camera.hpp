@@ -22,7 +22,7 @@ public:
     float getTopBoundary() const;
 
     float getBottomBoundary() const;
-
+    
 
 private:
     // The dimensions of the camera - should be the same as the window

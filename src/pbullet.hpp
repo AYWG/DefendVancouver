@@ -22,7 +22,7 @@ public:
     float m_velocity;
     bool is_Shotted = false;
     bool is_shoted(bool shot);
-    vec2 get_position() ;
+    vec2 get_position() const;
 
 
 private:

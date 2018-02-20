@@ -154,7 +154,6 @@ bool World::update(float elapsed_ms) {
     if (!spawn_playerBullet()) {
         return false;
     }
-
     if (is_shot) {
         Pbullet &new_pBullet = m_pbullet.back();
         new_pBullet.set_position(m_player.get_position());
@@ -163,16 +162,38 @@ bool World::update(float elapsed_ms) {
         pBullet.update(elapsed_ms * m_plbullet.m_velocity);
 
         if (is_shot) {
+           // pBullet = m_pbullet.back();
+           // pBullet.set_position(m_player.get_position());
             pBullet.fireBullet({pBullet.m_velocity * mouseAimDir.x , pBullet.m_velocity * mouseAimDir.y });
             afterShot = {pBullet.m_velocity * mousePosition().x, pBullet.m_velocity * mousePosition().y};
-            //is_shoted = true;
-            
+
         } else {
+
+            pBullet.update(elapsed_ms * m_plbullet.m_velocity);
             pBullet.fireBullet({afterShot.x, afterShot.y});
 
         }
 
     }
+
+
+    auto pshooter_it = m_pbullet.begin();
+    while (pshooter_it != m_pbullet.end()) {
+        if (pshooter_it->get_position().y >  m_camera.getBottomBoundary() ||
+            pshooter_it->get_position().y  <  m_camera.getTopBoundary() ||
+            pshooter_it->get_position().x > m_camera.getRightBoundary() ||
+            pshooter_it->get_position().x < m_camera.getLeftBoundary()) {
+            // m_pbullet.pop_back();
+            pshooter_it = m_pbullet.erase(pshooter_it);
+            continue;
+        }
+        ++pshooter_it;
+    }
+
+
+
+
+
 
 
     //basicEnemySpawning
@@ -270,6 +291,9 @@ void World::draw()
                 bBullet.draw(projection_2D);
           //  }
            }
+
+
+
 
 
 
