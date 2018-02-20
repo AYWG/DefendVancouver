@@ -163,7 +163,6 @@ bool World::update(float elapsed_ms) {
 
     }
 
-
     auto pshooter_it = m_pbullet.begin();
     while (pshooter_it != m_pbullet.end()) {
         if (pshooter_it->get_position().y >  m_camera.getBottomBoundary() ||
@@ -176,13 +175,8 @@ bool World::update(float elapsed_ms) {
         }
         ++pshooter_it;
     }
-
-
-
-
-
-
-
+  
+  
     //basicEnemySpawning
     m_next_shooter_spawn -= elapsed_ms * m_current_speed;
     if(m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn){
@@ -217,6 +211,7 @@ bool World::update(float elapsed_ms) {
 
         ++benemy_it;
     }
+
 
 	return true;
 }
@@ -284,14 +279,7 @@ void World::draw()
         shotBullet.draw(projection_2D);
         //  }
     }
-
-
-
-
-
-
-
-
+  
 
 	// Presenting
 	glfwSwapBuffers(m_window);
