@@ -136,19 +136,6 @@ bool World::update(float elapsed_ms) {
 
 
     //bullet
-    /////////////////BULLET/////////////////
- /*       //m_next_pbullet_spawn -= elapsed_ms * m_plbullet.m_velocity;
-
-        if (!is_shot) {
-            //m_plbullet.set_position(m_player.get_position());
-        } else if (is_shot) {
-            m_plbullet.update(elapsed_ms * m_plbullet.m_velocity);
-            m_plbullet.fireBullet({m_plbullet.m_velocity * mouseAimDir.x, m_plbullet.m_velocity * mouseAimDir.y});
-            // Next spawn
-            //m_next_pbullet_spawn = (PBULLET_DELAY_MS / 2) + m_dist(m_rng) * (PBULLET_DELAY_MS / 2);
-        }*/
-    /////////////////BULLET/////////////////
-
     m_next_pbullet_spawn -= elapsed_ms * m_plbullet.m_velocity;
     // if(m_pbullet.size() <= MAX_BASENEMIES && m_next_pbullet_spawn) {
     if (!spawn_playerBullet()) {
