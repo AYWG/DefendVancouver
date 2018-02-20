@@ -155,9 +155,9 @@ bool World::update(float elapsed_ms) {
             afterShot = {pBullet.m_velocity * mousePosition().x, pBullet.m_velocity * mousePosition().y};
 
         } else {
-
             pBullet.update(elapsed_ms * m_plbullet.m_velocity);
             pBullet.fireBullet({afterShot.x, afterShot.y});
+
 
         }
 
@@ -279,6 +279,12 @@ void World::draw()
           //  }
            }
 
+    for (auto &shotBullet : m_shotBullet) {
+        //  if(is_shot) {
+        shotBullet.draw(projection_2D);
+        //  }
+    }
+
 
 
 
@@ -386,13 +392,16 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     //is_shot = false;
 
     //SHOOTING
-    if (key == GLFW_KEY_SPACE){
+ /*   if (key == GLFW_KEY_SPACE){
         if (action == GLFW_PRESS){
             is_shot = true;
         }else if (action == GLFW_RELEASE){
             is_shot = false;
-        }
-        //m_pbullet.fireBullet({m_pbullet.m_velocity * mouseAimDir.x,m_pbullet.m_velocity * mouseAimDir.y })w
+        }*/
+    is_shot = false;
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
+        is_shot = true;
+
 
     }
 
