@@ -9,7 +9,7 @@
 
 
 
-class Pbullet : public Renderable {
+class pBullet : public Renderable {
     static Texture pbullet_texture;
 
 public:

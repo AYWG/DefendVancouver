@@ -142,7 +142,7 @@ bool World::update(float elapsed_ms) {
         return false;
     }
     if (is_shot) {
-        Pbullet &new_pBullet = m_pbullet.back();
+        pBullet &new_pBullet = m_pbullet.back();
         new_pBullet.set_position(m_player.get_position());
     }
     for (auto& pBullet : m_pbullet){
@@ -348,7 +348,7 @@ bool World::spawnShooter() {
 
 bool World::spawn_playerBullet()
 {
-    Pbullet playerBullet;
+    pBullet playerBullet;
     if (playerBullet.init())
     {
         m_pbullet.emplace_back(playerBullet);

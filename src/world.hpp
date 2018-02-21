@@ -79,12 +79,12 @@ private:
     // Game entities
     Player m_player;
 
-    std::vector<Pbullet> m_pbullet;
-    std::vector<Pbullet> m_shotBullet;
+    std::vector<pBullet> m_pbullet;
+    std::vector<pBullet> m_shotBullet;
 
 
     Shooter m_shooter;
-    Pbullet m_plbullet;
+    pBullet m_plbullet;
 
     std::vector<Shooter> m_shooters;
 
