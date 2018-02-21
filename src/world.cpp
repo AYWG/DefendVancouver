@@ -163,10 +163,8 @@ bool World::update(float elapsed_ms) {
 
     }
 
+
     auto pbullet_it = m_pbullet.begin();
-
-
-
 
     while (pbullet_it != m_pbullet.end()) {
         if (pbullet_it->get_Position().y >  m_camera.getBottomBoundary() ||
@@ -217,14 +215,14 @@ bool World::update(float elapsed_ms) {
         ++benemy_it;
     }
 
-/*
 
+/*
     auto benemy_col = m_shooters.begin();
     auto pbullet_col = m_pbullet.begin();
     float boundBullet = pbullet_col->get_bounding_box().x/2;
     float boundEnemy = benemy_col->get_bounding_box().x / 2;
     while (pbullet_col != m_pbullet.end() && benemy_col != m_shooters.end()) {
-        if (pbullet_col->get_position().y + boundBullet <
+        if (pbullet_col->get_Position().y + boundBullet <
                 benemy_col->get_position().y + boundEnemy){
             std::cout<<"hit";
             benemy_col = m_shooters.erase(benemy_col);
@@ -236,6 +234,7 @@ bool World::update(float elapsed_ms) {
         ++pbullet_col;
     }
 */
+
 
 
 	return true;
@@ -304,14 +303,7 @@ void World::draw()
         shotBullet.draw(projection_2D);
         //  }
     }
-
-
-
-
-
-
-
-
+  
 
 	// Presenting
 	glfwSwapBuffers(m_window);
