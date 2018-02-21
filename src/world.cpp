@@ -163,8 +163,6 @@ bool World::update(float elapsed_ms) {
 
     }
 
-
-
     auto pbullet_it = m_pbullet.begin();
 
 
@@ -218,6 +216,7 @@ bool World::update(float elapsed_ms) {
 
         ++benemy_it;
     }
+
 /*
 
     auto benemy_col = m_shooters.begin();
