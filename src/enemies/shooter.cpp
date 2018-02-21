@@ -135,3 +135,7 @@ vec2 Shooter::getBoundingBox()const
     return { std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height };
 }
 
+void Shooter::attack() {
+
+}
+

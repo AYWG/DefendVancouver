@@ -9,6 +9,8 @@
 
 class Enemy {
 public:
+    Enemy();
+
     virtual bool init() = 0;
 
     virtual void destroy() = 0;
@@ -20,6 +22,11 @@ public:
     vec2 getPosition() const;
 
     void setPosition(vec2 position);
+
+    /**
+     * Every enemy has a different attack.
+     */
+    virtual void attack() = 0;
 
 protected:
     vec2 m_position;
