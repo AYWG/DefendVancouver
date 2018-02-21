@@ -13,8 +13,14 @@
 // Same as static in c, local to compilation unit
 namespace
 {
+
+    const size_t MAX_BASENEMIES = 1;
+    const size_t MAX_BULLET = 1;
+    const size_t BENEMY_DELAY_MS = 2000;
+    const size_t PBULLET_DELAY_MS = 2000;
     const size_t MAX_SHOOTERS = 15;
     const size_t SHOOTER_DELAY_MS = 2000;
+
 
 	namespace
 	{
@@ -27,7 +33,9 @@ namespace
 
 World::World() :
 	m_points(0),
+    m_next_pbullet_spawn(0.f),
     m_next_shooter_spawn(0.f)
+
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -88,7 +96,7 @@ bool World::init(vec2 screenSize, vec2 worldSize)
     m_is_advanced_mode = false;
     m_shooter.init();
     m_player.init();
-    m_pbullet.init();
+    m_plbullet.init();
 
 	//m_background.init();
     m_camera.setFocusPoint(m_player.get_position());
@@ -105,37 +113,77 @@ void World::destroy()
 }
 
 // Update our game world
-bool World::update(float elapsed_ms)
-{
-	int w, h;
-	glfwGetFramebufferSize(m_window, &w, &h);
-	vec2 screen = { (float)w, (float)h };
+bool World::update(float elapsed_ms) {
+    int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+    vec2 screen = {(float) w, (float) h};
 
 
 
-	// faster based on current
-	m_player.update(elapsed_ms);
+    // faster based on current
+    m_player.update(elapsed_ms);
 
     vec2 playerPos = m_player.get_position();
     // update camera
-    if (((playerPos.x - screen.x / 5 >= 0) && (playerPos.x - 6 * screen.x / 5 <= 0)) && playerPos.x + screen.x / 2 <= m_size.x) {
+    if (((playerPos.x - screen.x / 5 >= 0) && (playerPos.x - 6 * screen.x / 5 <= 0)) &&
+        playerPos.x + screen.x / 2 <= m_size.x) {
         m_camera.setFocusPoint({playerPos.x, m_camera.getFocusPoint().y});
     }
-    if (playerPos.y - screen.y / 3 >= 0 && playerPos.y - 3 * screen.y / 4 <= 0 && playerPos.y + screen.y / 2 <= m_size.y) {
+    if (playerPos.y - screen.y / 3 >= 0 && playerPos.y - 3 * screen.y / 4 <= 0 &&
+        playerPos.y + screen.y / 2 <= m_size.y) {
         m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
     }
 
-    m_pbullet.update(elapsed_ms);
 
     //bullet
-
-    if (!is_shot) {
-        m_pbullet.set_position(m_player.get_position());
+    m_next_pbullet_spawn -= elapsed_ms * m_plbullet.m_velocity;
+    // if(m_pbullet.size() <= MAX_BASENEMIES && m_next_pbullet_spawn) {
+    if (!spawn_playerBullet()) {
+        return false;
     }
+    if (is_shot) {
+        pBullet &new_pBullet = m_pbullet.back();
+        new_pBullet.set_Position(m_player.get_position());
+    }
+    for (auto& pBullet : m_pbullet){
+        pBullet.update(elapsed_ms * m_plbullet.m_velocity);
+
+        if (is_shot) {
+           // pBullet = m_pbullet.back();
+           // pBullet.set_position(m_player.get_position());
+            pBullet.fireBullet({pBullet.m_velocity * mouseAimDir.x , pBullet.m_velocity * mouseAimDir.y });
+            afterShot = {pBullet.m_velocity * mousePosition().x, pBullet.m_velocity * mousePosition().y};
+
+        } else {
+            pBullet.update(elapsed_ms * m_plbullet.m_velocity);
+            pBullet.fireBullet({afterShot.x, afterShot.y});
+
+
+        }
+
+    }
+
+
+    auto pbullet_it = m_pbullet.begin();
+
+    while (pbullet_it != m_pbullet.end()) {
+        if (pbullet_it->get_Position().y >  m_camera.getBottomBoundary() ||
+            pbullet_it->get_Position().y  <  m_camera.getTopBoundary() ||
+            pbullet_it->get_Position().x > m_camera.getRightBoundary() ||
+            pbullet_it->get_Position().x < m_camera.getLeftBoundary()) {
+            // m_pbullet.pop_back();
+            pbullet_it = m_pbullet.erase(pbullet_it);
+            continue;
+        }
+
+        ++pbullet_it;
+    }
+
 
     //basicEnemySpawning
     m_next_shooter_spawn -= elapsed_ms * m_current_speed;
     if(m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn){
+
         ////////////////////TODO////////////////
         if(!spawnShooter()){
             return false;
@@ -168,8 +216,30 @@ bool World::update(float elapsed_ms)
     }
 
 
+/*
+    auto benemy_col = m_shooters.begin();
+    auto pbullet_col = m_pbullet.begin();
+    float boundBullet = pbullet_col->get_bounding_box().x/2;
+    float boundEnemy = benemy_col->get_bounding_box().x / 2;
+    while (pbullet_col != m_pbullet.end() && benemy_col != m_shooters.end()) {
+        if (pbullet_col->get_Position().y + boundBullet <
+                benemy_col->get_position().y + boundEnemy){
+            std::cout<<"hit";
+            benemy_col = m_shooters.erase(benemy_col);
+            pbullet_col = m_pbullet.erase(pbullet_col);
+
+            continue;
+        }
+        ++benemy_col;
+        ++pbullet_col;
+    }
+*/
+
+
+
 	return true;
 }
+
 
 // Render our game world
 void World::draw()
@@ -211,7 +281,9 @@ void World::draw()
 	// Drawing entities
 
     m_background.draw(projection_2D);
-    m_pbullet.draw(projection_2D);
+
+ //   m_plbullet.draw(projection_2D);
+
 	m_player.draw(projection_2D);
 
    // m_shooter.draw(projection_2D);
@@ -220,7 +292,18 @@ void World::draw()
         shooter.draw(projection_2D);
 
 
+       for (auto &bBullet : m_pbullet) {
+          //  if(is_shot) {
+                bBullet.draw(projection_2D);
+          //  }
+           }
 
+    for (auto &shotBullet : m_shotBullet) {
+        //  if(is_shot) {
+        shotBullet.draw(projection_2D);
+        //  }
+    }
+  
 
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -232,8 +315,18 @@ bool World::is_over()const
 	return glfwWindowShouldClose(m_window);
 }
 
-bool World::spawnShooter()
-{
+
+vec2 const  World::mousePosition(){
+    return get_mousePos(aimDirNorm);
+}
+
+vec2 World::get_mousePos(vec2 mousePos) {
+    mousePos = mouseAimDir;
+    return  mousePos;
+}
+
+
+bool World::spawnShooter() {
     Shooter shooter;
     if (shooter.init())
     {
@@ -241,6 +334,18 @@ bool World::spawnShooter()
         return true;
     }
     fprintf(stderr, "Failed to spawn shooter");
+    return false;
+}
+
+bool World::spawn_playerBullet()
+{
+    pBullet playerBullet;
+    if (playerBullet.init())
+    {
+        m_pbullet.emplace_back(playerBullet);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn turtle");
     return false;
 }
 
@@ -296,12 +401,20 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
-    is_shot = false;
+    //is_shot = false;
 
     //SHOOTING
-    if (action == GLFW_PRESS && key == GLFW_KEY_SPACE){
-        m_pbullet.fireBullet(mouseAimDir);
+ /*   if (key == GLFW_KEY_SPACE){
+        if (action == GLFW_PRESS){
+            is_shot = true;
+        }else if (action == GLFW_RELEASE){
+            is_shot = false;
+        }*/
+    is_shot = false;
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
         is_shot = true;
+
+
     }
 
 
@@ -345,15 +458,16 @@ void World::onMouseMove(GLFWwindow *window, double xpos, double ypos)
     auto y_pos = static_cast<float>(ypos);
     mousePos = {x_pos, y_pos};
     aimDir = {mousePos.x - playerCenter.x, mousePos.y - playerCenter.y};
+
     aimDirNorm = {static_cast<float>(aimDir.x / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2))),
-                  static_cast<float>(aimDir.y / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2)))};
+                   static_cast<float>(aimDir.y / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2)))};
+
 
     float rotation_angle = (atan2(aimDirNorm.x, -aimDirNorm.y));
 
-    mouseAimDir =   {aimDir.x, aimDir.y} ;
-
+    //mouseAimDir =   {aimDir.x, aimDir.y} ;
+    mouseAimDir = aimDirNorm;
 
     m_player.set_rotation(rotation_angle);
     //m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
-
 }

@@ -14,7 +14,7 @@ bool Shooter::init() {
     //Load texture
     if (!shooterTexture.is_valid())
     {
-        if (!shooterTexture.load_from_file(textures_path("shooter.png")))
+        if (!shooterTexture.load_from_file(textures_path("shooter_new.png")))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
@@ -62,8 +62,8 @@ bool Shooter::init() {
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture
-    m_scale.x = 0.2f;
-    m_scale.y = 0.2f;
+    m_scale.x = 1.5f;
+    m_scale.y = 1.5f;
     m_rotation = 0.f;
 
 

@@ -2,17 +2,17 @@
 // Created by gowth on 2018-02-09.
 //
 #include "pbullet.hpp"
+#include "../../../../../../../../cygwin64/lib/gcc/x86_64-pc-cygwin/6.4.0/include/c++/cmath"
 
 
+Texture pBullet::pbullet_texture;
 
-Texture Pbullet::pbullet_texture;
-
-bool Pbullet::init() {
+bool pBullet::init() {
 
     //Load texture
     if (!pbullet_texture.is_valid())
     {
-        if (!pbullet_texture.load_from_file(textures_path("bullet.png")))
+        if (!pbullet_texture.load_from_file(textures_path("Player_bullet.png")))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
@@ -62,28 +62,26 @@ bool Pbullet::init() {
     // 1.0 would be as big as the original texture
     m_scale.x = 1.0f;
     m_scale.y = 1.0f;
-    m_position = m_player.get_position();
+    //m_position = m_player.get_position();
 
-   // m_position.x = 600;
+    //m_position.x = 600;
     //m_position.y = 400;
 
 
     return true;
 }
 
-void Pbullet::update(float ms){
-    m_velocity = 0.0f;
+void pBullet::update(float ms){
+    m_velocity =   25.0f;
+
 
     float x_step = m_velocity * (ms / 1000);
     float y_step = m_velocity * (ms / 1000);
     fireBullet({ x_step, y_step });
-
-
-
 }
 
 
-void Pbullet::draw(const mat3 &projection){
+void pBullet::draw(const mat3 &projection){
     transform_begin();
     transform_translate(m_position);
     transform_scale(m_scale);
@@ -128,16 +126,26 @@ void Pbullet::draw(const mat3 &projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void Pbullet::set_position(vec2 position){
+void pBullet::set_Position(vec2 position){
     m_position = position;
 
 }
 
-void Pbullet::fireBullet(vec2 aimDir) {
+vec2 pBullet::get_Position()const  {
+    return m_position;
+
+}
+
+
+
+void pBullet::fireBullet(vec2 aimDir) {
     //fires bullet at aimDir
     m_position.x += aimDir.x;
     m_position.y += aimDir.y;
 }
 
+vec2 pBullet::get_bounding_box() const {
+    return { std::fabs(m_scale.x) * pbullet_texture.width, std::fabs(m_scale.y) * pbullet_texture.height};
+}
 
 
