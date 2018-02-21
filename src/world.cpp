@@ -143,7 +143,7 @@ bool World::update(float elapsed_ms) {
     }
     if (is_shot) {
         pBullet &new_pBullet = m_pbullet.back();
-        new_pBullet.set_position(m_player.get_position());
+        new_pBullet.set_Position(m_player.get_position());
     }
     for (auto& pBullet : m_pbullet){
         pBullet.update(elapsed_ms * m_plbullet.m_velocity);
@@ -171,10 +171,10 @@ bool World::update(float elapsed_ms) {
 
 
     while (pbullet_it != m_pbullet.end()) {
-        if (pbullet_it->get_position().y >  m_camera.getBottomBoundary() ||
-            pbullet_it->get_position().y  <  m_camera.getTopBoundary() ||
-            pbullet_it->get_position().x > m_camera.getRightBoundary() ||
-            pbullet_it->get_position().x < m_camera.getLeftBoundary()) {
+        if (pbullet_it->get_Position().y >  m_camera.getBottomBoundary() ||
+            pbullet_it->get_Position().y  <  m_camera.getTopBoundary() ||
+            pbullet_it->get_Position().x > m_camera.getRightBoundary() ||
+            pbullet_it->get_Position().x < m_camera.getLeftBoundary()) {
             // m_pbullet.pop_back();
             pbullet_it = m_pbullet.erase(pbullet_it);
             continue;

@@ -126,12 +126,12 @@ void pBullet::draw(const mat3 &projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void pBullet::set_position(vec2 position){
+void pBullet::set_Position(vec2 position){
     m_position = position;
 
 }
 
-vec2 pBullet::get_position()const  {
+vec2 pBullet::get_Position()const  {
     return m_position;
 
 }

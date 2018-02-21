@@ -16,12 +16,12 @@ public:
 
     bool init();
     void draw(const mat3& projection)override;
-    void set_position(vec2 position);
+    void set_Position(vec2 position);
     void fireBullet(vec2 aimDir);
     void update(float ms);
     float m_velocity;
     bool is_Shotted = false;
-    vec2 get_position() const;
+    vec2 get_Position() const;
     vec2 get_bounding_box() const;
 
 
