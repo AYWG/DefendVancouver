@@ -2,7 +2,7 @@
 // Created by gowth on 2018-02-09.
 //
 #include "pbullet.hpp"
-#include "../../../../../../../../cygwin64/lib/gcc/x86_64-pc-cygwin/6.4.0/include/c++/cmath"
+#include <cmath>
 
 
 Texture pBullet::pbullet_texture;
@@ -126,12 +126,12 @@ void pBullet::draw(const mat3 &projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void pBullet::set_Position(vec2 position){
+void pBullet::setPosition(vec2 position){
     m_position = position;
 
 }
 
-vec2 pBullet::get_Position()const  {
+vec2 pBullet::getPosition()const  {
     return m_position;
 
 }
@@ -144,7 +144,7 @@ void pBullet::fireBullet(vec2 aimDir) {
     m_position.y += aimDir.y;
 }
 
-vec2 pBullet::get_bounding_box() const {
+vec2 pBullet::getBoundingBox() const {
     return { std::fabs(m_scale.x) * pbullet_texture.width, std::fabs(m_scale.y) * pbullet_texture.height};
 }
 

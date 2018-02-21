@@ -21,6 +21,6 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    //    vec2 get_bounding_box()const;
+    //    vec2 getBoundingBox()const;
 
 };

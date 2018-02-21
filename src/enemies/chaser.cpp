@@ -122,4 +122,4 @@ void Chaser::draw(const mat3& projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-//vec2 get_bounding_box()const;
+//vec2 getBoundingBox()const;
