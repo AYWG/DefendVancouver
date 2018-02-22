@@ -14,6 +14,8 @@
 #include <vector>
 #include <random>
 
+#define  ROW 10
+#define  COL 10
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
@@ -49,6 +51,7 @@ public:
 	bool is_shot = false;
     bool is_shoted = false;
     vec2 mouseAimDir;
+
     //static vec2 shotDir;
 
 private:
@@ -84,6 +87,7 @@ private:
 
 
     Shooter m_shooter;
+    Chaser m_chaser;
     pBullet m_plbullet;
 
     std::vector<Shooter> m_shooters;

@@ -1,5 +1,6 @@
 // Header
 #include "world.hpp"
+#include <bits/stdc++.h>
 
 
 // stlib
@@ -9,6 +10,7 @@
 #include <iostream>
 #include <math.h>
 
+typedef  pair<int, int> Pair;
 
 // Same as static in c, local to compilation unit
 namespace
@@ -95,12 +97,13 @@ bool World::init(vec2 screenSize, vec2 worldSize)
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
     m_shooter.init();
-    m_player.init();
+    m_chaser.init();
     m_plbullet.init();
+    m_background.init();
 
 	//m_background.init();
     m_camera.setFocusPoint(m_player.get_position());
-	return m_background.init();
+	return m_player.init();
 	//return true;
 }
 
@@ -235,9 +238,115 @@ bool World::update(float elapsed_ms) {
     }
 */
 
+    //ASTAR
+    int j = 0;
+    int l = 0;
+   /* int grid[ROW][COL] = {
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,1,1,1,1,1,1,1}
+    };*/
+
+     int grid[ROW][COL] =
+            {
+                    { 1, 0, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
+            };
 
 
-	return true;
+    bool srcFound = false;
+    bool destFound = false;
+
+
+   for (float k = 0.f; k <= 1200.f ; k += 120){
+        for(float i = 0.f; i <= 800.f; i+=80.f){
+            if (m_chaser.get_position().y >= 0.f && m_chaser.get_position().y < 80.f
+                    && m_chaser.get_position().x >= 0.f && m_chaser.get_position().x < 120.f) {
+               //  Pair src = make_pair(0, 0);
+                srcFound = true;
+               if (srcFound) {
+                   break;
+               }
+
+            } else if ((m_chaser.get_position().y > (i) && m_chaser.get_position().y < (i+80.f))
+                    && (m_chaser.get_position().x > (k) && m_chaser.get_position().x < (k+120.f))){
+               // Pair src = make_pair(j,l);
+                srcFound = true;
+                if (srcFound) {
+                    break;
+                }
+            }
+            j++;
+        }
+       if (srcFound) {
+           break;
+       }
+       l++;
+       j = 0;
+    }
+
+
+    int a = 0;
+    int b = 0;
+
+    for (float k = 0.f; k <= 1200.f ; k += 120){
+        for(float i = 0.f; i <= 800.f; i+=80.f){
+            if (m_player.get_position().y >= 0.f && m_player.get_position().y < 80.f
+                && m_player.get_position().x >= 0.f && m_player.get_position().x < 120.f) {
+                //Pair dest = make_pair(0, 0);
+                destFound = true;
+                if(destFound) {
+                    break;
+                }
+            } else if ((m_player.get_position().y > (i) && m_player.get_position().y < (i+ 80.f))
+                       && (m_player.get_position().x > (k) && m_player.get_position().x < (k+120.f))){
+                //Pair dest = make_pair(a,b);
+                destFound = true;
+                if(destFound) {
+                    break;
+                }
+            }
+            a++;
+        }
+        if(destFound) {
+            break;
+        }
+        b++;
+        a = 0;
+    }
+
+    if (destFound && srcFound){
+        Pair src=make_pair(j,l);
+        Pair dest=make_pair(a,b);
+        m_chaser.aStarSearch(grid,dest,src);
+    }
+/*    Pair src=make_pair(8,0);
+    Pair dest=make_pair(0,0);
+
+    m_chaser.aStarSearch(grid,src,dest);*/
+
+
+
+
+
+
+
+    return true;
 }
 
 
@@ -285,6 +394,7 @@ void World::draw()
  //   m_plbullet.draw(projection_2D);
 
 	m_player.draw(projection_2D);
+    m_chaser.draw(projection_2D);
 
    // m_shooter.draw(projection_2D);
 
@@ -303,7 +413,7 @@ void World::draw()
         shotBullet.draw(projection_2D);
         //  }
     }
-  
+
 
 	// Presenting
 	glfwSwapBuffers(m_window);
