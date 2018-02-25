@@ -220,24 +220,7 @@ bool World::update(float elapsed_ms) {
     }
 
 
-/*
-    auto benemy_col = m_shooters.begin();
-    auto pbullet_col = m_pbullet.begin();
-    float boundBullet = pbullet_col->get_bounding_box().x/2;
-    float boundEnemy = benemy_col->get_bounding_box().x / 2;
-    while (pbullet_col != m_pbullet.end() && benemy_col != m_shooters.end()) {
-        if (pbullet_col->get_Position().y + boundBullet <
-                benemy_col->get_position().y + boundEnemy){
-            std::cout<<"hit";
-            benemy_col = m_shooters.erase(benemy_col);
-            pbullet_col = m_pbullet.erase(pbullet_col);
 
-            continue;
-        }
-        ++benemy_col;
-        ++pbullet_col;
-    }
-*/
 
     //ASTAR
     int j = 0;
@@ -250,22 +233,7 @@ bool World::update(float elapsed_ms) {
             grid[i][j] = 1;
         }
     }
-/*
 
-    int grid[ROW][COL] =
-            {
-                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                    { 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 },
-                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-            };
-*/
 
     bool srcFound = false;
     bool destFound = false;
@@ -332,38 +300,19 @@ if (!destFound) {
 }
     int r = m_bomber.get_position().x/120;
     int s = m_bomber.get_position().y/80;
-    std::cout<<r;
-    std::cout<<s;
 
     grid[s][r] = 0;
-    //std::cout<<a;
-    //std::cout<<b;
+
 
     m_chaser.update(elapsed_ms);
 
-
-  //  std::cout<<m_player.get_position().x;
-   // std::cout<<b;
     if (destFound && srcFound){
         Pair src=make_pair(j,l);
         Pair dest=make_pair(a,b);
-       // std::cout<<m_chaser.get_position().y;
         m_chaser.aStarSearch(grid,src,dest);
-
-        //m_chaser.update(elapsed_ms);
-       // m_chaser.move({80*dest.first,120*dest.second});
-
-
-        //std::cout<<m_chaser.get_position().x<<std::endl;
-
     }
 
-    destFound = false;
-    srcFound = false;
-/*    Pair src=make_pair(8,0);
-    Pair dest=make_pair(0,0);
 
-    m_chaser.aStarSearch(grid,src,dest);*/
 
 
     return true;
