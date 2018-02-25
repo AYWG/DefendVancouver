@@ -143,4 +143,6 @@ vec2 Shooter::get_bounding_box()const
     return { std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height };
 }
 
+
+
 //vec2 get_bounding_box()const;

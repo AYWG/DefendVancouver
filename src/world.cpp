@@ -99,6 +99,7 @@ bool World::init(vec2 screenSize, vec2 worldSize)
     m_shooter.init();
     m_chaser.init();
     m_plbullet.init();
+    m_bomber.init();
     m_background.init();
 
 	//m_background.init();
@@ -241,25 +242,22 @@ bool World::update(float elapsed_ms) {
     //ASTAR
     int j = 0;
     int l = 0;
-   /* int grid[ROW][COL] = {
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1}
-    };*/
 
-     int grid[ROW][COL] =
+    int grid[ROW][COL];
+
+    for (int i = 0; i <= 9; i++){
+        for (int j = 0; j <= 9; j++){
+            grid[i][j] = 1;
+        }
+    }
+/*
+
+    int grid[ROW][COL] =
             {
-                    { 1, 0, 1, 1, 1, 1, 1, 1, 1, 1 },
                     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                    { 1, 1, 1, 1, 0, 1, 1, 1, 1, 1 },
                     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
@@ -267,25 +265,25 @@ bool World::update(float elapsed_ms) {
                     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
             };
-
+*/
 
     bool srcFound = false;
     bool destFound = false;
 
-
-   for (float k = 0.f; k <= 1200.f ; k += 120){
-        for(float i = 0.f; i <= 800.f; i+=80.f){
+if (!srcFound) {
+    for (float k = 0.f; k <= 1200.f; k += 120) {
+        for (float i = 0.f; i <= 800.f; i += 80.f) {
             if (m_chaser.get_position().y >= 0.f && m_chaser.get_position().y < 80.f
-                    && m_chaser.get_position().x >= 0.f && m_chaser.get_position().x < 120.f) {
-               //  Pair src = make_pair(0, 0);
+                && m_chaser.get_position().x >= 0.f && m_chaser.get_position().x < 120.f) {
+                //  Pair src = make_pair(0, 0);
                 srcFound = true;
-               if (srcFound) {
-                   break;
-               }
+                if (srcFound) {
+                    break;
+                }
 
-            } else if ((m_chaser.get_position().y > (i) && m_chaser.get_position().y < (i+80.f))
-                    && (m_chaser.get_position().x > (k) && m_chaser.get_position().x < (k+120.f))){
-               // Pair src = make_pair(j,l);
+            } else if ((m_chaser.get_position().y >= (i) && m_chaser.get_position().y < (i + 80.f))
+                       && (m_chaser.get_position().x >= (k) && m_chaser.get_position().x < (k + 120.f))) {
+                // Pair src = make_pair(j,l);
                 srcFound = true;
                 if (srcFound) {
                     break;
@@ -293,60 +291,88 @@ bool World::update(float elapsed_ms) {
             }
             j++;
         }
-       if (srcFound) {
-           break;
-       }
-       l++;
-       j = 0;
+        if (srcFound) {
+            break;
+        }
+        l++;
+        j = 0;
     }
-
+}
 
     int a = 0;
     int b = 0;
 
-    for (float k = 0.f; k <= 1200.f ; k += 120){
-        for(float i = 0.f; i <= 800.f; i+=80.f){
+if (!destFound) {
+    for (float k = 0.f; k <= 1200.f; k += 120) {
+        for (float i = 0.f; i <= 800.f; i += 80.f) {
             if (m_player.get_position().y >= 0.f && m_player.get_position().y < 80.f
                 && m_player.get_position().x >= 0.f && m_player.get_position().x < 120.f) {
                 //Pair dest = make_pair(0, 0);
                 destFound = true;
-                if(destFound) {
+                if (destFound) {
                     break;
                 }
-            } else if ((m_player.get_position().y > (i) && m_player.get_position().y < (i+ 80.f))
-                       && (m_player.get_position().x > (k) && m_player.get_position().x < (k+120.f))){
+            } else if ((m_player.get_position().y >= (i) && m_player.get_position().y < (i + 80.f))
+                       && (m_player.get_position().x >= (k) && m_player.get_position().x < (k + 120.f))) {
                 //Pair dest = make_pair(a,b);
                 destFound = true;
-                if(destFound) {
+                if (destFound) {
                     break;
                 }
             }
+
             a++;
         }
-        if(destFound) {
+        if (destFound) {
             break;
         }
         b++;
         a = 0;
     }
+}
+    int r = m_bomber.get_position().x/120;
+    int s = m_bomber.get_position().y/80;
+    std::cout<<r;
+    std::cout<<s;
 
+    grid[s][r] = 0;
+    //std::cout<<a;
+    //std::cout<<b;
+
+    m_chaser.update(elapsed_ms);
+
+
+  //  std::cout<<m_player.get_position().x;
+   // std::cout<<b;
     if (destFound && srcFound){
         Pair src=make_pair(j,l);
         Pair dest=make_pair(a,b);
-        m_chaser.aStarSearch(grid,dest,src);
+       // std::cout<<m_chaser.get_position().y;
+        m_chaser.aStarSearch(grid,src,dest);
+
+        //m_chaser.update(elapsed_ms);
+       // m_chaser.move({80*dest.first,120*dest.second});
+
+
+        //std::cout<<m_chaser.get_position().x<<std::endl;
+
     }
+
+    destFound = false;
+    srcFound = false;
 /*    Pair src=make_pair(8,0);
     Pair dest=make_pair(0,0);
 
     m_chaser.aStarSearch(grid,src,dest);*/
 
 
+    return true;
+}
 
-
-
-
+bool World::elapsedUpdate(float elapsed_ms) {
 
     return true;
+
 }
 
 
@@ -395,6 +421,7 @@ void World::draw()
 
 	m_player.draw(projection_2D);
     m_chaser.draw(projection_2D);
+    m_bomber.draw(projection_2D);
 
    // m_shooter.draw(projection_2D);
 

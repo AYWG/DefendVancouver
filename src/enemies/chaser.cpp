@@ -67,8 +67,8 @@ bool Chaser::init() {
     curr_scale.x = 0.4f;
     curr_scale.y = 0.4f;
     curr_rotation = 0.f;
-    curr_pos.x = 0,
-    curr_pos.y = 0;
+    curr_pos.x = 1199,
+    curr_pos.y = 400;
 
     return true;
 }
@@ -78,6 +78,11 @@ void Chaser::destroy(){
 }
 
 void Chaser::update(float ms){
+    float velcity = 1;
+    float x_step = velcity * (ms/1000);
+    float  y_step = velcity * (ms/1000);
+
+    move({x_step,y_step});
 
 }
 
@@ -135,6 +140,12 @@ void Chaser::set_position(vec2 position){
     curr_pos = position;
 }
 
+vec2 Chaser::move(vec2 off){
+    curr_pos.x += off.x;
+    curr_pos.y += off.y;
+
+}
+
 // A Utility Function to check whether given cell (row, col)
 // is a valid cell or not.
 bool Chaser::isValid(int row, int col)
@@ -176,33 +187,72 @@ double Chaser::calculateHValue(int row, int col, Pair dest)
 
 // A Utility Function to trace the path from the source
 // to destination
-void Chaser::tracePath(cell cellDetails[][COL], Pair dest)
-{
-    printf ("\nThe Path is ");
+void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
+    printf("\nThe Path is ");
     int row = dest.first;
     int col = dest.second;
 
     stack<Pair> Path;
 
     while (!(cellDetails[row][col].parent_i == row
-             && cellDetails[row][col].parent_j == col ))
-    {
-        Path.push (make_pair (row, col));
+             && cellDetails[row][col].parent_j == col)) {
+        Path.push(make_pair(row, col));
         int temp_row = cellDetails[row][col].parent_i;
         int temp_col = cellDetails[row][col].parent_j;
         row = temp_row;
         col = temp_col;
     }
 
-    Path.push (make_pair (row, col));
-    while (!Path.empty())
-    {
-        pair<int,int> p = Path.top();
+    Path.push(make_pair(row, col));
+    while (!Path.empty()) {
+        pair<int, int> p = Path.top();
         Path.pop();
-        printf("-> (%d,%d) ",p.first,p.second);
-    }
+        printf("-> (%d,%d) ", p.first, p.second);
+        if (!Path.empty()) {
+            pair<int, int> np = Path.top();
+            float speed = 1.3f;
+            if (p.first > np.first) {
+                move({0, -speed});
+                if (p.second < np.second) {
+                    move({speed, 0});
+                }
+                if (p.second > np.second) {
+                    move({-speed, 0});
+                }
+                if (p.second == np.second) {
+                    move({0, 0});
+                }
+            }
+            else if (p.first < np.first) {
+                move({0, speed});
+                if (p.second < np.second) {
+                    move({speed, 0});
+                }
+                if (p.second > np.second) {
+                    move({-speed, 0});
+                }
+                if (p.second == np.second) {
+                    move({0, 0});
+                }
+            } else if (p.first == np.first){
+                move({0, 0});
+                if (p.second < np.second) {
+                    move({speed, 0});
+                }
+                if (p.second > np.second) {
+                    move({-speed, 0});
+                }
+                if (p.second == np.second) {
+                    move({0, 0});
+                }
+            }
 
-    return;
+        }else if (p.first == dest.first && p.second == dest.second) {
+            move(m_player.get_position());
+        }
+    }
+        return;
+
 }
 
 void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
@@ -220,7 +270,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
 
     //if source or destination is blocked
     if (isUnBlocked(grid, src.first, src.second) == false ||
-        isUnBlocked(grid, dest.first, dest.second == false)){
+        isUnBlocked(grid, dest.first, dest.second) == false){
         printf ("Source or the destination is blocked\n");
         return;
     }

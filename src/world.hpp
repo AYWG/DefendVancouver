@@ -14,8 +14,6 @@
 #include <vector>
 #include <random>
 
-#define  ROW 10
-#define  COL 10
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
@@ -33,6 +31,8 @@ public:
 
     // Steps the game ahead by ms milliseconds
     bool update(float ms);
+
+    bool elapsedUpdate (float ms);
 
     // Renders our scene
     void draw();
@@ -89,6 +89,7 @@ private:
     Shooter m_shooter;
     Chaser m_chaser;
     pBullet m_plbullet;
+    Bomber m_bomber;
 
     std::vector<Shooter> m_shooters;
 

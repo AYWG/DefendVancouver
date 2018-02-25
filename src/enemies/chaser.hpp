@@ -3,6 +3,7 @@
 //
 
 #include "../common.hpp"
+#include "../player.hpp"
 #include <bits/stdc++.h>
 
 // Basic alien enemies for the game (grey spaceship)
@@ -56,10 +57,12 @@ public:
     void tracePath(cell cellDetails[][COL], Pair dest);
 
     void aStarSearch(int grid[][COL], Pair src, Pair dest);
+
+    vec2 move(vec2 off);
 //    vec2 get_bounding_box()const;
 
 private:
-
+    Player m_player;
     vec2 curr_pos;
     vec2 curr_scale;
     float curr_rotation;
