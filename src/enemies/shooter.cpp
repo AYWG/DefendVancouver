@@ -97,6 +97,10 @@ void Shooter::update(float ms){
         m_nextShooterBulletSpawn = Shooter::bulletDelayMS;
 
     }
+
+    for (auto& shooterBullet : m_shooterBullets) {
+        shooterBullet.update(ms);
+    }
 }
 
 void Shooter::draw(const mat3& projection){
