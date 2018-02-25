@@ -239,18 +239,18 @@ bool World::update(float elapsed_ms) {
     bool destFound = false;
 
 if (!srcFound) {
-    for (float k = 0.f; k <= 1200.f; k += 120) {
-        for (float i = 0.f; i <= 800.f; i += 80.f) {
-            if (m_chaser.get_position().y >= 0.f && m_chaser.get_position().y < 80.f
-                && m_chaser.get_position().x >= 0.f && m_chaser.get_position().x < 120.f) {
+    for (float k = -600.f/*0.f*/; k <= 2060 /*1200.f*/; k += 266) {
+        for (float i = /*0*/-150.f; i <= 1000.f; i += 115.f) {
+            if (m_chaser.get_position().y >= 0.f && m_chaser.get_position().y < 115.f
+                && m_chaser.get_position().x >= 0.f && m_chaser.get_position().x < 266.f) {
                 //  Pair src = make_pair(0, 0);
                 srcFound = true;
                 if (srcFound) {
                     break;
                 }
 
-            } else if ((m_chaser.get_position().y >= (i) && m_chaser.get_position().y < (i + 80.f))
-                       && (m_chaser.get_position().x >= (k) && m_chaser.get_position().x < (k + 120.f))) {
+            } else if ((m_chaser.get_position().y >= (i) && m_chaser.get_position().y < (i + 115.f))
+                       && (m_chaser.get_position().x >= (k) && m_chaser.get_position().x < (k + 266.f))) {
                 // Pair src = make_pair(j,l);
                 srcFound = true;
                 if (srcFound) {
@@ -271,17 +271,17 @@ if (!srcFound) {
     int b = 0;
 
 if (!destFound) {
-    for (float k = 0.f; k <= 1200.f; k += 120) {
-        for (float i = 0.f; i <= 800.f; i += 80.f) {
-            if (m_player.get_position().y >= 0.f && m_player.get_position().y < 80.f
-                && m_player.get_position().x >= 0.f && m_player.get_position().x < 120.f) {
+    for (float k = /*0*/-600.f; k <= /*1200*/2060.f; k += 266) {
+        for (float i = -150.f; i <= 1000.f; i += 115.f) {
+            if (m_player.get_position().y >= 0.f && m_player.get_position().y < 115.f
+                && m_player.get_position().x >= 0.f && m_player.get_position().x < 266.f) {
                 //Pair dest = make_pair(0, 0);
                 destFound = true;
                 if (destFound) {
                     break;
                 }
-            } else if ((m_player.get_position().y >= (i) && m_player.get_position().y < (i + 80.f))
-                       && (m_player.get_position().x >= (k) && m_player.get_position().x < (k + 120.f))) {
+            } else if ((m_player.get_position().y >= (i) && m_player.get_position().y < (i + 115.f))
+                       && (m_player.get_position().x >= (k) && m_player.get_position().x < (k + 266.f))) {
                 //Pair dest = make_pair(a,b);
                 destFound = true;
                 if (destFound) {
@@ -298,10 +298,13 @@ if (!destFound) {
         a = 0;
     }
 }
-    int r = m_bomber.get_position().x/120;
-    int s = m_bomber.get_position().y/80;
+    int r = ceil(m_bomber.get_position().x/266);
+    int s = ceil(m_bomber.get_position().y/115);
+
+    std::cout<<s<<", "<<r<<std::endl;
 
     grid[s][r] = 0;
+
 
 
     m_chaser.update(elapsed_ms);
@@ -499,7 +502,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     is_shot = false;
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
         is_shot = true;
-
+        std::cout<<"the y value: "<< m_player.get_position().y<<std::endl;
 
     }
 
