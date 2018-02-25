@@ -4,16 +4,22 @@
 
 #pragma once
 
+#include <vector>
 #include "../common.hpp"
 #include "enemy.hpp"
+#include "shooterBullet.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
 class Shooter : public Enemy, public Renderable {
 
     static Texture shooterTexture;
+    static int maxNumberOfBullets;
+    static int bulletDelayMS;
 
 public:
+
+    Shooter();
 
     bool init() override;
 
@@ -26,5 +32,13 @@ public:
     vec2 getBoundingBox() const override;
 
     void attack() override;
+
+
+private:
+    std::vector<ShooterBullet> m_shooterBullets;
+
+    float m_nextShooterBulletSpawn;
+
+    bool spawnBullet();
 
 };

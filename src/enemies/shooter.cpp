@@ -9,6 +9,11 @@
 
 Texture Shooter::shooterTexture;
 
+int Shooter::maxNumberOfBullets = 5;
+int Shooter::bulletDelayMS = 1000;
+
+Shooter::Shooter() : m_nextShooterBulletSpawn(0.f) {}
+
 bool Shooter::init() {
 
     //Load texture
@@ -79,7 +84,19 @@ void Shooter::update(float ms){
     float step = -SHOOTER_SPEED * (ms / 1000);
     m_position.y -= step;
 
+    m_nextShooterBulletSpawn -= ms;
 
+    if (m_shooterBullets.size() <= Shooter::maxNumberOfBullets && m_nextShooterBulletSpawn < 0.f) {
+        if (!spawnBullet()) {
+            return;
+        }
+
+        ShooterBullet& newBullet = m_shooterBullets.back();
+        newBullet.setPosition(m_position);
+
+        m_nextShooterBulletSpawn = Shooter::bulletDelayMS;
+
+    }
 }
 
 void Shooter::draw(const mat3& projection){
@@ -126,6 +143,10 @@ void Shooter::draw(const mat3& projection){
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+
+    for (auto& shooterBullet : m_shooterBullets) {
+        shooterBullet.draw(projection);
+    }
 }
 
 // Returns the local bounding coordinates scaled by the current size of the turtle
@@ -137,5 +158,16 @@ vec2 Shooter::getBoundingBox()const
 
 void Shooter::attack() {
 
+}
+
+bool Shooter::spawnBullet() {
+    ShooterBullet shooterBullet;
+    if (shooterBullet.init())
+    {
+        m_shooterBullets.emplace_back(shooterBullet);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn shooter bullet");
+    return false;
 }
 
