@@ -272,6 +272,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
     if (isUnBlocked(grid, src.first, src.second) == false ||
         isUnBlocked(grid, dest.first, dest.second) == false){
         printf ("Source or the destination is blocked\n");
+        move({1, 1});
         return;
     }
 
