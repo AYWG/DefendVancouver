@@ -39,6 +39,7 @@ public:
     bool is_over() const;
 
 
+    vec2 getPlayerPosition() const;
 
 
     vec2 playerCenter;

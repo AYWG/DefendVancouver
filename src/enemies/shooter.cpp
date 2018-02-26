@@ -3,10 +3,11 @@
 //
 
 #include "shooter.hpp"
+#include "../world.hpp"
 
 #include <cmath>
 #include <iostream>
-class World;
+//class World;
 
 Texture Shooter::shooterTexture;
 
@@ -81,12 +82,22 @@ void Shooter::destroy(){
 }
 
 void Shooter::update(World *world, float ms) {
-    m_ai.doNextAction(world, this, ms);
+//    m_ai.doNextAction(world, this, ms);
 
+    //TODO: remove//////////////////////////
+    // only continue moving if not in range
+    if (m_position.y <= 250) {
+        const float SHOOTER_SPEED = 200.f;
+        float step = -SHOOTER_SPEED * (ms / 1000);
+        m_position.y -= step;
+    }
 
-    const float SHOOTER_SPEED = 200.f;
-    float step = -SHOOTER_SPEED * (ms / 1000);
-    m_position.y -= step;
+    // if in range, and player is within cone
+    if (m_position.y > 250 && isPlayerInVision(world->getPlayerPosition())) {
+        printf("Player is in vision!\n");
+    }
+
+    ////////////////////////////////////////
 
     m_nextShooterBulletSpawn -= ms;
 
@@ -108,6 +119,19 @@ void Shooter::update(World *world, float ms) {
     for (auto& shooterBullet : m_shooterBullets) {
         shooterBullet.update(ms);
     }
+
+    // remove out of screen bullets - remove once we have proper collisions
+    auto shooterBullet_it = m_shooterBullets.begin();
+
+    while (shooterBullet_it != m_shooterBullets.end()) {
+        if (shooterBullet_it->getPosition().y >  1000) {
+            shooterBullet_it = m_shooterBullets.erase(shooterBullet_it);
+            continue;
+        }
+
+        ++shooterBullet_it;
+    }
+
 }
 
 void Shooter::draw(const mat3& projection){
@@ -182,3 +206,20 @@ bool Shooter::spawnBullet() {
     return false;
 }
 
+bool Shooter::isPlayerInVision(vec2 playerPosition) {
+    // vision is represented by an invisible "triangle" that extends from the shooter's current position
+    float shooterVisionAngleFromNormal = 3.1415f / 6;
+
+    if (playerPosition.y > m_position.y) {
+        float verticalDiff = playerPosition.y - m_position.y;
+
+        float distanceToVisionBoundaryFromNormal = verticalDiff * tanf(shooterVisionAngleFromNormal);
+
+        if (playerPosition.x < m_position.x + distanceToVisionBoundaryFromNormal &&
+                playerPosition.x > m_position.x - distanceToVisionBoundaryFromNormal) {
+            return true;
+        }
+    }
+
+    return false;
+}

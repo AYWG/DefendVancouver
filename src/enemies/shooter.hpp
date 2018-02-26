@@ -46,4 +46,6 @@ private:
 
     bool spawnBullet();
 
+    bool isPlayerInVision(vec2 playerPosition);
+
 };

@@ -314,6 +314,10 @@ bool World::is_over()const
 	return glfwWindowShouldClose(m_window);
 }
 
+vec2 World::getPlayerPosition() const {
+    return m_player.get_position();
+}
+
 
 vec2 const  World::mousePosition(){
     return get_mousePos(aimDirNorm);

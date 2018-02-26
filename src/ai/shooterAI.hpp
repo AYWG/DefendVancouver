@@ -19,6 +19,8 @@ public:
 
 private:
     BehaviourTreeNode *m_root;
+
+    void init();
 };
 
 
