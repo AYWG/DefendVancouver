@@ -93,12 +93,21 @@ void Shooter::update(World *world, float ms) {
     }
 
     // if in range, and player is within cone
-    if (m_position.y > 250 && isPlayerInVision(world->getPlayerPosition())) {
-        float yDiff = world->getPlayerPosition().y - m_position.y;
-        float xDiff = world->getPlayerPosition().x - m_position.x;
-        float angle = atanf(xDiff / yDiff);
+    if (m_position.y > 250) {
 
-        m_rotation = -angle;
+        float targetAngle;
+        if (isPlayerInVision(world->getPlayerPosition())) {
+            float yDiff = world->getPlayerPosition().y - m_position.y;
+            float xDiff = world->getPlayerPosition().x - m_position.x;
+            targetAngle = -1.f * atanf(xDiff / yDiff);
+        }
+        else {
+            // default rotation
+            targetAngle = 0.f;
+        }
+
+        if (targetAngle > m_rotation) m_rotation = std::min(targetAngle, m_rotation + 0.01f);
+        if (targetAngle < m_rotation) m_rotation = std::max(targetAngle, m_rotation - 0.01f);
     }
 
 
