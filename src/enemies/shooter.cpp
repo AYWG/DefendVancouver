@@ -94,8 +94,14 @@ void Shooter::update(World *world, float ms) {
 
     // if in range, and player is within cone
     if (m_position.y > 250 && isPlayerInVision(world->getPlayerPosition())) {
-        printf("Player is in vision!\n");
+        float yDiff = world->getPlayerPosition().y - m_position.y;
+        float xDiff = world->getPlayerPosition().x - m_position.x;
+        float angle = atanf(xDiff / yDiff);
+
+        m_rotation = -angle;
     }
+
+
 
     ////////////////////////////////////////
 
