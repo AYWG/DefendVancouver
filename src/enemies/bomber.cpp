@@ -64,8 +64,8 @@ bool Bomber::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
     m_rotation = 0.f;
-    m_pos.x = 675;
-    m_pos.y = 400;
+    m_pos.x = 475;
+    m_pos.y = 300;
 
     return true;
 }
