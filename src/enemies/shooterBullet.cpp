@@ -54,8 +54,6 @@ bool ShooterBullet::init() {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
-    // Setting initial values, scale is negative to make it face the opposite way
-    // 1.0 would be as big as the original texture
     m_scale.x = 1.0f;
     m_scale.y = 1.0f;
 
@@ -115,11 +113,11 @@ void ShooterBullet::fire(vec2 aimDirection) {
 }
 
 void ShooterBullet::update(float ms) {
-    m_velocity = 125.0f;
+    m_velocity = 325.0f;
 
 
-    float x_step = m_velocity * (ms / 1000);
-    float y_step = m_velocity * (ms / 1000);
+    float x_step = m_velocity * (ms / 1000) * m_direction.x;
+    float y_step = m_velocity * (ms / 1000) * m_direction.y;
     fire({x_step, y_step});
 }
 
@@ -129,4 +127,8 @@ vec2 ShooterBullet::getPosition() const {
 
 void ShooterBullet::setPosition(vec2 position) {
     m_position = position;
+}
+
+void ShooterBullet::setDirection(vec2 direction) {
+    m_direction = direction;
 }

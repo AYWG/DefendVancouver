@@ -12,7 +12,7 @@ Texture Shooter::shooterTexture;
 int Shooter::maxNumberOfBullets = 5;
 int Shooter::bulletDelayMS = 1000;
 
-Shooter::Shooter() : m_nextShooterBulletSpawn(0.f) {}
+Shooter::Shooter() : m_nextShooterBulletSpawn(0.f), m_rotation(0.f) {}
 
 bool Shooter::init() {
 
@@ -93,6 +93,9 @@ void Shooter::update(float ms){
 
         ShooterBullet& newBullet = m_shooterBullets.back();
         newBullet.setPosition(m_position);
+
+        float bulletAngle = m_rotation + 3.1415f / 2.f;
+        newBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
 
         m_nextShooterBulletSpawn = Shooter::bulletDelayMS;
 

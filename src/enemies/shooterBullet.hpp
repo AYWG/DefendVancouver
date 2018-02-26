@@ -25,10 +25,15 @@ public:
 
     void setPosition(vec2 position);
 
+    void setDirection(vec2 direction);
+
 private:
 
     vec2 m_scale;
     vec2 m_position;
+
+    // A unit vector representing the bullet's direction
+    vec2 m_direction;
 
 };
 
