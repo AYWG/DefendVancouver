@@ -94,7 +94,6 @@ bool World::init(vec2 screenSize, vec2 worldSize)
 
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
-    m_shooter.init();
     m_player.init();
     m_plbullet.init();
 
@@ -199,7 +198,7 @@ bool World::update(float elapsed_ms) {
     }
 
     for (auto& bEnemy : m_shooters)
-        bEnemy.update(elapsed_ms * m_current_speed);
+        bEnemy.update(this, elapsed_ms * m_current_speed);
 
     // Removing out of screen bEnemy
     auto benemy_it = m_shooters.begin();
@@ -327,7 +326,8 @@ vec2 World::get_mousePos(vec2 mousePos) {
 
 
 bool World::spawnShooter() {
-    Shooter shooter;
+    ShooterAI ai;
+    Shooter shooter(ai);
     if (shooter.init())
     {
         m_shooters.emplace_back(shooter);

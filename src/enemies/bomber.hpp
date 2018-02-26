@@ -17,10 +17,10 @@ public:
 
     void destroy() override;
 
-    void update(float ms) override;
+    void update(World* world, float ms) override;
 
     void draw(const mat3 &projection) override;
 
-    //    vec2 getBoundingBox()const;
+    // vec2 getBoundingBox() const override;
 
 };

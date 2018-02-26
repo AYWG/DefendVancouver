@@ -17,7 +17,7 @@ using std::vector;
 
 class CompositeNode : public BehaviourTreeNode {
 public:
-    CompositeNode(const vector<BehaviourTreeNode*>& children = vector<BehaviourTreeNode*>());
+    explicit CompositeNode(const vector<BehaviourTreeNode*>& children);
 
 protected:
     vector<BehaviourTreeNode*> m_children;

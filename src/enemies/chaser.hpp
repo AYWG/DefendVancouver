@@ -5,6 +5,7 @@
 
 #include "../common.hpp"
 #include "enemy.hpp"
+//#include "../world.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
@@ -18,7 +19,7 @@ public:
 
     void destroy() override;
 
-    void update(float ms) override;
+    void update(World *world, float ms) override;
 
     void draw(const mat3 &projection) override;
 

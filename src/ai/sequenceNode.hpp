@@ -13,7 +13,9 @@
  */
 
 class SequenceNode : public CompositeNode {
-    STATUS tick() override;
+public:
+    explicit SequenceNode(const vector<BehaviourTreeNode*>& children);
+    STATUS tick(World *world, Enemy *enemy, float ms) override;
 };
 
 

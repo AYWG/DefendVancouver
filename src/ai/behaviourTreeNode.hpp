@@ -5,11 +5,16 @@
 #pragma once
 
 
+class World;
+class Enemy;
+
 class BehaviourTreeNode {
 public:
-    typedef enum {SUCCESS, FAILURE, RUNNING} STATUS;
+    typedef enum {
+        SUCCESS, FAILURE, RUNNING
+    } STATUS;
 
-    virtual STATUS tick() = 0;
+    virtual STATUS tick(World *world, Enemy *enemy, float ms) = 0;
 };
 
 

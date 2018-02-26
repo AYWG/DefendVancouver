@@ -6,6 +6,7 @@
 
 
 #include "../common.hpp"
+class World;
 
 class Enemy {
 public:
@@ -15,7 +16,7 @@ public:
 
     virtual void destroy() = 0;
 
-    virtual void update(float ms) = 0;
+    virtual void update(World *world, float ms) = 0;
 
     virtual vec2 getBoundingBox() const = 0;
 

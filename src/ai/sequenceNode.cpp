@@ -4,9 +4,13 @@
 
 #include "sequenceNode.hpp"
 
-SequenceNode::STATUS SequenceNode::tick() {
-    for (auto& child : m_children) {
-        STATUS childStatus = child->tick();
+SequenceNode::SequenceNode(const vector<BehaviourTreeNode *> &children) : CompositeNode(children) {
+
+}
+
+SequenceNode::STATUS SequenceNode::tick(World *world, Enemy *enemy, float ms) {
+    for (auto &child : m_children) {
+        STATUS childStatus = child->tick(world, enemy, ms);
         if (childStatus == RUNNING) {
             return RUNNING;
         } else if (childStatus == FAILURE) {

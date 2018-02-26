@@ -8,7 +8,6 @@
 #include "../conditionNode.hpp"
 
 class isPlayerInVision : public ConditionNode {
-    STATUS tick() override;
 };
 
 

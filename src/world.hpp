@@ -69,7 +69,7 @@ private:
 
 
 private:
-    // Window hjandle
+    // Window handle
     GLFWwindow *m_window;
 
     // Number of fish eaten by the salmon, displayed in the window title
@@ -83,7 +83,6 @@ private:
     std::vector<pBullet> m_shotBullet;
 
 
-    Shooter m_shooter;
     pBullet m_plbullet;
 
     std::vector<Shooter> m_shooters;

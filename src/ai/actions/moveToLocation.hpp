@@ -8,7 +8,6 @@
 #include "../actionNode.hpp"
 
 class MoveToLocation : public ActionNode {
-    STATUS tick() override;
 
 };
 

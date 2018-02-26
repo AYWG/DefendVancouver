@@ -8,6 +8,7 @@
 #include "../common.hpp"
 #include "enemy.hpp"
 #include "shooterBullet.hpp"
+#include "../ai/shooterAI.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
@@ -19,13 +20,13 @@ class Shooter : public Enemy, public Renderable {
 
 public:
 
-    Shooter();
+    explicit Shooter(ShooterAI& ai);
 
     bool init() override;
 
     void destroy() override;
 
-    void update(float ms) override;
+    void update(World *world, float ms) override;
 
     void draw(const mat3 &projection) override;
 
@@ -35,6 +36,8 @@ public:
 
 
 private:
+    ShooterAI m_ai;
+
     std::vector<ShooterBullet> m_shooterBullets;
 
     float m_nextShooterBulletSpawn;

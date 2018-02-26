@@ -3,6 +3,7 @@
 //
 
 #include "chaser.hpp"
+#include "../world.hpp"
 
 #include <cmath>
 
@@ -72,7 +73,7 @@ void Chaser::destroy(){
 
 }
 
-void Chaser::update(float ms){
+void Chaser::update(World *world, float ms) {
 
 }
 

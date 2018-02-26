@@ -3,7 +3,3 @@
 //
 
 #include "moveToLocation.hpp"
-
-MoveToLocation::STATUS MoveToLocation::tick() {
-
-}

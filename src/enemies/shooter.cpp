@@ -6,13 +6,14 @@
 
 #include <cmath>
 #include <iostream>
+class World;
 
 Texture Shooter::shooterTexture;
 
 int Shooter::maxNumberOfBullets = 5;
 int Shooter::bulletDelayMS = 1000;
 
-Shooter::Shooter() : m_nextShooterBulletSpawn(0.f), m_rotation(0.f) {}
+Shooter::Shooter(ShooterAI& ai) : m_ai(ai), m_nextShooterBulletSpawn(0.f), m_rotation(0.f) {}
 
 bool Shooter::init() {
 
@@ -79,7 +80,10 @@ void Shooter::destroy(){
 
 }
 
-void Shooter::update(float ms){
+void Shooter::update(World *world, float ms) {
+    m_ai.doNextAction(world, this, ms);
+
+
     const float SHOOTER_SPEED = 200.f;
     float step = -SHOOTER_SPEED * (ms / 1000);
     m_position.y -= step;
