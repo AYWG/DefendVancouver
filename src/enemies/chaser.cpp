@@ -216,7 +216,7 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
         pair<int, int> p = Path.top();
         Path.pop();
         printf("-> (%d,%d) ", p.first, p.second);
-        float speed = 3.0f;
+        float speed = 5.0f;
         if (!Path.empty()) {
             pair<int, int> np = Path.top();
             if (p.first > np.first) {
