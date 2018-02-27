@@ -9,6 +9,7 @@
 #include "enemies/chaser.hpp"
 #include "background.hpp"
 #include "camera.hpp"
+#include "bomb.hpp"
 
 // stlib
 #include <vector>
@@ -85,6 +86,7 @@ private:
 
 
     pBullet m_plbullet;
+    Bomb m_bomb;
 
     std::vector<Shooter> m_shooters;
 

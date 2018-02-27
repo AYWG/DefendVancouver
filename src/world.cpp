@@ -96,6 +96,7 @@ bool World::init(vec2 screenSize, vec2 worldSize)
     m_is_advanced_mode = false;
     m_player.init();
     m_plbullet.init();
+    m_bomb.init(textures_path("normal_bomb.png"));
 
 	//m_background.init();
     m_camera.setFocusPoint(m_player.get_position());
@@ -284,6 +285,8 @@ void World::draw()
  //   m_plbullet.draw(projection_2D);
 
 	m_player.draw(projection_2D);
+
+    m_bomb.draw(projection_2D);
 
    // m_shooter.draw(projection_2D);
 
