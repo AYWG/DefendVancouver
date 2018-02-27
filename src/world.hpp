@@ -41,6 +41,7 @@ public:
     bool is_over() const;
 
 
+    vec2 getPlayerPosition() const;
 
 
     vec2 playerCenter;
@@ -59,6 +60,8 @@ private:
     //spawn shooter
     bool spawnShooter();
 
+    bool spawnChaser();
+
     bool spawn_playerBullet();
 
     vec2 get_mousePos(vec2 mousePos);
@@ -72,7 +75,7 @@ private:
 
 
 private:
-    // Window hjandle
+    // Window handle
     GLFWwindow *m_window;
 
     // Number of fish eaten by the salmon, displayed in the window title
@@ -86,16 +89,18 @@ private:
     std::vector<pBullet> m_shotBullet;
 
 
-    Shooter m_shooter;
-    Chaser m_chaser;
-    pBullet m_plbullet;
-    Bomber m_bomber;
 
+    //Chaser m_chaser;
+
+    pBullet m_plbullet;
+    //Bomber m_bomber;
+    std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;
 
 
 
     float m_next_shooter_spawn;
+    float m_next_chaser_spawn;
     float m_current_speed;
     bool m_is_advanced_mode;
     float  m_next_pbullet_spawn;

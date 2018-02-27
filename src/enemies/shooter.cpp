@@ -3,11 +3,18 @@
 //
 
 #include "shooter.hpp"
+#include "../world.hpp"
 
 #include <cmath>
 #include <iostream>
+//class World;
 
 Texture Shooter::shooterTexture;
+
+int Shooter::maxNumberOfBullets = 5;
+int Shooter::bulletDelayMS = 1000;
+
+Shooter::Shooter(ShooterAI& ai) : m_ai(ai), m_nextShooterBulletSpawn(0.f), m_rotation(0.f) {}
 
 bool Shooter::init() {
 
@@ -16,7 +23,7 @@ bool Shooter::init() {
     {
         if (!shooterTexture.load_from_file(textures_path("shooter_new.png")))
         {
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load shooter texture!");
             return false;
         }
     }
@@ -74,17 +81,77 @@ void Shooter::destroy(){
 
 }
 
-void Shooter::update(float ms){
-    const float SHOOTER_SPEED = 200.f;
-    float step = -SHOOTER_SPEED * (ms / 1000);
-    m_pos.y -= step;
+void Shooter::update(World *world, float ms) {
+//    m_ai.doNextAction(world, this, ms);
 
+    //TODO: remove//////////////////////////
+    // only continue moving if not in range
+    if (m_position.y <= 250) {
+        const float SHOOTER_SPEED = 200.f;
+        float step = -SHOOTER_SPEED * (ms / 1000);
+        m_position.y -= step;
+    }
+
+    // if in range, and player is within cone
+    if (m_position.y > 250) {
+
+        float targetAngle;
+        if (isPlayerInVision(world->getPlayerPosition())) {
+            float yDiff = world->getPlayerPosition().y - m_position.y;
+            float xDiff = world->getPlayerPosition().x - m_position.x;
+            targetAngle = -1.f * atanf(xDiff / yDiff);
+        }
+        else {
+            // default rotation
+            targetAngle = 0.f;
+        }
+
+        if (targetAngle > m_rotation) m_rotation = std::min(targetAngle, m_rotation + 0.01f);
+        if (targetAngle < m_rotation) m_rotation = std::max(targetAngle, m_rotation - 0.01f);
+    }
+
+
+
+    ////////////////////////////////////////
+
+    m_nextShooterBulletSpawn -= ms;
+
+    if (m_shooterBullets.size() <= Shooter::maxNumberOfBullets && m_nextShooterBulletSpawn < 0.f) {
+        if (!spawnBullet()) {
+            return;
+        }
+
+        ShooterBullet& newBullet = m_shooterBullets.back();
+        newBullet.setPosition(m_position);
+
+        float bulletAngle = m_rotation + 3.1415f / 2.f;
+        newBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
+
+        m_nextShooterBulletSpawn = Shooter::bulletDelayMS;
+
+    }
+
+    for (auto& shooterBullet : m_shooterBullets) {
+        shooterBullet.update(ms);
+    }
+
+    // remove out of screen bullets - remove once we have proper collisions
+    auto shooterBullet_it = m_shooterBullets.begin();
+
+    while (shooterBullet_it != m_shooterBullets.end()) {
+        if (shooterBullet_it->getPosition().y >  1000) {
+            shooterBullet_it = m_shooterBullets.erase(shooterBullet_it);
+            continue;
+        }
+
+        ++shooterBullet_it;
+    }
 
 }
 
 void Shooter::draw(const mat3& projection){
     transform_begin();
-    transform_translate(m_pos);
+    transform_translate(m_position);
     transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
@@ -126,18 +193,14 @@ void Shooter::draw(const mat3& projection){
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
 
-vec2 Shooter::get_position()const{
-    return m_pos;
-}
-
-void Shooter::set_position(vec2 position){
-    m_pos = position;
+    for (auto& shooterBullet : m_shooterBullets) {
+        shooterBullet.draw(projection);
+    }
 }
 
 // Returns the local bounding coordinates scaled by the current size of the turtle
-vec2 Shooter::get_bounding_box()const
+vec2 Shooter::getBoundingBox()const
 {
     // fabs is to avoid negative scale due to the facing direction
     return { std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height };
@@ -146,3 +209,37 @@ vec2 Shooter::get_bounding_box()const
 
 
 //vec2 get_bounding_box()const;
+
+void Shooter::attack() {
+
+}
+
+bool Shooter::spawnBullet() {
+    ShooterBullet shooterBullet;
+    if (shooterBullet.init())
+    {
+        m_shooterBullets.emplace_back(shooterBullet);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn shooter bullet");
+    return false;
+}
+
+bool Shooter::isPlayerInVision(vec2 playerPosition) {
+    // vision is represented by an invisible "triangle" that extends from the shooter's current position
+    float shooterVisionAngleFromNormal = 3.1415f / 6;
+
+    if (playerPosition.y > m_position.y) {
+        float verticalDiff = playerPosition.y - m_position.y;
+
+        float distanceToVisionBoundaryFromNormal = verticalDiff * tanf(shooterVisionAngleFromNormal);
+
+        if (playerPosition.x < m_position.x + distanceToVisionBoundaryFromNormal &&
+                playerPosition.x > m_position.x - distanceToVisionBoundaryFromNormal) {
+            return true;
+        }
+    }
+
+    return false;
+}
+

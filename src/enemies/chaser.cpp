@@ -3,20 +3,27 @@
 //
 
 #include "chaser.hpp"
+#include "shooter.hpp"
+#include "../world.hpp"
 
 #include <cmath>
 #include <bits/stdc++.h>
 
 using namespace std;
 
-Texture Chaser::chaser_texture;
+Texture Chaser::chaserTexture;
+
+int Chaser::maxNumberOfBullets = 5;
+int Chaser::bulletDelayMS = 1000;
+
+Chaser::Chaser(ChaserAI& ai) : m_ai(ai), m_nextChaserBulletSpawn(0.f), m_rotation(0.f) {}
 
 bool Chaser::init() {
 
     //Load texture
-    if (!chaser_texture.is_valid())
+    if (!chaserTexture.is_valid())
     {
-        if (!chaser_texture.load_from_file(textures_path("chaser.png")))
+        if (!chaserTexture.load_from_file(textures_path("chaser.png")))
         {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
@@ -24,8 +31,8 @@ bool Chaser::init() {
     }
 
     //center of texture
-    float width = chaser_texture.width * 0.5f;
-    float height = chaser_texture.height * 0.5f;
+    float width = chaserTexture.width * 0.5f;
+    float height = chaserTexture.height * 0.5f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -width, +height, -0.01f };
@@ -64,11 +71,11 @@ bool Chaser::init() {
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture
-    curr_scale.x = 0.4f;
-    curr_scale.y = 0.4f;
-    curr_rotation = 0.f;
-    curr_pos.x = 1199,
-    curr_pos.y = 400;
+
+    m_scale.x = 0.4f;
+    m_scale.y = 0.4f;
+    m_rotation = 0.f;
+
 
     return true;
 }
@@ -77,20 +84,21 @@ void Chaser::destroy(){
 
 }
 
-void Chaser::update(float ms){
+void Chaser::update(World *world, float ms){
     float velcity = 1;
     float x_step = velcity * (ms/1000);
     float  y_step = velcity * (ms/1000);
 
     move({x_step,y_step});
 
+
 }
 
 void Chaser::draw(const mat3& projection){
     transform_begin();
-    transform_translate(curr_pos);
-    transform_rotate(curr_rotation);
-    transform_scale(curr_scale);
+    transform_translate(m_position);
+    transform_rotate(m_rotation);
+    transform_scale(m_scale);
     transform_end();
 
     // Setting shaders
@@ -120,7 +128,7 @@ void Chaser::draw(const mat3& projection){
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, chaser_texture.id);
+    glBindTexture(GL_TEXTURE_2D, chaserTexture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -132,17 +140,17 @@ void Chaser::draw(const mat3& projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Chaser::get_position()const{
-    return curr_pos;
-}
+vec2 Chaser::getBoundingBox() const {
 
-void Chaser::set_position(vec2 position){
-    curr_pos = position;
 }
 
 vec2 Chaser::move(vec2 off){
-    curr_pos.x += off.x;
-    curr_pos.y += off.y;
+    m_position.x += off.x;
+    m_position.y += off.y;
+
+}
+
+void Chaser::attack() {
 
 }
 
@@ -737,4 +745,6 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
 
 
 
+
+//vec2 getBoundingBox()const;
 

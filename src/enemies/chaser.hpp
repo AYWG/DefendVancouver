@@ -1,9 +1,13 @@
 //
 // Created by Shrey Swades Nayak on 2018-02-08.
 //
+#pragma once
 
 #include "../common.hpp"
+
 #include "../player.hpp"
+#include "enemy.hpp"
+#include "../ai/chaserAI.hpp"
 #include <bits/stdc++.h>
 
 // Basic alien enemies for the game (grey spaceship)
@@ -19,11 +23,21 @@ typedef  pair<int, int> Pair;
 //creating a shortcut for pair<int, pair<int, int>> type
 typedef  pair<double , pair<int, int> > pPair;
 
-class Chaser : public Renderable {
 
-    static Texture chaser_texture;
+//#include "../world.hpp"
+
+// Basic alien enemies for the game (grey spaceship)
+
+class Chaser : public Enemy, public Renderable {
+
+
+    static Texture chaserTexture;
+    static int maxNumberOfBullets;
+    static int bulletDelayMS;
 
 public:
+
+    explicit  Chaser(ChaserAI& ai);
 
     //Neccesary param
     struct cell
@@ -34,17 +48,18 @@ public:
         double f, g, h;
     };
 
-    bool init();
 
-    void destroy();
 
-    void update(float ms);
+    bool init() override;
 
-    void draw(const mat3& projection)override;
 
-    vec2 get_position()const;
+    void destroy() override;
 
-    void set_position(vec2 position);
+    void update(World *world, float ms) override;
+
+    void draw(const mat3 &projection) override;
+
+    vec2 getBoundingBox() const override;
 
     bool isValid (int row, int col);
 
@@ -59,12 +74,19 @@ public:
     void aStarSearch(int grid[][COL], Pair src, Pair dest);
 
     vec2 move(vec2 off);
-//    vec2 get_bounding_box()const;
+
+    void attack() override ;
 
 private:
+    ChaserAI m_ai;
+    float m_nextChaserBulletSpawn;
     Player m_player;
+    float m_rotation;
     vec2 curr_pos;
     vec2 curr_scale;
     float curr_rotation;
+
+    //    vec2 getBoundingBox()const;
+
 
 };
