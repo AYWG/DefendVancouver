@@ -8,6 +8,8 @@
 #pragma once
 
 #include "common.hpp"
+#include "world.hpp"
+
 
 class Bomb : public Renderable{
 
@@ -19,10 +21,15 @@ public:
     vec2 get_position()const;
 
     void draw(const mat3 &projection);
+
+    void update(World *world, float ms);
 private:
+    TexturedVertex vertices[4];
+
     vec2 b_position; // Window coordinates
     vec2 b_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     void set_position(vec2 position);
+
 
 };
 

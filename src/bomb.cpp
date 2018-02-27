@@ -11,20 +11,6 @@ using namespace std;
 
 bool Bomb::init(const char *path) {
 
-    Texture spriteSheet;
-
-    if (!spriteSheet.is_valid()) {
-        if (!spriteSheet.load_from_file(path)) {
-            fprintf(stderr, "Failed to load spritesheet!");
-            return false;
-        }
-    }
-
-    // get frame width and height
-    float fw = spriteSheet.width/3;
-    float fh = spriteSheet.height/3;
-
-
     //load texture
     if (!bomb_texture.is_valid()) {
         if (!bomb_texture.load_from_file(path)) {
@@ -37,15 +23,16 @@ bool Bomb::init(const char *path) {
     float wr = bomb_texture.width * 0.5f;
     float hr = bomb_texture.height * 0.5f;
 
-    TexturedVertex vertices[4];
+    //TexturedVertex vertices[4];
+
     vertices[0].position = { -wr, +hr, -0.01f };
-    vertices[0].texcoord = { 0.f, 1.f };
+    vertices[0].texcoord = { 0.f, 0.33f };
     vertices[1].position = { +wr, +hr, -0.01f };
-    vertices[1].texcoord = { 1.f, 1.f,  };
+    vertices[1].texcoord = { 0.33f, 0.33f};
     vertices[2].position = { +wr, -hr, -0.01f };
-    vertices[2].texcoord = { 1.f, 0.f };
+    vertices[2].texcoord = { 0.33f, 0.f};
     vertices[3].position = { -wr, -hr, -0.01f };
-    vertices[3].texcoord = { 0.f, 0.f };
+    vertices[3].texcoord = { 0.f, 0.f};
 
     uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
     // Clearing errors
@@ -72,8 +59,8 @@ bool Bomb::init(const char *path) {
 
     b_scale.x = 1.0f;
     b_scale.y = 1.0f;
-    b_position.x = 100;
-    b_position.y = 100;
+    b_position.x = 200;
+    b_position.y = 200;
 
 
     return true;
@@ -125,6 +112,76 @@ void Bomb::draw(const mat3& projection){
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
+
+void Bomb::update(World *world, float ms){
+    float bomb_animation = 1500.f;
+    float step = bomb_animation * (ms / 1000);
+    mat3 projection_2D = world->getProjectionMatrix();
+
+    vec2 v0 = vertices[0].texcoord; //top left vertex
+    vec2 v1 = vertices[1].texcoord; //top right vertex
+    vec2 v2 = vertices[2].texcoord; //bottom right vertex
+    vec2 v3 = vertices[3].texcoord; //bottom left vertex
+
+    for(int j = 0; j < 3; j++){
+        v0.x = 0;
+        v1.x = 0.33;
+        v2.x = 0.33;
+        v3.x = 0;
+        if(j == 0){
+            v0.y = 0;
+            v1.y = 0;
+            v2.y = 0.33;
+            v3.y = 0.33;
+        } else {
+            v0.y += 0.33;
+            v1.y += 0.33;
+            double wy = v2.y + 0.33;
+            if(wy < 1){
+                v2.y += 0.33;
+                v3.y += 0.33;
+            } else {
+                v2.y = 1;
+                v3.y = 1;
+            }
+        }
+        for(int i = 0; i < 3; i++){
+            if(i==0){
+                continue;
+            }
+            v0.x += 0.33;
+            v3.x += 0.33;
+            double wx = v1.x + 0.33;
+            if(wx < 1){
+                v1.x += 0.33;
+                v2.x += 0.33;
+            } else {
+                v1.x = 1;
+                v2.x = 1;
+            }
+            uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+            // Clearing errors
+            gl_flush_errors();
+
+            // Vertex Buffer creation
+            glGenBuffers(1, &mesh.vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
+
+            // Index Buffer creation
+            glGenBuffers(1, &mesh.ibo);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
+
+            // Vertex Array (Container for Vertex + Index buffer)
+            glGenVertexArrays(1, &mesh.vao);
+
+            draw(projection_2D);
+        }
+    }
+
+}
+
 vec2 Bomb::get_position()const{
     return b_position;
 }
