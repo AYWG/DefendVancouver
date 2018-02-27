@@ -3,6 +3,7 @@
 //
 
 #include "chaser.hpp"
+#include "../world.hpp"
 
 #include <cmath>
 
@@ -61,9 +62,9 @@ bool Chaser::init() {
 
     // Setting initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture
-    curr_scale.x = 0.4f;
-    curr_scale.y = 0.4f;
-    curr_rotation = 0.f;
+    m_scale.x = 0.4f;
+    m_scale.y = 0.4f;
+    m_rotation = 0.f;
 
     return true;
 }
@@ -72,15 +73,15 @@ void Chaser::destroy(){
 
 }
 
-void Chaser::update(float ms){
+void Chaser::update(World *world, float ms) {
 
 }
 
 void Chaser::draw(const mat3& projection){
     transform_begin();
-    transform_translate(curr_pos);
-    transform_rotate(curr_rotation);
-    transform_scale(curr_scale);
+    transform_translate(m_position);
+    transform_rotate(m_rotation);
+    transform_scale(m_scale);
     transform_end();
 
     // Setting shaders
@@ -122,12 +123,4 @@ void Chaser::draw(const mat3& projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Chaser::get_position()const{
-    return curr_pos;
-}
-
-void Chaser::set_position(vec2 position){
-    curr_pos = position;
-}
-
-//vec2 get_bounding_box()const;
+//vec2 getBoundingBox()const;

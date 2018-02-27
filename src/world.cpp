@@ -94,7 +94,6 @@ bool World::init(vec2 screenSize, vec2 worldSize)
 
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
-    m_shooter.init();
     m_player.init();
     m_plbullet.init();
 
@@ -143,14 +142,14 @@ bool World::update(float elapsed_ms) {
     }
     if (is_shot) {
         pBullet &new_pBullet = m_pbullet.back();
-        new_pBullet.set_Position(m_player.get_position());
+        new_pBullet.setPosition(m_player.get_position());
     }
     for (auto& pBullet : m_pbullet){
         pBullet.update(elapsed_ms * m_plbullet.m_velocity);
 
         if (is_shot) {
            // pBullet = m_pbullet.back();
-           // pBullet.set_position(m_player.get_position());
+           // pBullet.setPosition()(m_player.getPosition());
             pBullet.fireBullet({pBullet.m_velocity * mouseAimDir.x , pBullet.m_velocity * mouseAimDir.y });
             afterShot = {pBullet.m_velocity * mousePosition().x, pBullet.m_velocity * mousePosition().y};
 
@@ -167,10 +166,10 @@ bool World::update(float elapsed_ms) {
     auto pbullet_it = m_pbullet.begin();
 
     while (pbullet_it != m_pbullet.end()) {
-        if (pbullet_it->get_Position().y >  m_camera.getBottomBoundary() ||
-            pbullet_it->get_Position().y  <  m_camera.getTopBoundary() ||
-            pbullet_it->get_Position().x > m_camera.getRightBoundary() ||
-            pbullet_it->get_Position().x < m_camera.getLeftBoundary()) {
+        if (pbullet_it->getPosition().y >  m_camera.getBottomBoundary() ||
+            pbullet_it->getPosition().y  <  m_camera.getTopBoundary() ||
+            pbullet_it->getPosition().x > m_camera.getRightBoundary() ||
+            pbullet_it->getPosition().x < m_camera.getLeftBoundary()) {
             // m_pbullet.pop_back();
             pbullet_it = m_pbullet.erase(pbullet_it);
             continue;
@@ -192,21 +191,21 @@ bool World::update(float elapsed_ms) {
         Shooter& new_bEnemy = m_shooters.back();
 
         // Setting random initial position
-       // new_bEnemy.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
-        new_bEnemy.set_position({ 50 + m_dist(m_rng) * (screen.x), screen.y - 800  });
+       // new_bEnemy.setPosition(({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
+        new_bEnemy.setPosition({ 50 + m_dist(m_rng) * (screen.x), screen.y - 800  });
         // Next spawn
         m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
     }
 
     for (auto& bEnemy : m_shooters)
-        bEnemy.update(elapsed_ms * m_current_speed);
+        bEnemy.update(this, elapsed_ms * m_current_speed);
 
     // Removing out of screen bEnemy
     auto benemy_it = m_shooters.begin();
     while (benemy_it != m_shooters.end())
     {
-        float w = benemy_it->get_bounding_box().x / 2;
-        if (benemy_it->get_position().y + w > screen.y)
+        float w = benemy_it->getBoundingBox().x / 2;
+        if (benemy_it->getPosition().y + w > screen.y)
         {
             benemy_it = m_shooters.erase(benemy_it);
             continue;
@@ -219,11 +218,11 @@ bool World::update(float elapsed_ms) {
 /*
     auto benemy_col = m_shooters.begin();
     auto pbullet_col = m_pbullet.begin();
-    float boundBullet = pbullet_col->get_bounding_box().x/2;
-    float boundEnemy = benemy_col->get_bounding_box().x / 2;
+    float boundBullet = pbullet_col->getBoundingBox().x/2;
+    float boundEnemy = benemy_col->getBoundingBox().x / 2;
     while (pbullet_col != m_pbullet.end() && benemy_col != m_shooters.end()) {
-        if (pbullet_col->get_Position().y + boundBullet <
-                benemy_col->get_position().y + boundEnemy){
+        if (pbullet_col->getPosition().y + boundBullet <
+                benemy_col->getPosition().y + boundEnemy){
             std::cout<<"hit";
             benemy_col = m_shooters.erase(benemy_col);
             pbullet_col = m_pbullet.erase(pbullet_col);
@@ -315,6 +314,10 @@ bool World::is_over()const
 	return glfwWindowShouldClose(m_window);
 }
 
+vec2 World::getPlayerPosition() const {
+    return m_player.get_position();
+}
+
 
 vec2 const  World::mousePosition(){
     return get_mousePos(aimDirNorm);
@@ -327,7 +330,8 @@ vec2 World::get_mousePos(vec2 mousePos) {
 
 
 bool World::spawnShooter() {
-    Shooter shooter;
+    ShooterAI ai;
+    Shooter shooter(ai);
     if (shooter.init())
     {
         m_shooters.emplace_back(shooter);
@@ -469,5 +473,5 @@ void World::onMouseMove(GLFWwindow *window, double xpos, double ypos)
     mouseAimDir = aimDirNorm;
 
     m_player.set_rotation(rotation_angle);
-    //m_player.set_rotation(atan2((xpos - m_player.get_position().x), -(ypos - m_player.get_position().y) ) );
+    //m_player.set_rotation(atan2((xpos - m_player.getPosition().x), -(ypos - m_player.getPosition().y) ) );
 }

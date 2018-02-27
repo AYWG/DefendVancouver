@@ -39,6 +39,7 @@ public:
     bool is_over() const;
 
 
+    vec2 getPlayerPosition() const;
 
 
     vec2 playerCenter;
@@ -69,7 +70,7 @@ private:
 
 
 private:
-    // Window hjandle
+    // Window handle
     GLFWwindow *m_window;
 
     // Number of fish eaten by the salmon, displayed in the window title
@@ -83,7 +84,6 @@ private:
     std::vector<pBullet> m_shotBullet;
 
 
-    Shooter m_shooter;
     pBullet m_plbullet;
 
     std::vector<Shooter> m_shooters;

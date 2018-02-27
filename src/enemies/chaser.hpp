@@ -1,35 +1,28 @@
 //
 // Created by Shrey Swades Nayak on 2018-02-08.
 //
+#pragma once
 
 #include "../common.hpp"
+#include "enemy.hpp"
+//#include "../world.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
-class Chaser : public Renderable {
+class Chaser : public Enemy, public Renderable {
 
     static Texture chaser_texture;
 
 public:
 
-    bool init();
+    bool init() override;
 
-    void destroy();
+    void destroy() override;
 
-    void update(float ms);
+    void update(World *world, float ms) override;
 
-    void draw(const mat3& projection)override;
+    void draw(const mat3 &projection) override;
 
-    vec2 get_position()const;
-
-    void set_position(vec2 position);
-
-//    vec2 get_bounding_box()const;
-
-private:
-
-    vec2 curr_pos;
-    vec2 curr_scale;
-    float curr_rotation;
+    //    vec2 getBoundingBox()const;
 
 };

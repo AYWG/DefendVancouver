@@ -11,10 +11,8 @@ Texture Bomber::bomber_texture;
 bool Bomber::init() {
 
     //Load texture
-    if (!bomber_texture.is_valid())
-    {
-        if (!bomber_texture.load_from_file(textures_path("pixelStitch-2-01.png")))
-        {
+    if (!bomber_texture.is_valid()) {
+        if (!bomber_texture.load_from_file(textures_path("pixelStitch-2-01.png"))) {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
         }
@@ -25,17 +23,17 @@ bool Bomber::init() {
     float height = bomber_texture.height * 0.5f;
 
     TexturedVertex vertices[4];
-    vertices[0].position = { -width, +height, -0.01f };
-    vertices[0].texcoord = { 0.f, 1.f };
-    vertices[1].position = { +width, +height, -0.01f };
-    vertices[1].texcoord = { 1.f, 1.f };
-    vertices[2].position = { +width, -height, -0.01f };
-    vertices[2].texcoord = { 1.f, 0.f };
-    vertices[3].position = { -width, -height, -0.01f };
-    vertices[3].texcoord = { 0.f, 0.f };
+    vertices[0].position = {-width, +height, -0.01f};
+    vertices[0].texcoord = {0.f, 1.f};
+    vertices[1].position = {+width, +height, -0.01f};
+    vertices[1].texcoord = {1.f, 1.f};
+    vertices[2].position = {+width, -height, -0.01f};
+    vertices[2].texcoord = {1.f, 0.f};
+    vertices[3].position = {-width, -height, -0.01f};
+    vertices[3].texcoord = {0.f, 0.f};
 
     // counterclockwise as it's the default opengl front winding direction
-    uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+    uint16_t indices[] = {0, 3, 1, 1, 3, 2};
 
     // Clearing errors
     gl_flush_errors();
@@ -68,17 +66,17 @@ bool Bomber::init() {
     return true;
 }
 
-void Bomber::destroy(){
+void Bomber::destroy() {
 
 }
 
-void Bomber::update(float ms){
+void Bomber::update(World *world, float ms) {
 
 }
 
-void Bomber::draw(const mat3& projection){
+void Bomber::draw(const mat3 &projection) {
     transform_begin();
-    transform_translate(m_pos);
+    transform_translate(m_position);
     transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
@@ -87,7 +85,8 @@ void Bomber::draw(const mat3& projection){
     glUseProgram(effect.program);
 
     // Enabling alpha channel for textures
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
 
     // Getting uniform locations for glUniform* calls
@@ -105,29 +104,21 @@ void Bomber::draw(const mat3& projection){
     GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
     glEnableVertexAttribArray(in_texcoord_loc);
-    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
-    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
+    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, bomber_texture.id);
 
     // Setting uniform values to the currently bound program
-    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-    float color[] = { 1.f, 1.f, 1.f };
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
+    float color[] = {1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
-    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Bomber::get_position()const{
-    return m_pos;
-}
-
-void Bomber::set_position(vec2 position){
-    m_pos = position;
-}
-
-//vec2 get_bounding_box()const;
+//vec2 getBoundingBox()const;
