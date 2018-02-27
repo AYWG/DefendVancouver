@@ -1,5 +1,6 @@
 // Header
 #include "world.hpp"
+#include <bits/stdc++.h>
 
 
 // stlib
@@ -9,6 +10,7 @@
 #include <iostream>
 #include <math.h>
 
+typedef  pair<int, int> Pair;
 
 // Same as static in c, local to compilation unit
 namespace
@@ -34,7 +36,8 @@ namespace
 World::World() :
 	m_points(0),
     m_next_pbullet_spawn(0.f),
-    m_next_shooter_spawn(0.f)
+    m_next_shooter_spawn(0.f),
+    m_next_chaser_spawn(0.f)
 
 {
 	// Seeding rng with random device
@@ -94,12 +97,18 @@ bool World::init(vec2 screenSize, vec2 worldSize)
 
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
+
+  //  m_chaser.init();
+
     m_player.init();
+
     m_plbullet.init();
+    //m_bomber.init();
+    m_background.init();
 
 	//m_background.init();
     m_camera.setFocusPoint(m_player.get_position());
-	return m_background.init();
+	return m_player.init();
 	//return true;
 }
 
@@ -215,6 +224,7 @@ bool World::update(float elapsed_ms) {
     }
 
 
+
 /*
     auto benemy_col = m_shooters.begin();
     auto pbullet_col = m_pbullet.begin();
@@ -226,17 +236,149 @@ bool World::update(float elapsed_ms) {
             std::cout<<"hit";
             benemy_col = m_shooters.erase(benemy_col);
             pbullet_col = m_pbullet.erase(pbullet_col);
-
-            continue;
-        }
-        ++benemy_col;
-        ++pbullet_col;
-    }
 */
 
+//////////////////CHASER///////////////////
+    //basicEnemySpawning
+    m_next_chaser_spawn -= elapsed_ms * m_current_speed;
+    if(m_chasers.size() <= MAX_SHOOTERS && m_next_chaser_spawn){
+
+        ////////////////////TODO////////////////
+        if(!spawnChaser()){
+            return false;
+        }
+
+        Chaser& new_cEnemy = m_chasers.back();
+
+        // Setting random initial position
+        // new_bEnemy.setPosition(({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
+        new_cEnemy.setPosition({ 50 + m_dist(m_rng) * (screen.x), screen.y - 800  });
+        // Next spawn
+        m_next_chaser_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+    }
+
+    for (auto& m_chaser : m_chasers)
+        m_chaser.update(this, elapsed_ms * m_current_speed);
+
+    // Removing out of screen cEnemy
+    auto cenemy_it = m_chasers.begin();
+    while (cenemy_it != m_chasers.end())
+    {
+        float w = cenemy_it->getBoundingBox().x / 2;
+        if (cenemy_it->getPosition().y + w > screen.y)
+        {
+            cenemy_it = m_chasers.erase(cenemy_it);
+            continue;
+        }
+
+        ++cenemy_it;
+    }
+    //////////////SPAWNDONE/////////////////
+    //ASTAR
+    int j = 0;
+    int l = 0;
+
+    int grid[ROW][COL];
+
+    for (int i = 0; i <= 9; i++){
+        for (int j = 0; j <= 9; j++){
+            grid[i][j] = 1;
+        }
+    }
 
 
-	return true;
+    bool srcFound = false;
+    bool destFound = false;
+
+    for (auto& m_chaser : m_chasers) {
+        if (!srcFound) {
+            for (float k = -600.f/*0.f*/; k <= 2060 /*1200.f*/; k += 266) {
+                for (float i = /*0*/-150.f; i <= 1000.f; i += 115.f) {
+                    if (m_chaser.getPosition().y >= 0.f && m_chaser.getPosition().y < 115.f
+                        && m_chaser.getPosition().x >= 0.f && m_chaser.getPosition().x < 266.f) {
+                        //  Pair src = make_pair(0, 0);
+                        srcFound = true;
+                        if (srcFound) {
+                            break;
+                        }
+
+                    } else if ((m_chaser.getPosition().y >= (i) && m_chaser.getPosition().y < (i + 115.f))
+                               && (m_chaser.getPosition().x >= (k) && m_chaser.getPosition().x < (k + 266.f))) {
+                        // Pair src = make_pair(j,l);
+                        srcFound = true;
+                        if (srcFound) {
+                            break;
+                        }
+                    }
+                    j++;
+                }
+                if (srcFound) {
+                    break;
+                }
+                l++;
+                j = 0;
+            }
+        }
+
+        int a = 0;
+        int b = 0;
+
+        if (!destFound) {
+            for (float k = /*0*/-600.f; k <= /*1200*/2060.f; k += 266) {
+                for (float i = -150.f; i <= 1000.f; i += 115.f) {
+                    if (m_player.get_position().y >= 0.f && m_player.get_position().y < 115.f
+                        && m_player.get_position().x >= 0.f && m_player.get_position().x < 266.f) {
+                        //Pair dest = make_pair(0, 0);
+                        destFound = true;
+                        if (destFound) {
+                            break;
+                        }
+                    } else if ((m_player.get_position().y >= (i) && m_player.get_position().y < (i + 115.f))
+                               && (m_player.get_position().x >= (k) && m_player.get_position().x < (k + 266.f))) {
+                        //Pair dest = make_pair(a,b);
+                        destFound = true;
+                        if (destFound) {
+                            break;
+                        }
+                    }
+
+                    a++;
+                }
+                if (destFound) {
+                    break;
+                }
+                b++;
+                a = 0;
+            }
+        }
+/*    int r = ceil(m_bomber.get_position().x/266);
+    int s = ceil(m_bomber.get_position().y/115);
+
+    std::cout<<s<<", "<<r<<std::endl;
+
+    grid[s][r] = 0;*/
+
+
+
+        m_chaser.update(this, elapsed_ms);
+
+        if (destFound && srcFound) {
+            Pair src = make_pair(j, l);
+            Pair dest = make_pair(a, b);
+            m_chaser.aStarSearch(grid, src, dest);
+        }
+    }
+
+
+
+
+    return true;
+}
+
+bool World::elapsedUpdate(float elapsed_ms) {
+
+    return true;
+
 }
 
 
@@ -285,7 +427,12 @@ void World::draw()
 
 	m_player.draw(projection_2D);
 
+    //m_bomber.draw(projection_2D);
+
    // m_shooter.draw(projection_2D);
+
+    for (auto& m_chaser : m_chasers)
+        m_chaser.draw(projection_2D);
 
     for (auto& shooter : m_shooters)
         shooter.draw(projection_2D);
@@ -302,7 +449,7 @@ void World::draw()
         shotBullet.draw(projection_2D);
         //  }
     }
-  
+
 
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -338,6 +485,17 @@ bool World::spawnShooter() {
         return true;
     }
     fprintf(stderr, "Failed to spawn shooter");
+    return false;
+}
+
+bool World::spawnChaser() {
+    ChaserAI ai;
+    Chaser chaser(ai);
+    if (chaser.init())
+    {
+        m_chasers.emplace_back(chaser);
+        return true;
+    }
     return false;
 }
 
@@ -417,7 +575,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     is_shot = false;
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
         is_shot = true;
-
+        std::cout<<"the y value: "<< m_player.get_position().y<<std::endl;
 
     }
 

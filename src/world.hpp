@@ -32,6 +32,8 @@ public:
     // Steps the game ahead by ms milliseconds
     bool update(float ms);
 
+    bool elapsedUpdate (float ms);
+
     // Renders our scene
     void draw();
 
@@ -50,12 +52,15 @@ public:
 	bool is_shot = false;
     bool is_shoted = false;
     vec2 mouseAimDir;
+
     //static vec2 shotDir;
 
 private:
 
     //spawn shooter
     bool spawnShooter();
+
+    bool spawnChaser();
 
     bool spawn_playerBullet();
 
@@ -84,13 +89,18 @@ private:
     std::vector<pBullet> m_shotBullet;
 
 
-    pBullet m_plbullet;
 
+    //Chaser m_chaser;
+
+    pBullet m_plbullet;
+    //Bomber m_bomber;
+    std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;
 
 
 
     float m_next_shooter_spawn;
+    float m_next_chaser_spawn;
     float m_current_speed;
     bool m_is_advanced_mode;
     float  m_next_pbullet_spawn;

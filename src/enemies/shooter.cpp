@@ -206,6 +206,10 @@ vec2 Shooter::getBoundingBox()const
     return { std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height };
 }
 
+
+
+//vec2 get_bounding_box()const;
+
 void Shooter::attack() {
 
 }
@@ -238,3 +242,4 @@ bool Shooter::isPlayerInVision(vec2 playerPosition) {
 
     return false;
 }
+
