@@ -59,6 +59,7 @@ private:
     bool m_is_flying[NUM_DIRECTIONS];
     float m_max_speed;
     size_t m_num_indices;
+    int m_lives;
 
 
 };

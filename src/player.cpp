@@ -72,6 +72,7 @@ bool Player::init() {
     m_position.x = 200;
     m_position.y = 400;
     m_max_speed = 200.f;
+    m_lives = 3;
     set_rotation(1.571f);
 
     return true;
