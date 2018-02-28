@@ -24,7 +24,7 @@ public:
     bool is_move() const;
 
     // Renders the salmon
-    void draw(const mat3 &projection) override;
+    void draw(const mat3& projection) override;
 
     //move
     void move(vec2 off);
@@ -46,6 +46,8 @@ public:
     void set_flying(bool is_flying, DIRECTION dir);
 
     float get_max_speed() const;
+
+    void destroy();
 
 private:
     vec2 m_position; // Window coordinates

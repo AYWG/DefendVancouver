@@ -11,8 +11,12 @@ Texture Bomber::bomber_texture;
 bool Bomber::init() {
 
     //Load texture
-    if (!bomber_texture.is_valid()) {
-        if (!bomber_texture.load_from_file(textures_path("pixelStitch-2-01.png"))) {
+
+    if (!bomber_texture.is_valid())
+    {
+        if (!bomber_texture.load_from_file(textures_path("bomber.png")))
+        {
+
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
         }
@@ -62,6 +66,7 @@ bool Bomber::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
     m_rotation = 0.f;
+
 
     return true;
 }

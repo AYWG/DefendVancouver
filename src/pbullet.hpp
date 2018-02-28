@@ -25,6 +25,7 @@ public:
     vec2 getBoundingBox() const;
 
 
+
 private:
     vec2 m_scale;
     vec2 m_position;
