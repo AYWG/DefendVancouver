@@ -42,8 +42,6 @@ public:
 
     vec2 getPlayerPosition() const;
 
-    mat3 getProjectionMatrix();
-
 
     vec2 playerCenter;
     vec2 mousePos;
@@ -87,6 +85,7 @@ private:
     std::vector<pBullet> m_pbullet;
     std::vector<pBullet> m_shotBullet;
 
+    std::vector<Bomb> m_bombs;
 
     pBullet m_plbullet;
 
@@ -109,7 +108,6 @@ private:
 
     vec2 m_size;
     vec2 afterShot;
-    mat3 projMatrix;
 
     Camera m_camera;
 };

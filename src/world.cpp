@@ -122,7 +122,8 @@ bool World::update(float elapsed_ms) {
 
     // faster based on current
     m_player.update(elapsed_ms);
-    m_bomb.update(this, elapsed_ms);
+    m_bomb.update(elapsed_ms);
+
 
     vec2 playerPos = m_player.get_position();
     // update camera
@@ -278,7 +279,6 @@ void World::draw()
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
-    projMatrix = projection_2D;
 
 	// Drawing entities
 
@@ -287,6 +287,7 @@ void World::draw()
  //   m_plbullet.draw(projection_2D);
 
 	m_player.draw(projection_2D);
+    m_bomb.draw(projection_2D);
 
    // m_shooter.draw(projection_2D);
 
@@ -329,10 +330,6 @@ vec2 const  World::mousePosition(){
 vec2 World::get_mousePos(vec2 mousePos) {
     mousePos = mouseAimDir;
     return  mousePos;
-}
-
-mat3 World::getProjectionMatrix() {
-    return projMatrix;
 }
 
 
