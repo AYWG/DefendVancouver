@@ -103,6 +103,7 @@ bool World::init(vec2 screenSize, vec2 worldSize)
     m_player.init();
 
     m_plbullet.init();
+    m_bomb.init(textures_path("normal_bomb.png"));
     //m_bomber.init();
     m_background.init();
 
@@ -130,6 +131,8 @@ bool World::update(float elapsed_ms) {
 
     // faster based on current
     m_player.update(elapsed_ms);
+    m_bomb.update(elapsed_ms);
+
 
     vec2 playerPos = m_player.get_position();
     // update camera
@@ -426,6 +429,7 @@ void World::draw()
  //   m_plbullet.draw(projection_2D);
 
 	m_player.draw(projection_2D);
+    m_bomb.draw(projection_2D);
 
     //m_bomber.draw(projection_2D);
 

@@ -9,6 +9,7 @@
 #include "enemies/chaser.hpp"
 #include "background.hpp"
 #include "camera.hpp"
+#include "bomb.hpp"
 
 // stlib
 #include <vector>
@@ -74,6 +75,7 @@ private:
     vec2 const mousePosition();
 
 
+
 private:
     // Window handle
     GLFWwindow *m_window;
@@ -88,11 +90,15 @@ private:
     std::vector<pBullet> m_pbullet;
     std::vector<pBullet> m_shotBullet;
 
+    std::vector<Bomb> m_bombs;
 
 
     //Chaser m_chaser;
 
     pBullet m_plbullet;
+
+    Bomb m_bomb;
+
     //Bomber m_bomber;
     std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;
