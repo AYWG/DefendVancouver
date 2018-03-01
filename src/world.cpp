@@ -284,11 +284,13 @@ bool World::update(float elapsed_ms) {
 
     int grid[ROW][COL];
 
-    for (int i = 0; i <= 9; i++){
-        for (int j = 0; j <= 9; j++){
+    for (int i = 0; i <= 99; i++){
+        for (int j = 0; j <= 99; j++){
             grid[i][j] = 1;
         }
     }
+
+
 
 
     bool srcFound = false;
@@ -297,26 +299,23 @@ bool World::update(float elapsed_ms) {
     //width -> -600 to 2060
     //height -> -150 to 1000
 
-    float width = 266.f;
-    float height = 115.f;
-
-/*    int grid[ROW][COL];
-
-    for (int i = 0; i <= 12; i++){
-        for (int j = 0; j <= 12; j++){
-            grid[i][j] = 1;
-        }
-    }
+    float width = 26.6f;
+    float height = 11.5f;
 
 
-    bool srcFound = false;
-    bool destFound = false;
+/*    for (auto& m_shooter : m_shooters) {
+        int r = ceil(m_shooter.getPosition().x / width);
+        int s = ceil(m_shooter.getPosition().y / height);
 
-    //width -> -600 to 2060
-    //height -> -150 to 1000
+        std::cout << grid << std::endl;
 
-    float width = 204.62f;
-    float height = 88.46f;*/
+        grid[s][r] = 0;
+        grid[s+1][r] = 0;
+        grid[s-1][r] = 0;
+        grid[s][r+1] = 0;
+        grid[s][r-1] = 0;
+    }*/
+
 
     for (auto& m_chaser : m_chasers) {
         if (!srcFound) {
@@ -380,14 +379,7 @@ bool World::update(float elapsed_ms) {
             }
         }
 
-        for (auto& m_shooter : m_shooters) {
-            int r = ceil(m_shooter.getPosition().x / width);
-            int s = ceil(m_shooter.getPosition().y / height);
 
-            std::cout << s << ", " << r << std::endl;
-
-            grid[s][r] = 0;
-        }
 
 
 
