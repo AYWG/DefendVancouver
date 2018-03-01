@@ -216,7 +216,7 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
         pair<int, int> p = Path.top();
         Path.pop();
         printf("-> (%d,%d) ", p.first, p.second);
-        float speed = 1.5f;
+        float speed = 1.0f;
         if (!Path.empty()) {
             pair<int, int> np = Path.top();
             //////////////////////////
@@ -278,7 +278,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
     if (isUnBlocked(grid, src.first, src.second) == false ||
         isUnBlocked(grid, dest.first, dest.second) == false){
         printf ("Source or the destination is blocked\n");
-        move({-5, 0});
+       //    move({-5, 0});
         return;
     }
 
