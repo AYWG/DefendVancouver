@@ -284,8 +284,8 @@ bool World::update(float elapsed_ms) {
 
     int grid[ROW][COL];
 
-    for (int i = 0; i <= 9; i++){
-        for (int j = 0; j <= 9; j++){
+    for (int i = 0; i <= 49; i++){
+        for (int j = 0; j <= 49; j++){
             grid[i][j] = 1;
         }
     }
@@ -297,8 +297,8 @@ bool World::update(float elapsed_ms) {
     //width -> -600 to 2060
     //height -> -150 to 1000
 
-    float width = 266.f;
-    float height = 115.f;
+    float width = 53.2f;
+    float height = 23.f;
 
 /*    int grid[ROW][COL];
 
@@ -384,7 +384,7 @@ bool World::update(float elapsed_ms) {
             int r = ceil(m_shooter.getPosition().x / width);
             int s = ceil(m_shooter.getPosition().y / height);
 
-            std::cout << s << ", " << r << std::endl;
+            std::cout << grid << std::endl;
 
             grid[s][r] = 0;
         }

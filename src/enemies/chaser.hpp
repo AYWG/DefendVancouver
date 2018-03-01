@@ -14,8 +14,8 @@
 
 using  namespace std;
 
-#define  ROW 10
-#define  COL 10
+#define  ROW 50
+#define  COL 50
 
 //shortcut for int, int pair type
 typedef  pair<int, int> Pair;
