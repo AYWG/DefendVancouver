@@ -19,7 +19,7 @@ namespace
     const size_t MAX_BASENEMIES = 1;
     const size_t MAX_BULLET = 1;
     const size_t BENEMY_DELAY_MS = 2000;
-    const size_t PBULLET_DELAY_MS = 2000;
+    const size_t PBULLET_DELAY_MS = 200;
     const size_t MAX_SHOOTERS = 15;
     const size_t MAX_CHASER = 0;
     const size_t SHOOTER_DELAY_MS = 2000;
@@ -148,19 +148,28 @@ bool World::update(float elapsed_ms) {
 
 
     //bullet
-    m_next_pbullet_spawn -= elapsed_ms * m_plbullet.m_velocity;
+    m_next_pbullet_spawn -= elapsed_ms;
     // if(m_pbullet.size() <= MAX_BASENEMIES && m_next_pbullet_spawn) {
-    if (!spawn_playerBullet()) {
-        return false;
-    }
-    if (is_shot) {
+    if (is_shot && m_next_pbullet_spawn < 0.f) {
+        if (!spawn_playerBullet()) {
+            return false;
+        }
+
         pBullet &new_pBullet = m_pbullet.back();
         new_pBullet.setPosition(m_player.get_position());
-    }
-    for (auto& pBullet : m_pbullet){
-        pBullet.update(elapsed_ms * m_plbullet.m_velocity);
 
-        if (is_shot) {
+        float bulletAngle = -1.f * m_player.getRotation() + 3.1415f / 2.f;
+
+        printf("player orientation: %f\n", m_player.getRotation());
+        new_pBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
+
+        m_next_pbullet_spawn = PBULLET_DELAY_MS;
+    }
+
+    for (auto& pBullet : m_pbullet){
+        pBullet.update(elapsed_ms);
+
+        /*if (is_shot) {
            // pBullet = m_pbullet.back();
            // pBullet.setPosition()(m_player.getPosition());
             pBullet.fireBullet({pBullet.m_velocity * mouseAimDir.x , pBullet.m_velocity * mouseAimDir.y });
@@ -171,7 +180,7 @@ bool World::update(float elapsed_ms) {
             pBullet.fireBullet({afterShot.x, afterShot.y});
 
 
-        }
+        }*/
 
     }
 
@@ -284,11 +293,13 @@ bool World::update(float elapsed_ms) {
 
     int grid[ROW][COL];
 
-    for (int i = 0; i <= 9; i++){
-        for (int j = 0; j <= 9; j++){
+    for (int i = 0; i <= 99; i++){
+        for (int j = 0; j <= 99; j++){
             grid[i][j] = 1;
         }
     }
+
+
 
 
     bool srcFound = false;
@@ -297,26 +308,23 @@ bool World::update(float elapsed_ms) {
     //width -> -600 to 2060
     //height -> -150 to 1000
 
-    float width = 266.f;
-    float height = 115.f;
-
-/*    int grid[ROW][COL];
-
-    for (int i = 0; i <= 12; i++){
-        for (int j = 0; j <= 12; j++){
-            grid[i][j] = 1;
-        }
-    }
+    float width = 26.6f;
+    float height = 11.5f;
 
 
-    bool srcFound = false;
-    bool destFound = false;
+/*    for (auto& m_shooter : m_shooters) {
+        int r = ceil(m_shooter.getPosition().x / width);
+        int s = ceil(m_shooter.getPosition().y / height);
 
-    //width -> -600 to 2060
-    //height -> -150 to 1000
+        std::cout << grid << std::endl;
 
-    float width = 204.62f;
-    float height = 88.46f;*/
+        grid[s][r] = 0;
+        grid[s+1][r] = 0;
+        grid[s-1][r] = 0;
+        grid[s][r+1] = 0;
+        grid[s][r-1] = 0;
+    }*/
+
 
     for (auto& m_chaser : m_chasers) {
         if (!srcFound) {
@@ -380,14 +388,7 @@ bool World::update(float elapsed_ms) {
             }
         }
 
-        for (auto& m_shooter : m_shooters) {
-            int r = ceil(m_shooter.getPosition().x / width);
-            int s = ceil(m_shooter.getPosition().y / height);
 
-            std::cout << s << ", " << r << std::endl;
-
-            grid[s][r] = 0;
-        }
 
 
 
@@ -539,7 +540,7 @@ bool World::spawn_playerBullet()
         m_pbullet.emplace_back(playerBullet);
         return true;
     }
-    fprintf(stderr, "Failed to spawn turtle");
+    fprintf(stderr, "Failed to spawn player bullet");
     return false;
 }
 
@@ -605,10 +606,12 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }else if (action == GLFW_RELEASE){
             is_shot = false;
         }*/
-    is_shot = false;
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
-        is_shot = true;
-        std::cout<<"the y value: "<< m_player.get_position().y<<std::endl;
+    if (key == GLFW_KEY_SPACE) {
+        if (action == GLFW_PRESS) {
+            is_shot = true;
+        } else if (action == GLFW_RELEASE) {
+            is_shot = false;
+        }
 
     }
 

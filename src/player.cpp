@@ -223,3 +223,6 @@ float Player::get_max_speed() const {
     return m_max_speed;
 }
 
+float Player::getRotation() const {
+    return m_rotation;
+}
