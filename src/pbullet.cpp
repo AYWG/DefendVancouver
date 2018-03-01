@@ -72,11 +72,10 @@ bool pBullet::init() {
 }
 
 void pBullet::update(float ms){
-    m_velocity =   25.0f;
+    m_velocity =   325.0f;
 
-
-    float x_step = m_velocity * (ms / 1000);
-    float y_step = m_velocity * (ms / 1000);
+    float x_step = m_velocity * (ms / 1000) * m_direction.x;
+    float y_step = m_velocity * (ms / 1000) * m_direction.y;
     fireBullet({ x_step, y_step });
 }
 
@@ -146,6 +145,10 @@ void pBullet::fireBullet(vec2 aimDir) {
 
 vec2 pBullet::getBoundingBox() const {
     return { std::fabs(m_scale.x) * pbullet_texture.width, std::fabs(m_scale.y) * pbullet_texture.height};
+}
+
+void pBullet::setDirection(vec2 direction) {
+    m_direction = direction;
 }
 
 

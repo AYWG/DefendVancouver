@@ -115,7 +115,6 @@ void ShooterBullet::fire(vec2 aimDirection) {
 void ShooterBullet::update(float ms) {
     m_velocity = 325.0f;
 
-
     float x_step = m_velocity * (ms / 1000) * m_direction.x;
     float y_step = m_velocity * (ms / 1000) * m_direction.y;
     fire({x_step, y_step});
