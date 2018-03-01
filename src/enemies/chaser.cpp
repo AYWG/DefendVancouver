@@ -219,41 +219,39 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
         float speed = 5.0f;
         if (!Path.empty()) {
             pair<int, int> np = Path.top();
-            if (p.first > np.first) {
+            //////////////////////////
+            if ((p.first > np.first) && (p.second < np.second) ) {
+                move({speed, -speed});
+            }
+            if ((p.first > np.first) && (p.second > np.second) ) {
+                move({-speed, -speed});
+            }
+            if ((p.first > np.first) && (p.second < np.second) ) {
                 move({0, -speed});
-                if (p.second < np.second) {
-                    move({speed, 0});
-                }
-                if (p.second > np.second) {
-                    move({-speed, 0});
-                }
-                if (p.second == np.second) {
-                    move({0, 0});
-                }
             }
-            else if (p.first < np.first) {
+            ///////////////////////////
+
+            if ((p.first < np.first)&&(p.second < np.second)) {
+                move({speed, speed});
+            }
+            if ((p.first < np.first)&&(p.second > np.second)) {
+                move({-speed, speed});
+            }
+            if ((p.first < np.first)&&(p.second == np.second)) {
                 move({0, speed});
-                if (p.second < np.second) {
-                    move({speed, 0});
-                }
-                if (p.second > np.second) {
-                    move({-speed, 0});
-                }
-                if (p.second == np.second) {
-                    move({0, 0});
-                }
-            } else if (p.first == np.first){
-                move({0, 0});
-                if (p.second < np.second) {
-                    move({speed, 0});
-                }
-                if (p.second > np.second) {
-                    move({-speed, 0});
-                }
-                if (p.second == np.second) {
-                    move({0, 0});
-                }
             }
+            ////////////////////////////
+
+            if ((p.first == np.first)&&(p.second < np.second)) {
+                move({speed, 0});
+            }
+            if ((p.first == np.first)&&(p.second > np.second)) {
+                move({-speed, 0});
+            }
+            if ((p.first == np.first)&&(p.second == np.second)) {
+                move({0, 0});
+            }
+            /////////////////////////////
 
         }else if (isDestination(p.first, p.second, dest) == true) {
             move({speed * m_player.get_position().x,speed * m_player.get_position().x} );
@@ -280,7 +278,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
     if (isUnBlocked(grid, src.first, src.second) == false ||
         isUnBlocked(grid, dest.first, dest.second) == false){
         printf ("Source or the destination is blocked\n");
-        move({-1, -1});
+        move({-5, 0});
         return;
     }
 
