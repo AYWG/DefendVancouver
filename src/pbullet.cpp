@@ -64,8 +64,8 @@ bool pBullet::init() {
     m_scale.y = 1.0f;
     //m_position = m_player.get_position();
 
-    //m_position.x = 600;
-    //m_position.y = 400;
+    m_position.x = 600000;
+    m_position.y = 40000000;
 
 
     return true;

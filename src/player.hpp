@@ -57,7 +57,7 @@ private:
     bool m_isMove;
     float m_velocity[NUM_DIRECTIONS];
     bool m_is_flying[NUM_DIRECTIONS];
-    float m_max_speed;
+    float m_max_speed = 20;
     size_t m_num_indices;
     int m_lives;
 
