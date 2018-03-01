@@ -23,4 +23,10 @@ Project for CPSC 436D
   * The camera tracks the player as they move around the world
 * Implemented basic enemy movement
   * Enemies descend from top of the screen to bottom
-
+  
+## Game Logic and AI milestone features:
+* Created Shooter AI
+* Used A* to create Player Chasing AI
+* Implemented player lives and health
+* Created powerups
+* Implemented bomb blasts in the game

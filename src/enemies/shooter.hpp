@@ -2,38 +2,56 @@
 // Created by Shrey Swades Nayak on 2018-02-08.
 //
 
+#pragma once
+
+#include <vector>
 #include "../common.hpp"
+#include "enemy.hpp"
+#include "shooterBullet.hpp"
+#include "../ai/shooterAI.hpp"
+//#include "chaser.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
-class Shooter : public Renderable {
+class Shooter : public Enemy, public Renderable {
 
     static Texture shooterTexture;
+    static int maxNumberOfBullets;
+    static int bulletDelayMS;
 
 public:
 
-    bool init();
+    explicit Shooter(ShooterAI& ai);
 
-    void destroy();
 
-    void update(float ms);
+    bool init() override;
 
-    void draw(const mat3& projection)override;
+    void destroy() override;
 
-    vec2 get_position()const;
+    void update(World *world, float ms) override;
 
-    void set_position(vec2 position);
+    void draw(const mat3 &projection) override;
 
-    vec2 get_bounding_box()const;
+    vec2 getBoundingBox() const override;
 
+    void attack() override;
+
+
+private:
+    ShooterAI m_ai;
 
 
 //    vec2 get_bounding_box()const;
 
-private:
+    std::vector<ShooterBullet> m_shooterBullets;
 
-    vec2 m_pos;
-    vec2 m_scale;
+
+    float m_nextShooterBulletSpawn;
+
     float m_rotation;
+
+    bool spawnBullet();
+
+    bool isPlayerInVision(vec2 playerPosition);
 
 };

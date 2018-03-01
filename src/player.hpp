@@ -24,7 +24,7 @@ public:
     bool is_move() const;
 
     // Renders the salmon
-    void draw(const mat3 &projection) override;
+    void draw(const mat3& projection) override;
 
     //move
     void move(vec2 off);
@@ -47,6 +47,8 @@ public:
 
     float get_max_speed() const;
 
+    void destroy();
+
 private:
     vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
@@ -57,6 +59,7 @@ private:
     bool m_is_flying[NUM_DIRECTIONS];
     float m_max_speed;
     size_t m_num_indices;
+    int m_lives;
 
 
 };
