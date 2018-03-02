@@ -65,6 +65,8 @@ private:
 
     bool spawn_playerBullet();
 
+    bool spawn_bomb();
+
     vec2 get_mousePos(vec2 mousePos);
 
     // !!! INPUT CALLBACK FUNCTIONS
@@ -91,17 +93,15 @@ private:
 
     std::vector<pBullet> m_pbullet;
     std::vector<pBullet> m_shotBullet;
-
     std::vector<Bomb> m_bombs;
 
 
-    //Chaser m_chaser;
+
 
     pBullet m_plbullet;
 
-    Bomb m_bomb;
 
-    //Bomber m_bomber;
+
     std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;
 
@@ -112,6 +112,7 @@ private:
     float m_current_speed;
     bool m_is_advanced_mode;
     float  m_next_pbullet_spawn;
+    float m_next_bomb_spawn;
 
     // C++ rng
     std::default_random_engine m_rng;
