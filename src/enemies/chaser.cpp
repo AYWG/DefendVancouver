@@ -7,7 +7,10 @@
 #include "../world.hpp"
 
 #include <cmath>
-#include <bits/stdc++.h>
+#include <stack>
+#include <cfloat>
+#include <set>
+
 
 using namespace std;
 

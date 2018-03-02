@@ -1,6 +1,6 @@
 // Header
 #include "world.hpp"
-#include <bits/stdc++.h>
+
 
 
 // stlib
