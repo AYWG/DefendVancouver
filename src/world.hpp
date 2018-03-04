@@ -72,6 +72,8 @@ private:
 
     void onMouseMove(GLFWwindow *window, double xpos, double ypos);
 
+    void onMouseClick(GLFWwindow *window, int buttton, int action, int mod);
+
     vec2 const mousePosition();
 
 
