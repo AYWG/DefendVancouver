@@ -120,7 +120,6 @@ void Player::update(float ms) {
         }
     }
 
-    get_position();
 
 
 }
@@ -132,7 +131,7 @@ void Player::draw(const mat3& projection)
     transform_begin();
 
     transform_translate({ m_position.x, m_position.y});
-    transform_rotate(-m_rotation);
+    transform_rotate(m_rotation);
     transform_scale(m_scale);
 
     transform_end();
