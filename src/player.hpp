@@ -14,14 +14,11 @@ class Player : public Renderable {
 
 public:
     typedef enum {
-        UP, DOWN, LEFT, RIGHT
+        LEFT, FORWARD, RIGHT, BACKWARD
     } DIRECTION;
 
     //init ship
     bool init();
-
-    //move
-    bool is_move() const;
 
     // Renders the salmon
     void draw(const mat3& projection) override;
@@ -36,16 +33,14 @@ public:
     vec2 get_position() const;
 
     //set rotation
-    void set_rotation(float radians);
+    void setRotation(float radians);
 
 
     void set_velocity(float velocity, DIRECTION dir);
 
     void swap_velocity(DIRECTION dir1, DIRECTION dir2);
 
-    void set_flying(bool is_flying, DIRECTION dir);
-
-    float get_max_speed() const;
+    void setFlying(DIRECTION dir, bool isFlying);
 
     void destroy();
 
@@ -54,14 +49,15 @@ public:
 private:
     vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
-    vec2 up_position;
     float m_rotation; // in radians
-    bool m_isMove;
-    float m_velocity[NUM_DIRECTIONS];
-    bool m_is_flying[NUM_DIRECTIONS];
-    float m_max_speed = 20;
+    vec2 m_velocity;
+    bool m_isFlying[NUM_DIRECTIONS];
+    float m_maxSpeed;
     size_t m_num_indices;
     int m_lives;
+
+    float getMovementOrientation(DIRECTION dir);
+    vec2 getNewVelocity(vec2 oldVelocity, vec2 delta);
 
 
 };
