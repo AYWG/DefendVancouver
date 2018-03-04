@@ -103,29 +103,28 @@ void Player::destroy() {
 
 void Player::update(float ms) {
     // every frame, decrement absolute value of velocity
-    auto drag = 10.f * ms / 1000;
+    auto drag = 50.f * ms / 1000;
     m_velocity.x = m_velocity.x > 0 ? std::max(0.f, m_velocity.x - drag) : std::min(0.f, m_velocity.x + drag);
     m_velocity.y = m_velocity.y > 0 ? std::max(0.f, m_velocity.y - drag) : std::min(0.f, m_velocity.y + drag);
 
 
-    // determine net acceleration vector based on isFlying
+    // determine net acceleration vector based on m_isFlying
     // get direction vector for each flag that is set, then add up the direction vectors, then normalize
-    vec2 netAccelerationDirection = { 0.f, 0.f };
+    vec2 netAccelerationDirection = {0.f, 0.f};
     for (int dir = LEFT; dir < NUM_DIRECTIONS; dir++) {
         if (m_isFlying[dir]) {
             auto orientation = getMovementOrientation(static_cast<DIRECTION>(dir));
-            vec2 direction = { cosf(orientation), sinf(orientation)};
+            vec2 direction = {cosf(orientation), sinf(orientation)};
             netAccelerationDirection.x += direction.x;
             netAccelerationDirection.y += direction.y;
         }
     }
-
     netAccelerationDirection = normalize(netAccelerationDirection);
-    auto accelerationMagnitude = 200.f;
+    auto accelerationMagnitude = 300.f;
     auto deltaXVelocity = netAccelerationDirection.x * accelerationMagnitude * ms / 1000;
     auto deltaYVelocity = netAccelerationDirection.y * accelerationMagnitude * ms / 1000;
 
-    m_velocity = getNewVelocity(m_velocity, {deltaXVelocity, deltaYVelocity} );
+    m_velocity = getNewVelocity(m_velocity, {deltaXVelocity, deltaYVelocity});
 
     auto x_step = m_velocity.x * (ms / 1000);
     auto y_step = m_velocity.y * (ms / 1000);
@@ -224,9 +223,9 @@ float Player::getMovementOrientation(DIRECTION dir) {
 }
 
 vec2 Player::getNewVelocity(vec2 oldVelocity, vec2 delta) {
-    vec2 newVelocity = { (oldVelocity.x + delta.x) , (oldVelocity.y + delta.y)};
+    vec2 newVelocity = {(oldVelocity.x + delta.x), (oldVelocity.y + delta.y)};
     float newMagnitude = std::min(magnitude(newVelocity), m_maxSpeed);
     vec2 newDirection = normalize(newVelocity);
 
-    return { newDirection.x * newMagnitude, newDirection.y * newMagnitude};
+    return {newDirection.x * newMagnitude, newDirection.y * newMagnitude};
 }
