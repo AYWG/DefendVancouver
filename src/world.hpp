@@ -1,7 +1,6 @@
 #pragma once
 
 // internal
-#include "pbullet.hpp"
 #include "common.hpp"
 #include "player.hpp"
 #include "enemies/shooter.hpp"
@@ -10,6 +9,7 @@
 #include "background.hpp"
 #include "camera.hpp"
 #include "bomb.hpp"
+#include "bullets/playerBullet.hpp"
 
 // stlib
 #include <vector>
@@ -125,7 +125,6 @@ private:
 
 
     vec2 m_size;
-    vec2 afterShot;
 
     Camera m_camera;
 };

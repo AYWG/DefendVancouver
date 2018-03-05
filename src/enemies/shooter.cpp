@@ -5,9 +5,6 @@
 #include "shooter.hpp"
 #include "../world.hpp"
 
-#include <cmath>
-#include <iostream>
-//class World;
 
 Texture Shooter::shooterTexture;
 
@@ -89,15 +86,15 @@ void Shooter::update(World *world, float ms) {
     }
 
     // remove out of screen bullets - remove once we have proper collisions
-    auto shooterBullet_it = m_shooterBullets.begin();
+    auto bulletIt = m_bullets.begin();
 
-    while (shooterBullet_it != m_shooterBullets.end()) {
-        if (shooterBullet_it->getPosition().y >  1000) {
-            shooterBullet_it = m_shooterBullets.erase(shooterBullet_it);
+    while (bulletIt != m_bullets.end()) {
+        if (bulletIt->getPosition().y >  1000) {
+            bulletIt = m_bullets.erase(bulletIt);
             continue;
         }
 
-        ++shooterBullet_it;
+        ++bulletIt;
     }
 }
 
@@ -146,8 +143,8 @@ void Shooter::draw(const mat3& projection){
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-    for (auto& shooterBullet : m_shooterBullets) {
-        shooterBullet.draw(projection);
+    for (auto& bullet : m_bullets) {
+        bullet.draw(projection);
     }
 }
 
@@ -180,10 +177,10 @@ void Shooter::attack(float ms) {
 }
 
 bool Shooter::spawnBullet() {
-    ShooterBullet shooterBullet;
-    if (shooterBullet.init())
+    ShooterBullet bullet;
+    if (bullet.init())
     {
-        m_shooterBullets.emplace_back(shooterBullet);
+        m_bullets.emplace_back(bullet);
         return true;
     }
     fprintf(stderr, "Failed to spawn shooter bullet");
