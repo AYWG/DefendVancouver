@@ -537,6 +537,10 @@ std::vector<vec2> World::getBombPositions() const {
     return positions;
 }
 
+vec2 World::getCityPosition() const {
+    return m_background.get_position();
+}
+
 
 vec2 const  World::mousePosition(){
     return get_mousePos(aimDirNorm);

@@ -82,15 +82,9 @@ void Shooter::destroy(){
 }
 
 void Shooter::update(World *world, float ms) {
-//    m_ai.doNextAction(world, this, ms);
 
     //TODO: remove//////////////////////////
-    // only continue moving if not in range
-    if (m_position.y <= 250) {
-        const float SHOOTER_SPEED = 200.f;
-        float step = -SHOOTER_SPEED * (ms / 1000);
-        m_position.y -= step;
-    }
+    m_ai.doNextAction(world, this, ms);
 
     // if in range, and player is within cone
     if (m_position.y > 250) {

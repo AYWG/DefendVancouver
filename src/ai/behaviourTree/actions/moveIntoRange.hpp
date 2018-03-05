@@ -7,15 +7,13 @@
 
 #include "../actionNode.hpp"
 #include "../../../common.hpp"
+#include "../../../world.hpp"
 #include "../../../enemies/enemy.hpp"
 
-class MoveToLocation : public ActionNode {
+class MoveIntoRange : public ActionNode {
 public:
-    explicit MoveToLocation(vec2& location);
     STATUS tick(World *world, Enemy *enemy, float ms) override;
 
-private:
-    vec2 m_location;
 };
 
 
