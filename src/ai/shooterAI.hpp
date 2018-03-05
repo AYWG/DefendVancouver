@@ -6,7 +6,7 @@
 
 
 #include "aI.hpp"
-#include "behaviourTreeNode.hpp"
+#include "behaviourTree/behaviourTreeNode.hpp"
 
 class World;
 class Enemy;

@@ -52,6 +52,6 @@ private:
 
     bool spawnBullet();
 
-    bool isPlayerInVision(vec2 playerPosition);
+    bool isObjectInVision(vec2 objPosition);
 
 };

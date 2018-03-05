@@ -2,7 +2,7 @@
 // Created by Andy on 2018-02-25.
 //
 
-#include "actions/moveToLocation.hpp"
+#include "behaviourTree/actions/moveToLocation.hpp"
 #include "chaserAI.hpp"
 
 ChaserAI::ChaserAI() : m_root(nullptr) {

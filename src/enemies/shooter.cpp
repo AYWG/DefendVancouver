@@ -96,10 +96,37 @@ void Shooter::update(World *world, float ms) {
     if (m_position.y > 250) {
 
         float targetAngle;
-        if (isPlayerInVision(world->getPlayerPosition())) {
-            float yDiff = world->getPlayerPosition().y - m_position.y;
-            float xDiff = world->getPlayerPosition().x - m_position.x;
+        auto playerPosition = world->getPlayerPosition();
+        if (isObjectInVision(playerPosition)) {
+            auto yDiff = playerPosition.y - m_position.y;
+            auto xDiff = playerPosition.x - m_position.x;
             targetAngle = -1.f * atanf(xDiff / yDiff);
+
+            // Check for any bombs in vision
+            std::vector<vec2> bombsInVision;
+            for (auto bombPosition : world->getBombPositions()) {
+                if (isObjectInVision(bombPosition)) {
+                    bombsInVision.emplace_back(bombPosition);
+                }
+            }
+
+            if (!bombsInVision.empty()) {
+                std::vector<vec2> bombsCloseToPlayer;
+                for (auto bombInVision : bombsInVision) {
+                    // TODO: Improve this
+                    if (fabs(bombInVision.x - playerPosition.x) < 100 &&
+                            fabs(bombInVision.y - playerPosition.y) < 100) {
+                        bombsCloseToPlayer.emplace_back(bombInVision);
+                        break;
+                    }
+                }
+
+                if (!bombsCloseToPlayer.empty()) {
+                    yDiff = bombsCloseToPlayer.front().y - m_position.y;
+                    xDiff = bombsCloseToPlayer.front().x - m_position.x;
+                    targetAngle = -1.f * atan(xDiff / yDiff);
+                }
+            }
         }
         else {
             // default rotation
@@ -225,17 +252,17 @@ bool Shooter::spawnBullet() {
     return false;
 }
 
-bool Shooter::isPlayerInVision(vec2 playerPosition) {
+bool Shooter::isObjectInVision(vec2 objPosition) {
     // vision is represented by an invisible "triangle" that extends from the shooter's current position
     float shooterVisionAngleFromNormal = 3.1415f / 6;
 
-    if (playerPosition.y > m_position.y) {
-        float verticalDiff = playerPosition.y - m_position.y;
+    if (objPosition.y > m_position.y) {
+        float verticalDiff = objPosition.y - m_position.y;
 
         float distanceToVisionBoundaryFromNormal = verticalDiff * tanf(shooterVisionAngleFromNormal);
 
-        if (playerPosition.x < m_position.x + distanceToVisionBoundaryFromNormal &&
-                playerPosition.x > m_position.x - distanceToVisionBoundaryFromNormal) {
+        if (objPosition.x < m_position.x + distanceToVisionBoundaryFromNormal &&
+                objPosition.x > m_position.x - distanceToVisionBoundaryFromNormal) {
             return true;
         }
     }

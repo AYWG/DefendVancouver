@@ -529,6 +529,14 @@ vec2 World::getPlayerPosition() const {
     return m_player.get_position();
 }
 
+std::vector<vec2> World::getBombPositions() const {
+    auto positions = std::vector<vec2>();
+    for (auto& bomb : m_bombs) {
+        positions.emplace_back(bomb.get_position());
+    }
+    return positions;
+}
+
 
 vec2 const  World::mousePosition(){
     return get_mousePos(aimDirNorm);

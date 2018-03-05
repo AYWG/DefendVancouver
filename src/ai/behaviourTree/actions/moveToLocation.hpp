@@ -6,8 +6,8 @@
 
 
 #include "../actionNode.hpp"
-#include "../../common.hpp"
-#include "../../enemies/enemy.hpp"
+#include "../../../common.hpp"
+#include "../../../enemies/enemy.hpp"
 
 class MoveToLocation : public ActionNode {
 public:

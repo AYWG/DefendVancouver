@@ -3,7 +3,7 @@
 //
 
 #include "shooterAI.hpp"
-#include "actions/moveToLocation.hpp"
+#include "behaviourTree/actions/moveToLocation.hpp"
 
 ShooterAI::ShooterAI() : m_root(nullptr) {
     init();

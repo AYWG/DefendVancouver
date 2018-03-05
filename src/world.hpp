@@ -44,6 +44,8 @@ public:
 
     vec2 getPlayerPosition() const;
 
+    std::vector<vec2> getBombPositions() const;
+
 
     vec2 playerCenter;
     vec2 mousePos;
