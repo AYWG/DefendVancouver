@@ -398,6 +398,7 @@ bool World::update(float elapsed_ms) {
         }
     }
 
+
     // trigger bomb animation
     for (auto& bomb : m_bombs)
         bomb.update(elapsed_ms * m_current_speed);

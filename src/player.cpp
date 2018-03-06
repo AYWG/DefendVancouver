@@ -30,11 +30,11 @@ bool Player::init()
 
     // Reading vertices and colors
     char test[100];
-    size_t num_vertices;
+    int num_vertices;
   //  fread(test, 100, 1, mesh_file);
-    fscanf(mesh_file, "%zu\n", &num_vertices);
+    fscanf(mesh_file, "%du\n", &num_vertices);
 
-    for (size_t i = 0; i < num_vertices; ++i)
+    for (auto i = 0; i < num_vertices; ++i)
     {
         float x, y, z;
         float _u[3]; // unused
@@ -47,9 +47,9 @@ bool Player::init()
     }
 
     // Reading associated indices
-    size_t num_indices;
-    fscanf(mesh_file, "%zu\n", &num_indices);
-    for (size_t i = 0; i < num_indices; ++i)
+    int num_indices;
+    fscanf(mesh_file, "%du\n", &num_indices);
+    for (auto i = 0; i < num_indices; ++i)
     {
         int idx[3];
         fscanf(mesh_file, "%d %d %d\n", idx, idx + 1, idx + 2);
