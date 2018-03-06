@@ -48,8 +48,6 @@ private:
 
     float m_nextShooterBulletSpawn;
 
-    float m_rotation;
-
     bool spawnBullet();
 
     bool isObjectInVision(vec2 objPosition);

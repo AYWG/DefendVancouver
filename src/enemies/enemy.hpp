@@ -50,10 +50,6 @@ protected:
     float m_rotation;
     float m_maxSpeed;
 
-    /**
-     * The position of the enemy's target (usually the player).
-     */
-    vec2 m_targetPosition;
     float m_angleToTarget;
 
     std::vector<vec2> m_bombsInVision;

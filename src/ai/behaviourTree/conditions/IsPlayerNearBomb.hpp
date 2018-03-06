@@ -6,6 +6,7 @@
 
 
 #include "../conditionNode.hpp"
+#include "../../../world.hpp"
 #include "../../../enemies/enemy.hpp"
 
 class IsPlayerNearBomb : public ConditionNode {
