@@ -134,13 +134,11 @@ bool World::update(float elapsed_ms) {
     m_player.update(elapsed_ms);
     vec2 playerPos = m_player.get_position();
 
-    // Update camera
-    if (((playerPos.x - screen.x / 5 >= 0) && (playerPos.x - 6 * screen.x / 5 <= 0)) &&
-        playerPos.x + screen.x / 2 <= m_size.x) {
+    // update camera
+    if (playerPos.x - screen.x / 2 >= 0 && playerPos.x + screen.x / 2 <= m_size.x) {
         m_camera.setFocusPoint({playerPos.x, m_camera.getFocusPoint().y});
     }
-    if (playerPos.y - screen.y / 3 >= 0 && playerPos.y - 3 * screen.y / 4 <= 0 &&
-        playerPos.y + screen.y / 2 <= m_size.y) {
+    if (playerPos.y - screen.y / 2 >= 0 && playerPos.y + screen.y / 2 <= m_size.y) {
         m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
     }
 

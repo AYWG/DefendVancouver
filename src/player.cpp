@@ -88,7 +88,7 @@ bool Player::init()
     m_scale.y = 200.f;
 
     m_num_indices = indices.size();
-    m_position = { 50.f, 100.f };
+    m_position = { 2500.f, 500.f };
     m_rotation = 0.f;
 
     //m_isMove = false;
