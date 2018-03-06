@@ -90,8 +90,11 @@ bool World::init(vec2 screenSize, vec2 worldSize)
         ((World *) glfwGetWindowUserPointer(wnd))->onKey(wnd, _0, _1, _2, _3); };
 	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) {
         ((World *) glfwGetWindowUserPointer(wnd))->onMouseMove(wnd, _0, _1); };
+    auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
+        ((World *) glfwGetWindowUserPointer(wnd))->onMouseClick(wnd, _0, _1, _2); };
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+    glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
     m_size = worldSize;
     m_camera.setSize(screenSize);
@@ -606,14 +609,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }else if (action == GLFW_RELEASE){
             is_shot = false;
         }*/
-    if (key == GLFW_KEY_SPACE) {
-        if (action == GLFW_PRESS) {
-            is_shot = true;
-        } else if (action == GLFW_RELEASE) {
-            is_shot = false;
-        }
 
-    }
 
 
 
@@ -668,4 +664,14 @@ void World::onMouseMove(GLFWwindow *window, double xpos, double ypos)
 
     m_player.set_rotation(rotation_angle);
     //m_player.set_rotation(atan2((xpos - m_player.getPosition().x), -(ypos - m_player.getPosition().y) ) );
+}
+
+void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) {
+            is_shot = true;
+        } else if (action == GLFW_RELEASE) {
+            is_shot = false;
+        }
+    }
 }
