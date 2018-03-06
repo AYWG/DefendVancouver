@@ -5,7 +5,7 @@
 #pragma once
 
 
-#include "behaviourTreeNode.hpp"
+#include "../behaviourTreeNode.hpp"
 
 /**
  * A DecoratorNode has a single child

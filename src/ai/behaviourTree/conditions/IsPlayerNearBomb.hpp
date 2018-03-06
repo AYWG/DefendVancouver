@@ -6,15 +6,11 @@
 
 
 #include "../conditionNode.hpp"
-#include "../../../world.hpp"
+#include "../../../enemies/enemy.hpp"
 
-class IsObjectInVision : public ConditionNode {
+class IsPlayerNearBomb : public ConditionNode {
 public:
-    explicit IsObjectInVision(vec2 objPosition);
     STATUS tick(World *world, Enemy *enemy, float ms) override;
-
-private:
-    vec2 m_objPosition;
 };
 
 

@@ -87,49 +87,49 @@ void Shooter::update(World *world, float ms) {
     m_ai.doNextAction(world, this, ms);
 
     // if in range, and player is within cone
-    if (m_position.y > 250) {
-
-        float targetAngle;
-        auto playerPosition = world->getPlayerPosition();
-        if (isObjectInVision(playerPosition)) {
-            auto yDiff = playerPosition.y - m_position.y;
-            auto xDiff = playerPosition.x - m_position.x;
-            targetAngle = -1.f * atanf(xDiff / yDiff);
-
-            // Check for any bombs in vision
-            std::vector<vec2> bombsInVision;
-            for (auto bombPosition : world->getBombPositions()) {
-                if (isObjectInVision(bombPosition)) {
-                    bombsInVision.emplace_back(bombPosition);
-                }
-            }
-
-            if (!bombsInVision.empty()) {
-                std::vector<vec2> bombsCloseToPlayer;
-                for (auto bombInVision : bombsInVision) {
-                    // TODO: Improve this
-                    if (fabs(bombInVision.x - playerPosition.x) < 100 &&
-                            fabs(bombInVision.y - playerPosition.y) < 100) {
-                        bombsCloseToPlayer.emplace_back(bombInVision);
-                        break;
-                    }
-                }
-
-                if (!bombsCloseToPlayer.empty()) {
-                    yDiff = bombsCloseToPlayer.front().y - m_position.y;
-                    xDiff = bombsCloseToPlayer.front().x - m_position.x;
-                    targetAngle = -1.f * atan(xDiff / yDiff);
-                }
-            }
-        }
-        else {
-            // default rotation
-            targetAngle = 0.f;
-        }
-
-        if (targetAngle > m_rotation) m_rotation = std::min(targetAngle, m_rotation + 0.01f);
-        if (targetAngle < m_rotation) m_rotation = std::max(targetAngle, m_rotation - 0.01f);
-    }
+//    if (m_position.y > 250) {
+//
+//        float targetAngle;
+//        auto playerPosition = world->getPlayerPosition();
+//        if (isObjectInVision(playerPosition)) {
+//            auto yDiff = playerPosition.y - m_position.y;
+//            auto xDiff = playerPosition.x - m_position.x;
+//            targetAngle = -1.f * atanf(xDiff / yDiff);
+//
+//            // Check for any bombs in vision
+//            std::vector<vec2> bombsInVision;
+//            for (auto bombPosition : world->getBombPositions()) {
+//                if (isObjectInVision(bombPosition)) {
+//                    bombsInVision.emplace_back(bombPosition);
+//                }
+//            }
+//
+//            if (!bombsInVision.empty()) {
+//                std::vector<vec2> bombsCloseToPlayer;
+//                for (auto bombInVision : bombsInVision) {
+//                    // TODO: Improve this
+//                    if (fabs(bombInVision.x - playerPosition.x) < 100 &&
+//                            fabs(bombInVision.y - playerPosition.y) < 100) {
+//                        bombsCloseToPlayer.emplace_back(bombInVision);
+//                        break;
+//                    }
+//                }
+//
+//                if (!bombsCloseToPlayer.empty()) {
+//                    yDiff = bombsCloseToPlayer.front().y - m_position.y;
+//                    xDiff = bombsCloseToPlayer.front().x - m_position.x;
+//                    targetAngle = -1.f * atan(xDiff / yDiff);
+//                }
+//            }
+//        }
+//        else {
+//            // default rotation
+//            targetAngle = 0.f;
+//        }
+//
+//        if (targetAngle > m_rotation) m_rotation = std::min(targetAngle, m_rotation + 0.01f);
+//        if (targetAngle < m_rotation) m_rotation = std::max(targetAngle, m_rotation - 0.01f);
+//    }
 
 
 

@@ -20,6 +20,9 @@ public:
 private:
     BehaviourTreeNode *m_root;
 
+    /**
+     * Builds the behaviour tree.
+     */
     void init();
 };
 
