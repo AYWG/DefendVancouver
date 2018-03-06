@@ -78,7 +78,7 @@ mat3 mul(const mat3 &l, const mat3 &r) {
 
 vec2 normalize(vec2 v) {
     float m = magnitude(v);
-    if (m == 0.f) {
+    if (m < 1.f) {
         return { v.x, v.y };
     }
     return {v.x / m, v.y / m};
