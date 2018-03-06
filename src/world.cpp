@@ -105,19 +105,15 @@ bool World::init(vec2 screenSize, vec2 worldSize)
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
 
-  //  m_chaser.init();
-
     m_player.init();
 
     m_plbullet.init();
-    //m_bomb.init(textures_path("normal_bomb.png"));
-    //m_bomber.init();
+
     m_background.init();
 
-	//m_background.init();
     m_camera.setFocusPoint(m_player.get_position());
 	return m_player.init();
-	//return true;
+
 }
 
 // Releases all the associated resources
@@ -134,15 +130,11 @@ bool World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
 
-
-
-    // faster based on current
+    // faster based on acceleration
     m_player.update(elapsed_ms);
-
-
-
     vec2 playerPos = m_player.get_position();
-    // update camera
+
+    // Update camera
     if (((playerPos.x - screen.x / 5 >= 0) && (playerPos.x - 6 * screen.x / 5 <= 0)) &&
         playerPos.x + screen.x / 2 <= m_size.x) {
         m_camera.setFocusPoint({playerPos.x, m_camera.getFocusPoint().y});
@@ -151,7 +143,6 @@ bool World::update(float elapsed_ms) {
         playerPos.y + screen.y / 2 <= m_size.y) {
         m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
     }
-
 
     //bullet
     m_next_pbullet_spawn -= elapsed_ms;
