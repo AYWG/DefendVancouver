@@ -19,6 +19,10 @@ public:
 
     vec2 get_position()const;
 
+    int getFrameCount()const;
+
+    void set_position(vec2 position);
+
     void draw(const mat3 &projection);
 
     bool update(float ms);

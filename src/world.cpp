@@ -1,6 +1,6 @@
 // Header
 #include "world.hpp"
-#include <bits/stdc++.h>
+
 
 
 // stlib
@@ -18,11 +18,13 @@ namespace
 
     const size_t MAX_BASENEMIES = 1;
     const size_t MAX_BULLET = 1;
+    const size_t MAX_BOMBS = 5;
     const size_t BENEMY_DELAY_MS = 2000;
     const size_t PBULLET_DELAY_MS = 200;
     const size_t MAX_SHOOTERS = 15;
     const size_t MAX_CHASER = 0;
     const size_t SHOOTER_DELAY_MS = 2000;
+    const size_t BOMB_DELAY_MS = 5000;
 
 
 	namespace
@@ -38,7 +40,8 @@ World::World() :
 	m_points(0),
     m_next_pbullet_spawn(0.f),
     m_next_shooter_spawn(0.f),
-    m_next_chaser_spawn(0.f)
+    m_next_chaser_spawn(0.f),
+    m_next_bomb_spawn(0.f)
 
 {
 	// Seeding rng with random device
@@ -102,19 +105,15 @@ bool World::init(vec2 screenSize, vec2 worldSize)
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
 
-  //  m_chaser.init();
-
     m_player.init();
 
     m_plbullet.init();
-    m_bomb.init(textures_path("normal_bomb.png"));
-    //m_bomber.init();
+
     m_background.init();
 
-	//m_background.init();
     m_camera.setFocusPoint(m_player.get_position());
 	return m_player.init();
-	//return true;
+
 }
 
 // Releases all the associated resources
@@ -131,15 +130,11 @@ bool World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
 
-
-
-    // faster based on current
+    // faster based on acceleration
     m_player.update(elapsed_ms);
-    m_bomb.update(elapsed_ms);
-
-
     vec2 playerPos = m_player.get_position();
-    // update camera
+
+    // Update camera
     if (((playerPos.x - screen.x / 5 >= 0) && (playerPos.x - 6 * screen.x / 5 <= 0)) &&
         playerPos.x + screen.x / 2 <= m_size.x) {
         m_camera.setFocusPoint({playerPos.x, m_camera.getFocusPoint().y});
@@ -148,7 +143,6 @@ bool World::update(float elapsed_ms) {
         playerPos.y + screen.y / 2 <= m_size.y) {
         m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
     }
-
 
     //bullet
     m_next_pbullet_spawn -= elapsed_ms;
@@ -405,6 +399,39 @@ bool World::update(float elapsed_ms) {
     }
 
 
+    // trigger bomb animation
+    for (auto& bomb : m_bombs)
+        bomb.update(elapsed_ms * m_current_speed);
+
+    // removing bombs from screen
+    auto bomb_it = m_bombs.begin();
+    while (bomb_it != m_bombs.end())
+    {
+        int fc = bomb_it->getFrameCount();
+        if (fc == 0)
+        {
+            bomb_it = m_bombs.erase(bomb_it);
+            continue;
+        }
+
+        ++bomb_it;
+    }
+
+    // Spawn new regular bombs
+    m_next_bomb_spawn -= elapsed_ms;
+    if (m_bombs.size() <= MAX_BOMBS && m_next_bomb_spawn < 0.f)
+    {
+        if (!spawn_bomb())
+            return false;
+        Bomb& new_bomb = m_bombs.back();
+
+        //new_bomb.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
+        new_bomb.set_position(getPlayerPosition());
+
+        m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
+    }
+
+
 
 
     return true;
@@ -461,7 +488,6 @@ void World::draw()
  //   m_plbullet.draw(projection_2D);
 
 	m_player.draw(projection_2D);
-    m_bomb.draw(projection_2D);
 
     //m_bomber.draw(projection_2D);
 
@@ -484,6 +510,10 @@ void World::draw()
         //  if(is_shot) {
         shotBullet.draw(projection_2D);
         //  }
+    }
+
+    for (auto& bomb : m_bombs){
+        bomb.draw(projection_2D);
     }
 
 
@@ -544,6 +574,18 @@ bool World::spawn_playerBullet()
         return true;
     }
     fprintf(stderr, "Failed to spawn player bullet");
+    return false;
+}
+
+bool World::spawn_bomb()
+{
+    Bomb bomb;
+    if (bomb.init(textures_path("normal_bomb.png")))
+    {
+        m_bombs.emplace_back(bomb);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn bomb");
     return false;
 }
 
