@@ -34,7 +34,7 @@ public:
 
     vec2 getBoundingBox() const override;
 
-    void attack() override;
+    void attack(float ms) override;
 
 
 private:

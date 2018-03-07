@@ -3,3 +3,8 @@
 //
 
 #include "attack.hpp"
+
+Attack::STATUS Attack::tick(World *world, Enemy *enemy, float ms) {
+    enemy->attack(ms);
+    return SUCCESS;
+}

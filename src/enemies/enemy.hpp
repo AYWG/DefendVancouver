@@ -42,7 +42,7 @@ public:
     /**
      * Every enemy has a different attack.
      */
-    virtual void attack() = 0;
+    virtual void attack(float ms) = 0;
 
 protected:
     vec2 m_position;

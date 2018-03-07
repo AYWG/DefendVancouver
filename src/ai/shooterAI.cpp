@@ -11,6 +11,7 @@
 #include "behaviourTree/sequenceNode.hpp"
 #include "behaviourTree/decorators/repeatUntilFailure.hpp"
 #include "behaviourTree/decorators/succeeder.hpp"
+#include "behaviourTree/actions/attack.hpp"
 
 ShooterAI::ShooterAI() : m_root(nullptr) {
     init();
@@ -22,6 +23,7 @@ void ShooterAI::doNextAction(World *world, Enemy *enemy, float ms) {
 
 void ShooterAI::init() {
     auto moveIntoRangeNode = new MoveIntoRange();
+    auto attackNode = new Attack();
     auto rotateToTargetNode = new RotateToTarget();
     auto isPlayerInVisionNode = new IsPlayerInVision();
     auto areBombsInVisionNode = new AreBombsInVision();
@@ -31,7 +33,7 @@ void ShooterAI::init() {
     auto findTargetSequenceNode = new SequenceNode(findTargetSequenceChildren);
     auto succeederNode = new Succeeder(findTargetSequenceNode);
 
-    vector<BehaviourTreeNode *> attackingSequenceChildren = {succeederNode, rotateToTargetNode};
+    vector<BehaviourTreeNode *> attackingSequenceChildren = {succeederNode, rotateToTargetNode, attackNode};
     auto attackingSequenceNode = new SequenceNode(attackingSequenceChildren);
 
     auto repeatUntilFailureNode = new RepeatUntilFailure(attackingSequenceNode);

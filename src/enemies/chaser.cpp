@@ -153,7 +153,7 @@ vec2 Chaser::move(vec2 off){
 
 }
 
-void Chaser::attack() {
+void Chaser::attack(float ms) {
 
 }
 
