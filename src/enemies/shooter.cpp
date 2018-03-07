@@ -78,7 +78,7 @@ bool Shooter::init() {
 }
 
 void Shooter::destroy(){
-d
+
 }
 
 void Shooter::update(World *world, float ms) {
