@@ -7,9 +7,9 @@
 
 #include "decoratorNode.hpp"
 
-class RepeatUntilSuccess : public DecoratorNode {
+class RepeatUntilFailure : public DecoratorNode {
 public:
-    explicit RepeatUntilSuccess(BehaviourTreeNode* child);
+    explicit RepeatUntilFailure(BehaviourTreeNode* child);
 
     STATUS tick(World *world, Enemy *enemy, float ms) override;
 };

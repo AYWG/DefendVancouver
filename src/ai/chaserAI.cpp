@@ -2,7 +2,7 @@
 // Created by Andy on 2018-02-25.
 //
 
-#include "actions/moveToLocation.hpp"
+#include "behaviourTree/actions/moveIntoRange.hpp"
 #include "chaserAI.hpp"
 
 ChaserAI::ChaserAI() : m_root(nullptr) {
@@ -14,5 +14,5 @@ void ChaserAI::doNextAction(World *world, Enemy *enemy, float ms) {
 }
 
 void ChaserAI::init() {
-    //m_root = new MoveToLocation();
+    //m_root = new MoveIntoRange();
 }

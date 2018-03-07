@@ -155,7 +155,6 @@ bool World::update(float elapsed_ms) {
 
         float bulletAngle = -1.f * m_player.getRotation() + 3.1415f / 2.f;
 
-        printf("player orientation: %f\n", m_player.getRotation());
         new_pBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
 
         m_next_pbullet_spawn = PBULLET_DELAY_MS;
@@ -205,11 +204,10 @@ bool World::update(float elapsed_ms) {
             return false;
         }
 
-        Shooter& new_bEnemy = m_shooters.back();
+        Shooter& shooter = m_shooters.back();
 
         // Setting random initial position
-       // new_bEnemy.setPosition(({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
-        new_bEnemy.setPosition({ 50 + m_dist(m_rng) * (screen.x), screen.y - 800  });
+        shooter.setPosition({ 50 + m_dist(m_rng) * screen.x, -200.f  });
         // Next spawn
         m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
     }
@@ -527,6 +525,18 @@ bool World::is_over()const
 
 vec2 World::getPlayerPosition() const {
     return m_player.get_position();
+}
+
+std::vector<vec2> World::getBombPositions() const {
+    auto positions = std::vector<vec2>();
+    for (auto& bomb : m_bombs) {
+        positions.emplace_back(bomb.get_position());
+    }
+    return positions;
+}
+
+vec2 World::getCityPosition() const {
+    return m_background.get_position();
 }
 
 
