@@ -6,13 +6,14 @@
 
 
 #include "../actionNode.hpp"
+#include "../../../enemies/enemy.hpp"
 
 /**
  * An attack action.
  */
 
-class Attack : ActionNode {
-
+class Attack : public ActionNode {
+    STATUS tick(World *world, Enemy *enemy, float ms) override;
 };
 
 

@@ -78,28 +78,11 @@ bool Shooter::init() {
 }
 
 void Shooter::destroy(){
-
+d
 }
 
 void Shooter::update(World *world, float ms) {
     m_ai.doNextAction(world, this, ms);
-
-    m_nextShooterBulletSpawn -= ms;
-
-    if (m_shooterBullets.size() <= Shooter::maxNumberOfBullets && m_nextShooterBulletSpawn < 0.f) {
-        if (!spawnBullet()) {
-            return;
-        }
-
-        ShooterBullet& newBullet = m_shooterBullets.back();
-        newBullet.setPosition(m_position);
-
-        float bulletAngle = m_rotation + 3.1415f / 2.f;
-        newBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
-
-        m_nextShooterBulletSpawn = Shooter::bulletDelayMS;
-
-    }
 
     for (auto& shooterBullet : m_shooterBullets) {
         shooterBullet.update(ms);
@@ -116,7 +99,6 @@ void Shooter::update(World *world, float ms) {
 
         ++shooterBullet_it;
     }
-
 }
 
 void Shooter::draw(const mat3& projection){
@@ -180,8 +162,21 @@ vec2 Shooter::getBoundingBox()const
 
 //vec2 get_bounding_box()const;
 
-void Shooter::attack() {
+void Shooter::attack(float ms) {
+    m_nextShooterBulletSpawn -= ms;
 
+    if (m_shooterBullets.size() <= Shooter::maxNumberOfBullets && m_nextShooterBulletSpawn < 0.f) {
+        if (!spawnBullet()) {
+            return;
+        }
+        ShooterBullet& newBullet = m_shooterBullets.back();
+        newBullet.setPosition(m_position);
+
+        float bulletAngle = m_rotation + 3.1415f / 2.f;
+        newBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
+
+        m_nextShooterBulletSpawn = Shooter::bulletDelayMS;
+    }
 }
 
 bool Shooter::spawnBullet() {

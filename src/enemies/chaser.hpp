@@ -75,7 +75,7 @@ public:
 
     vec2 move(vec2 off);
 
-    void attack() override ;
+    void attack(float ms) override ;
 
 private:
     ChaserAI m_ai;
