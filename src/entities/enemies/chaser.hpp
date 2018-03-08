@@ -77,6 +77,8 @@ public:
 
     void attack(float ms) override ;
 
+    unsigned int getMass() const override;
+
 private:
     ChaserAI m_ai;
     float m_nextChaserBulletSpawn;

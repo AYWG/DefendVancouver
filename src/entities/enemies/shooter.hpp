@@ -9,7 +9,6 @@
 #include "../../ai/shooterAI.hpp"
 #include "../bullets/shooterBullet.hpp"
 
-// Basic alien enemies for the game (grey spaceship)
 
 class Shooter : public Enemy, public Renderable {
 
@@ -32,6 +31,8 @@ public:
     vec2 getBoundingBox() const override;
 
     void attack(float ms) override;
+
+    unsigned int getMass() const override;
 
 
 private:

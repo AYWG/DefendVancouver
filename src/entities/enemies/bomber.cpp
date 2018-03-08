@@ -127,3 +127,7 @@ void Bomber::draw(const mat3 &projection) {
 }
 
 //vec2 getBoundingBox()const;
+
+unsigned int Bomber::getMass() const {
+    return 110;
+}

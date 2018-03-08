@@ -118,4 +118,7 @@ vec2 PlayerBullet::getBoundingBox() const {
     return { std::fabs(m_scale.x) * playerBulletTexture.width, std::fabs(m_scale.y) * playerBulletTexture.height};
 }
 
+unsigned int PlayerBullet::getMass() const {
+    return 10;
+}
 

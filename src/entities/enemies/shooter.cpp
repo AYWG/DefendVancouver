@@ -176,6 +176,10 @@ void Shooter::attack(float ms) {
     }
 }
 
+unsigned int Shooter::getMass() const {
+    return 100;
+}
+
 bool Shooter::spawnBullet() {
     ShooterBullet bullet;
     if (bullet.init())

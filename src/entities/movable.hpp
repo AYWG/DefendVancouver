@@ -8,7 +8,11 @@
 class Movable {
 public:
     virtual ~Movable() = default;
-    virtual unsigned int getMass() = 0;
+
+    /**
+     * Anything that is movable has a fixed mass.
+     */
+    virtual unsigned int getMass() const = 0;
 };
 
 

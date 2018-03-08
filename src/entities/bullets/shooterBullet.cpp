@@ -114,3 +114,7 @@ void ShooterBullet::update(float ms) {
 vec2 ShooterBullet::getBoundingBox() const {
 
 }
+
+unsigned int ShooterBullet::getMass() const {
+    return 10;
+}

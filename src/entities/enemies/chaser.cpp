@@ -157,6 +157,10 @@ void Chaser::attack(float ms) {
 
 }
 
+unsigned int Chaser::getMass() const {
+    return 90;
+}
+
 // A Utility Function to check whether given cell (row, col)
 // is a valid cell or not.
 bool Chaser::isValid(int row, int col)

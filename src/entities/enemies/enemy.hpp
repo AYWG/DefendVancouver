@@ -9,10 +9,11 @@
 #include "../../common.hpp"
 #include "../bomb.hpp"
 #include "../entity.hpp"
+#include "../movable.hpp"
 
 class World;
 
-class Enemy : public Entity {
+class Enemy : public Entity, public Movable {
 public:
     Enemy();
     virtual ~Enemy() = default;

@@ -6,16 +6,14 @@
 
 
 #include "../../common.hpp"
+#include "../movable.hpp"
+#include "../entity.hpp"
 
-class Bullet {
+class Bullet : public Entity, public Movable {
 public:
     Bullet();
 
     virtual void update(float ms) = 0;
-
-    vec2 getPosition() const;
-
-    void setPosition(vec2 position);
 
     void setDirection(vec2 direction);
 
@@ -25,7 +23,6 @@ public:
 
 protected:
     vec2 m_scale;
-    vec2 m_position;
 
     // A unit vector representing the bullet's direction
     vec2 m_direction;

@@ -492,7 +492,7 @@ std::vector<vec2> World::getBombPositions() const {
 }
 
 vec2 World::getCityPosition() const {
-    return m_background.get_position();
+    return m_background.getPosition();
 }
 
 
