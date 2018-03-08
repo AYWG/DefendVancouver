@@ -104,11 +104,9 @@ void Player::destroy() {
 }
 
 void Player::update(float ms) {
-    // every frame, decrement absolute value of velocity
-    auto drag = 50.f * ms / 1000;
-    m_velocity.x = m_velocity.x > 0 ? std::max(0.f, m_velocity.x - drag) : std::min(0.f, m_velocity.x + drag);
-    m_velocity.y = m_velocity.y > 0 ? std::max(0.f, m_velocity.y - drag) : std::min(0.f, m_velocity.y + drag);
-
+    auto drag = 1.05f;
+    m_velocity.x /= drag;
+    m_velocity.y /= drag;
 
     // determine net acceleration vector based on m_isFlying
     // get direction vector for each flag that is set, then add up the direction vectors, then normalize
@@ -122,7 +120,7 @@ void Player::update(float ms) {
         }
     }
     netAccelerationDirection = normalize(netAccelerationDirection);
-    auto accelerationMagnitude = 300.f;
+    auto accelerationMagnitude = 1000.f;
     auto deltaXVelocity = netAccelerationDirection.x * accelerationMagnitude * ms / 1000;
     auto deltaYVelocity = netAccelerationDirection.y * accelerationMagnitude * ms / 1000;
 
