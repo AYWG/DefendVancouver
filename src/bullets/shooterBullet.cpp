@@ -9,7 +9,7 @@ Texture ShooterBullet::shooterBulletTexture;
 bool ShooterBullet::init() {
     //Load texture
     if (!shooterBulletTexture.is_valid()) {
-        if (!shooterBulletTexture.load_from_file(textures_path("Enemy_bullet.png"))) {
+        if (!shooterBulletTexture.load_from_file(textures_path("shooterBullet.png"))) {
             fprintf(stderr, "Failed to load shooter bullet texture!");
             return false;
         }
@@ -54,8 +54,6 @@ bool ShooterBullet::init() {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
-    m_scale.x = 1.0f;
-    m_scale.y = 1.0f;
 
     return true;
 }
@@ -106,28 +104,13 @@ void ShooterBullet::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void ShooterBullet::fire(vec2 aimDirection) {
-    //fires bullet at aimDir
-    m_position.x += aimDirection.x;
-    m_position.y += aimDirection.y;
-}
-
 void ShooterBullet::update(float ms) {
-    m_velocity = 325.0f;
+    float x_step = m_speed * (ms / 1000) * m_direction.x;
+    float y_step = m_speed * (ms / 1000) * m_direction.y;
 
-    float x_step = m_velocity * (ms / 1000) * m_direction.x;
-    float y_step = m_velocity * (ms / 1000) * m_direction.y;
-    fire({x_step, y_step});
+    setPosition({getPosition().x + x_step, getPosition().y + y_step});
 }
 
-vec2 ShooterBullet::getPosition() const {
-    return m_position;
-}
+vec2 ShooterBullet::getBoundingBox() const {
 
-void ShooterBullet::setPosition(vec2 position) {
-    m_position = position;
-}
-
-void ShooterBullet::setDirection(vec2 direction) {
-    m_direction = direction;
 }

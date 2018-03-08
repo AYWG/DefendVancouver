@@ -12,6 +12,10 @@
 #include <vector>
 #include <sstream>
 
+std::string getTexturesPath(std::string& fileName) {
+    return (std::string("../data/textures/") + fileName);
+}
+
 void gl_flush_errors() {
     while (glGetError() != GL_NO_ERROR);
 }

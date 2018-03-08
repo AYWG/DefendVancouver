@@ -7,9 +7,8 @@
 #include <vector>
 #include "../common.hpp"
 #include "enemy.hpp"
-#include "shooterBullet.hpp"
 #include "../ai/shooterAI.hpp"
-//#include "chaser.hpp"
+#include "../bullets/shooterBullet.hpp"
 
 // Basic alien enemies for the game (grey spaceship)
 
@@ -22,7 +21,6 @@ class Shooter : public Enemy, public Renderable {
 public:
 
     explicit Shooter(ShooterAI& ai);
-
 
     bool init() override;
 
@@ -43,13 +41,11 @@ private:
 
 //    vec2 get_bounding_box()const;
 
-    std::vector<ShooterBullet> m_shooterBullets;
+    std::vector<ShooterBullet> m_bullets;
 
 
-    float m_nextShooterBulletSpawn;
+    float m_nextBulletSpawn;
 
     bool spawnBullet();
-
-    bool isObjectInVision(vec2 objPosition);
 
 };

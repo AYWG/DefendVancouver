@@ -5,16 +5,13 @@
 #include "shooter.hpp"
 #include "../world.hpp"
 
-#include <cmath>
-#include <iostream>
-//class World;
 
 Texture Shooter::shooterTexture;
 
 int Shooter::maxNumberOfBullets = 5;
 int Shooter::bulletDelayMS = 1000;
 
-Shooter::Shooter(ShooterAI& ai) : m_ai(ai), m_nextShooterBulletSpawn(0.f) {}
+Shooter::Shooter(ShooterAI& ai) : m_ai(ai), m_nextBulletSpawn(0.f) {}
 
 bool Shooter::init() {
 
@@ -84,20 +81,20 @@ void Shooter::destroy(){
 void Shooter::update(World *world, float ms) {
     m_ai.doNextAction(world, this, ms);
 
-    for (auto& shooterBullet : m_shooterBullets) {
-        shooterBullet.update(ms);
+    for (auto& bullet : m_bullets) {
+        bullet.update(ms);
     }
 
     // remove out of screen bullets - remove once we have proper collisions
-    auto shooterBullet_it = m_shooterBullets.begin();
+    auto bulletIt = m_bullets.begin();
 
-    while (shooterBullet_it != m_shooterBullets.end()) {
-        if (shooterBullet_it->getPosition().y >  1000) {
-            shooterBullet_it = m_shooterBullets.erase(shooterBullet_it);
+    while (bulletIt != m_bullets.end()) {
+        if (bulletIt->getPosition().y >  1000) {
+            bulletIt = m_bullets.erase(bulletIt);
             continue;
         }
 
-        ++shooterBullet_it;
+        ++bulletIt;
     }
 }
 
@@ -146,8 +143,8 @@ void Shooter::draw(const mat3& projection){
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-    for (auto& shooterBullet : m_shooterBullets) {
-        shooterBullet.draw(projection);
+    for (auto& bullet : m_bullets) {
+        bullet.draw(projection);
     }
 }
 
@@ -163,48 +160,29 @@ vec2 Shooter::getBoundingBox()const
 //vec2 get_bounding_box()const;
 
 void Shooter::attack(float ms) {
-    m_nextShooterBulletSpawn -= ms;
+    m_nextBulletSpawn -= ms;
 
-    if (m_shooterBullets.size() <= Shooter::maxNumberOfBullets && m_nextShooterBulletSpawn < 0.f) {
+    if (m_bullets.size() <= Shooter::maxNumberOfBullets && m_nextBulletSpawn < 0.f) {
         if (!spawnBullet()) {
             return;
         }
-        ShooterBullet& newBullet = m_shooterBullets.back();
+        ShooterBullet& newBullet = m_bullets.back();
         newBullet.setPosition(m_position);
 
         float bulletAngle = m_rotation + 3.1415f / 2.f;
         newBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
-
-        m_nextShooterBulletSpawn = Shooter::bulletDelayMS;
+        newBullet.setSpeed(325.0f);
+        m_nextBulletSpawn = Shooter::bulletDelayMS;
     }
 }
 
 bool Shooter::spawnBullet() {
-    ShooterBullet shooterBullet;
-    if (shooterBullet.init())
+    ShooterBullet bullet;
+    if (bullet.init())
     {
-        m_shooterBullets.emplace_back(shooterBullet);
+        m_bullets.emplace_back(bullet);
         return true;
     }
     fprintf(stderr, "Failed to spawn shooter bullet");
     return false;
 }
-
-bool Shooter::isObjectInVision(vec2 objPosition) {
-    // vision is represented by an invisible "triangle" that extends from the shooter's current position
-    float shooterVisionAngleFromNormal = 3.1415f / 6;
-
-    if (objPosition.y > m_position.y) {
-        float verticalDiff = objPosition.y - m_position.y;
-
-        float distanceToVisionBoundaryFromNormal = verticalDiff * tanf(shooterVisionAngleFromNormal);
-
-        if (objPosition.x < m_position.x + distanceToVisionBoundaryFromNormal &&
-                objPosition.x > m_position.x - distanceToVisionBoundaryFromNormal) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
