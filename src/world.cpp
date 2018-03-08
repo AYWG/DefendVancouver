@@ -20,7 +20,7 @@ namespace
     const size_t MAX_BULLET = 1;
     const size_t MAX_BOMBS = 5;
     const size_t BENEMY_DELAY_MS = 2000;
-    const size_t PBULLET_DELAY_MS = 200;
+    const size_t BULLET_DELAY_MS = 200;
     const size_t MAX_SHOOTERS = 15;
     const size_t MAX_CHASER = 0;
     const size_t SHOOTER_DELAY_MS = 2000;
@@ -38,7 +38,7 @@ namespace
 
 World::World() :
 	m_points(0),
-    m_next_pbullet_spawn(0.f),
+    m_next_bullet_spawn(0.f),
     m_next_shooter_spawn(0.f),
     m_next_chaser_spawn(0.f),
     m_next_bomb_spawn(0.f)
@@ -105,10 +105,6 @@ bool World::init(vec2 screenSize, vec2 worldSize)
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
 
-    m_player.init();
-
-    m_plbullet.init();
-
     m_background.init();
 
     m_camera.setFocusPoint(m_player.get_position());
@@ -143,51 +139,35 @@ bool World::update(float elapsed_ms) {
     }
 
     //bullet
-    m_next_pbullet_spawn -= elapsed_ms;
-    // if(m_pbullet.size() <= MAX_BASENEMIES && m_next_pbullet_spawn) {
-    if (is_shot && m_next_pbullet_spawn < 0.f) {
+    m_next_bullet_spawn -= elapsed_ms;
+    if (is_shot && m_next_bullet_spawn < 0.f) {
         if (!spawn_playerBullet()) {
             return false;
         }
 
-        pBullet &new_pBullet = m_pbullet.back();
+        Bullet &new_pBullet = m_bullets.back();
         new_pBullet.setPosition(m_player.get_position());
 
         float bulletAngle = -1.f * m_player.getRotation() + 3.1415f / 2.f;
 
         new_pBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
-
-        m_next_pbullet_spawn = PBULLET_DELAY_MS;
+        new_pBullet.setSpeed(325.0f);
+        m_next_bullet_spawn = BULLET_DELAY_MS;
     }
 
-    for (auto& pBullet : m_pbullet){
-        pBullet.update(elapsed_ms);
-
-        /*if (is_shot) {
-           // pBullet = m_pbullet.back();
-           // pBullet.setPosition()(m_player.getPosition());
-            pBullet.fireBullet({pBullet.m_velocity * mouseAimDir.x , pBullet.m_velocity * mouseAimDir.y });
-            afterShot = {pBullet.m_velocity * mousePosition().x, pBullet.m_velocity * mousePosition().y};
-
-        } else {
-            pBullet.update(elapsed_ms * m_plbullet.m_velocity);
-            pBullet.fireBullet({afterShot.x, afterShot.y});
-
-
-        }*/
-
+    for (auto& bullet : m_bullets){
+        bullet.update(elapsed_ms);
     }
 
 
-    auto pbullet_it = m_pbullet.begin();
+    auto pbullet_it = m_bullets.begin();
 
-    while (pbullet_it != m_pbullet.end()) {
+    while (pbullet_it != m_bullets.end()) {
         if (pbullet_it->getPosition().y >  m_camera.getBottomBoundary() ||
             pbullet_it->getPosition().y  <  m_camera.getTopBoundary() ||
             pbullet_it->getPosition().x > m_camera.getRightBoundary() ||
             pbullet_it->getPosition().x < m_camera.getLeftBoundary()) {
-            // m_pbullet.pop_back();
-            pbullet_it = m_pbullet.erase(pbullet_it);
+            pbullet_it = m_bullets.erase(pbullet_it);
             continue;
         }
 
@@ -195,7 +175,6 @@ bool World::update(float elapsed_ms) {
     }
 
 
-    //basicEnemySpawning
     m_next_shooter_spawn -= elapsed_ms * m_current_speed;
     if(m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn){
 
@@ -215,37 +194,36 @@ bool World::update(float elapsed_ms) {
     for (auto& bEnemy : m_shooters)
         bEnemy.update(this, elapsed_ms * m_current_speed);
 
-    // Removing out of screen bEnemy
-    auto benemy_it = m_shooters.begin();
-    while (benemy_it != m_shooters.end())
+    // Removing out of screen shooters
+    auto shooterIt = m_shooters.begin();
+    while (shooterIt != m_shooters.end())
     {
-        float w = benemy_it->getBoundingBox().x / 2;
-        if (benemy_it->getPosition().y + w > screen.y)
+        float w = shooterIt->getBoundingBox().x / 2;
+        if (shooterIt->getPosition().y + w > screen.y)
         {
-            benemy_it = m_shooters.erase(benemy_it);
+            shooterIt = m_shooters.erase(shooterIt);
             continue;
         }
 
-        ++benemy_it;
+        ++shooterIt;
     }
 
 
 
 /*
     auto benemy_col = m_shooters.begin();
-    auto pbullet_col = m_pbullet.begin();
+    auto pbullet_col = m_bullets.begin();
     float boundBullet = pbullet_col->getBoundingBox().x/2;
     float boundEnemy = benemy_col->getBoundingBox().x / 2;
-    while (pbullet_col != m_pbullet.end() && benemy_col != m_shooters.end()) {
+    while (pbullet_col != m_bullets.end() && benemy_col != m_shooters.end()) {
         if (pbullet_col->getPosition().y + boundBullet <
                 benemy_col->getPosition().y + boundEnemy){
             std::cout<<"hit";
             benemy_col = m_shooters.erase(benemy_col);
-            pbullet_col = m_pbullet.erase(pbullet_col);
+            pbullet_col = m_bullets.erase(pbullet_col);
 */
 
 //////////////////CHASER///////////////////
-    //basicEnemySpawning
     m_next_chaser_spawn -= elapsed_ms * m_current_speed;
     if(m_chasers.size() <= MAX_CHASER && m_next_chaser_spawn){
 
@@ -496,17 +474,10 @@ void World::draw()
         shooter.draw(projection_2D);
 
 
-       for (auto &bBullet : m_pbullet) {
-          //  if(is_shot) {
-                bBullet.draw(projection_2D);
-          //  }
+       for (auto &bullet : m_bullets) {
+                bullet.draw(projection_2D);
            }
 
-    for (auto &shotBullet : m_shotBullet) {
-        //  if(is_shot) {
-        shotBullet.draw(projection_2D);
-        //  }
-    }
 
     for (auto& bomb : m_bombs){
         bomb.draw(projection_2D);
@@ -575,10 +546,10 @@ bool World::spawnChaser() {
 
 bool World::spawn_playerBullet()
 {
-    pBullet playerBullet;
+    PlayerBullet playerBullet;
     if (playerBullet.init())
     {
-        m_pbullet.emplace_back(playerBullet);
+        m_bullets.emplace_back(playerBullet);
         return true;
     }
     fprintf(stderr, "Failed to spawn player bullet");

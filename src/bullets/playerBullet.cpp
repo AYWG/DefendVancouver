@@ -1,27 +1,27 @@
 //
 // Created by gowth on 2018-02-09.
 //
-#include "pbullet.hpp"
+#include "playerBullet.hpp"
 #include <cmath>
 
 
-Texture pBullet::pbullet_texture;
+Texture PlayerBullet::playerBulletTexture;
 
-bool pBullet::init() {
+bool PlayerBullet::init() {
 
     //Load texture
-    if (!pbullet_texture.is_valid())
+    if (!playerBulletTexture.is_valid())
     {
-        if (!pbullet_texture.load_from_file(textures_path("Player_bullet.png")))
+        if (!playerBulletTexture.load_from_file(textures_path("playerBullet.png")))
         {
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load player bullet texture!");
             return false;
         }
     }
 
     //center of texture
-    float width = pbullet_texture.width * 0.1f;
-    float height = pbullet_texture.height * 0.1f;
+    float width = playerBulletTexture.width * 0.1f;
+    float height = playerBulletTexture.height * 0.1f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -width, +height, -0.01f };
@@ -58,29 +58,18 @@ bool pBullet::init() {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
-    // Setting initial values, scale is negative to make it face the opposite way
-    // 1.0 would be as big as the original texture
-    m_scale.x = 1.0f;
-    m_scale.y = 1.0f;
-    //m_position = m_player.get_position();
-
-    m_position.x = 600000;
-    m_position.y = 40000000;
-
-
     return true;
 }
 
-void pBullet::update(float ms){
-    m_velocity =   325.0f;
+void PlayerBullet::update(float ms){
+    float x_step = m_speed * (ms / 1000) * m_direction.x;
+    float y_step = m_speed * (ms / 1000) * m_direction.y;
 
-    float x_step = m_velocity * (ms / 1000) * m_direction.x;
-    float y_step = m_velocity * (ms / 1000) * m_direction.y;
-    fireBullet({ x_step, y_step });
+    setPosition({getPosition().x + x_step, getPosition().y + y_step});
 }
 
 
-void pBullet::draw(const mat3 &projection){
+void PlayerBullet::draw(const mat3 &projection){
     transform_begin();
     transform_translate(m_position);
     transform_scale(m_scale);
@@ -113,7 +102,7 @@ void pBullet::draw(const mat3 &projection){
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, pbullet_texture.id);
+    glBindTexture(GL_TEXTURE_2D, playerBulletTexture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -125,30 +114,8 @@ void pBullet::draw(const mat3 &projection){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void pBullet::setPosition(vec2 position){
-    m_position = position;
-
-}
-
-vec2 pBullet::getPosition()const  {
-    return m_position;
-
-}
-
-
-
-void pBullet::fireBullet(vec2 aimDir) {
-    //fires bullet at aimDir
-    m_position.x += aimDir.x;
-    m_position.y += aimDir.y;
-}
-
-vec2 pBullet::getBoundingBox() const {
-    return { std::fabs(m_scale.x) * pbullet_texture.width, std::fabs(m_scale.y) * pbullet_texture.height};
-}
-
-void pBullet::setDirection(vec2 direction) {
-    m_direction = direction;
+vec2 PlayerBullet::getBoundingBox() const {
+    return { std::fabs(m_scale.x) * playerBulletTexture.width, std::fabs(m_scale.y) * playerBulletTexture.height};
 }
 
 

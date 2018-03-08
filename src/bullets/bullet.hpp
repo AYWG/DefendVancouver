@@ -1,5 +1,5 @@
 //
-// Created by Andy on 2018-02-24.
+// Created by Andy on 2018-03-03.
 //
 
 #pragma once
@@ -7,19 +7,11 @@
 
 #include "../common.hpp"
 
-class ShooterBullet : public Renderable {
-    static Texture shooterBulletTexture;
-
+class Bullet {
 public:
-    float m_velocity;
+    Bullet();
 
-    bool init();
-
-    void draw(const mat3 &projection) override;
-
-    void fire(vec2 aimDirection);
-
-    void update(float ms);
+    virtual void update(float ms) = 0;
 
     vec2 getPosition() const;
 
@@ -27,14 +19,18 @@ public:
 
     void setDirection(vec2 direction);
 
-private:
+    virtual vec2 getBoundingBox() const = 0;
 
+    void setSpeed(float speed);
+
+protected:
     vec2 m_scale;
     vec2 m_position;
 
     // A unit vector representing the bullet's direction
     vec2 m_direction;
 
+    float m_speed;
 };
 
 

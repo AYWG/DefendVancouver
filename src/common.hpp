@@ -21,9 +21,11 @@
 #define data_path "data"
 #define shader_path(name) "../shaders/" name
 #endif
-#define textures_path(name) "../data/textures/" name
+#define textures_path(name) "../data/textures/" name // string literal
 #define audio_path(name) data_path "/audio/" name
 #define mesh_path(name) "../data/meshes/" name
+
+std::string getTexturesPath(std::string& fileName);
 
 // Not much math is needed and there are already way too many libraries linked (:
 // If you want to do some overloads..
