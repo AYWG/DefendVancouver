@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../common.hpp"
+#include "../../common.hpp"
 #include "bullet.hpp"
 
 

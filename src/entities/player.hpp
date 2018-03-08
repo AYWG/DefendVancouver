@@ -6,7 +6,7 @@
 
 #define NUM_DIRECTIONS 4
 
-#include "common.hpp"
+#include "../common.hpp"
 
 class Player : public Renderable {
 

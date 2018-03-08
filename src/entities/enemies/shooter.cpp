@@ -3,7 +3,7 @@
 //
 
 #include "shooter.hpp"
-#include "../world.hpp"
+#include "../../world.hpp"
 
 
 Texture Shooter::shooterTexture;

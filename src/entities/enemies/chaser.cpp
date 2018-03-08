@@ -4,7 +4,7 @@
 
 #include "chaser.hpp"
 #include "shooter.hpp"
-#include "../world.hpp"
+#include "../../world.hpp"
 
 #include <cmath>
 #include <stack>

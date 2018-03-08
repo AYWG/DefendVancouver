@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "common.hpp"
+#include "../common.hpp"
 
 
 class Bomb : public Renderable{

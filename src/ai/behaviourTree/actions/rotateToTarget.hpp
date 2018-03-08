@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../actionNode.hpp"
-#include "../../../enemies/enemy.hpp"
+#include "../../../entities/enemies/enemy.hpp"
 
 class RotateToTarget : public ActionNode {
     STATUS tick(World *world, Enemy *enemy, float ms) override;

@@ -3,11 +3,11 @@
 //
 #pragma once
 
-#include "../common.hpp"
+#include "../../common.hpp"
 
 #include "../player.hpp"
 #include "enemy.hpp"
-#include "../ai/chaserAI.hpp"
+#include "../../ai/chaserAI.hpp"
 
 
 // Basic alien enemies for the game (grey spaceship)

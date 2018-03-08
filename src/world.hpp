@@ -2,14 +2,14 @@
 
 // internal
 #include "common.hpp"
-#include "player.hpp"
-#include "enemies/shooter.hpp"
-#include "enemies/bomber.hpp"
-#include "enemies/chaser.hpp"
+#include "entities/player.hpp"
+#include "entities/enemies/shooter.hpp"
+#include "entities/enemies/bomber.hpp"
+#include "entities/enemies/chaser.hpp"
 #include "background.hpp"
 #include "camera.hpp"
-#include "bomb.hpp"
-#include "bullets/playerBullet.hpp"
+#include "entities/bomb.hpp"
+#include "entities/bullets/playerBullet.hpp"
 
 // stlib
 #include <vector>

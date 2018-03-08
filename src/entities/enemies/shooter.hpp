@@ -5,9 +5,8 @@
 #pragma once
 
 #include <vector>
-#include "../common.hpp"
 #include "enemy.hpp"
-#include "../ai/shooterAI.hpp"
+#include "../../ai/shooterAI.hpp"
 #include "../bullets/shooterBullet.hpp"
 
 // Basic alien enemies for the game (grey spaceship)

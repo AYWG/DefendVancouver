@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include "../common.hpp"
+#include "../../common.hpp"
 #include "enemy.hpp"
 // Basic alien enemies for the game (grey spaceship)
 
