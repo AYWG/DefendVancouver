@@ -95,14 +95,12 @@ private:
     // Game entities
     Player m_player;
 
-    std::vector<pBullet> m_pbullet;
-    std::vector<pBullet> m_shotBullet;
+    std::vector<PlayerBullet> m_bullets;
     std::vector<Bomb> m_bombs;
 
 
 
 
-    pBullet m_plbullet;
 
 
 
@@ -115,7 +113,7 @@ private:
     float m_next_chaser_spawn;
     float m_current_speed;
     bool m_is_advanced_mode;
-    float  m_next_pbullet_spawn;
+    float  m_next_bullet_spawn;
     float m_next_bomb_spawn;
 
     // C++ rng

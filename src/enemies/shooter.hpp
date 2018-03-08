@@ -48,6 +48,4 @@ private:
 
     bool spawnBullet();
 
-    bool isObjectInVision(vec2 objPosition);
-
 };

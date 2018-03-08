@@ -20,7 +20,7 @@ namespace
     const size_t MAX_BULLET = 1;
     const size_t MAX_BOMBS = 5;
     const size_t BENEMY_DELAY_MS = 2000;
-    const size_t PBULLET_DELAY_MS = 200;
+    const size_t BULLET_DELAY_MS = 200;
     const size_t MAX_SHOOTERS = 15;
     const size_t MAX_CHASER = 0;
     const size_t SHOOTER_DELAY_MS = 2000;
@@ -104,10 +104,6 @@ bool World::init(vec2 screenSize, vec2 worldSize)
 
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
-
-    m_player.init();
-
-    m_plbullet.init();
 
     m_background.init();
 
