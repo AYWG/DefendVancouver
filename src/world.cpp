@@ -1,6 +1,6 @@
 // Header
 #include "world.hpp"
-#include <bits/stdc++.h>
+
 
 
 // stlib
@@ -17,11 +17,13 @@ namespace {
 
     const size_t MAX_BASENEMIES = 1;
     const size_t MAX_BULLET = 1;
+    const size_t MAX_BOMBS = 5;
     const size_t BENEMY_DELAY_MS = 2000;
     const size_t PBULLET_DELAY_MS = 200;
     const size_t MAX_SHOOTERS = 15;
     const size_t MAX_CHASER = 0;
     const size_t SHOOTER_DELAY_MS = 2000;
+    const size_t BOMB_DELAY_MS = 5000;
 
 
     namespace {
@@ -35,7 +37,8 @@ World::World() :
         m_points(0),
         m_next_pbullet_spawn(0.f),
         m_next_shooter_spawn(0.f),
-        m_next_chaser_spawn(0.f) {
+        m_next_chaser_spawn(0.f),
+        m_next_bomb_spawn(0.f) {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
 }
@@ -74,18 +77,19 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     // Load OpenGL function pointers
     gl3wInit();
 
-    // Setting callbacks to member functions (that's why the redirect is needed)
-    // Input is handled using GLFW, for more info see
-    // http://www.glfw.org/docs/latest/input_guide.html
-    glfwSetWindowUserPointer(m_window, this);
-    auto key_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2, int _3) {
-        ((World *) glfwGetWindowUserPointer(wnd))->onKey(wnd, _0, _1, _2, _3);
-    };
-    auto cursor_pos_redirect = [](GLFWwindow *wnd, double _0, double _1) {
-        ((World *) glfwGetWindowUserPointer(wnd))->onMouseMove(wnd, _0, _1);
-    };
-    glfwSetKeyCallback(m_window, key_redirect);
-    glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+	// Setting callbacks to member functions (that's why the redirect is needed)
+	// Input is handled using GLFW, for more info see
+	// http://www.glfw.org/docs/latest/input_guide.html
+	glfwSetWindowUserPointer(m_window, this);
+	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) {
+        ((World *) glfwGetWindowUserPointer(wnd))->onKey(wnd, _0, _1, _2, _3); };
+	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) {
+        ((World *) glfwGetWindowUserPointer(wnd))->onMouseMove(wnd, _0, _1); };
+    auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
+        ((World *) glfwGetWindowUserPointer(wnd))->onMouseClick(wnd, _0, _1, _2); };
+	glfwSetKeyCallback(m_window, key_redirect);
+	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+    glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
     m_size = worldSize;
     m_camera.setSize(screenSize);
@@ -93,19 +97,15 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_current_speed = 1.f;
     m_is_advanced_mode = false;
 
-    //  m_chaser.init();
-
     m_player.init();
 
     m_plbullet.init();
-    m_bomb.init(textures_path("normal_bomb.png"));
-    //m_bomber.init();
+
     m_background.init();
 
-    //m_background.init();
     m_camera.setFocusPoint(m_player.get_position());
-    return m_player.init();
-    //return true;
+	return m_player.init();
+
 }
 
 // Releases all the associated resources
@@ -121,24 +121,17 @@ bool World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
 
-
-
-    // faster based on current
+    // faster based on acceleration
     m_player.update(elapsed_ms);
-    m_bomb.update(elapsed_ms);
-
-
     vec2 playerPos = m_player.get_position();
+
     // update camera
-    if (((playerPos.x - screen.x / 5 >= 0) && (playerPos.x - 6 * screen.x / 5 <= 0)) &&
-        playerPos.x + screen.x / 2 <= m_size.x) {
+    if (playerPos.x - screen.x / 2 >= 0 && playerPos.x + screen.x / 2 <= m_size.x) {
         m_camera.setFocusPoint({playerPos.x, m_camera.getFocusPoint().y});
     }
-    if (playerPos.y - screen.y / 3 >= 0 && playerPos.y - 3 * screen.y / 4 <= 0 &&
-        playerPos.y + screen.y / 2 <= m_size.y) {
+    if (playerPos.y - screen.y / 2 >= 0 && playerPos.y + screen.y / 2 <= m_size.y) {
         m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
     }
-
 
     //bullet
     m_next_pbullet_spawn -= elapsed_ms;
@@ -153,8 +146,7 @@ bool World::update(float elapsed_ms) {
 
         float bulletAngle = m_player.getRotation() + 3.1415f / 2.f;
 
-        printf("player orientation: %f\n", m_player.getRotation());
-        new_pBullet.setDirection({cosf(bulletAngle), sinf(bulletAngle)});
+        new_pBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
 
         m_next_pbullet_spawn = PBULLET_DELAY_MS;
     }
@@ -203,11 +195,10 @@ bool World::update(float elapsed_ms) {
             return false;
         }
 
-        Shooter &new_bEnemy = m_shooters.back();
+        Shooter& shooter = m_shooters.back();
 
         // Setting random initial position
-        // new_bEnemy.setPosition(({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
-        new_bEnemy.setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
+        shooter.setPosition({ 50 + m_dist(m_rng) * screen.x, -200.f  });
         // Next spawn
         m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
     }
@@ -386,6 +377,41 @@ bool World::update(float elapsed_ms) {
     }
 
 
+    // trigger bomb animation
+    for (auto& bomb : m_bombs)
+        bomb.update(elapsed_ms * m_current_speed);
+
+    // removing bombs from screen
+    auto bomb_it = m_bombs.begin();
+    while (bomb_it != m_bombs.end())
+    {
+        int fc = bomb_it->getFrameCount();
+        if (fc == 0)
+        {
+            bomb_it = m_bombs.erase(bomb_it);
+            continue;
+        }
+
+        ++bomb_it;
+    }
+
+    // Spawn new regular bombs
+    m_next_bomb_spawn -= elapsed_ms;
+    if (m_bombs.size() <= MAX_BOMBS && m_next_bomb_spawn < 0.f)
+    {
+        if (!spawn_bomb())
+            return false;
+        Bomb& new_bomb = m_bombs.back();
+
+        //new_bomb.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
+        new_bomb.set_position(getPlayerPosition());
+
+        m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
+    }
+
+
+
+
     return true;
 }
 
@@ -440,8 +466,7 @@ void World::draw() {
 
     //   m_plbullet.draw(projection_2D);
 
-    m_player.draw(projection_2D);
-    m_bomb.draw(projection_2D);
+	m_player.draw(projection_2D);
 
     //m_bomber.draw(projection_2D);
 
@@ -466,6 +491,9 @@ void World::draw() {
         //  }
     }
 
+    for (auto& bomb : m_bombs){
+        bomb.draw(projection_2D);
+    }
 
     // Presenting
     glfwSwapBuffers(m_window);
@@ -480,8 +508,20 @@ vec2 World::getPlayerPosition() const {
     return m_player.get_position();
 }
 
+std::vector<vec2> World::getBombPositions() const {
+    auto positions = std::vector<vec2>();
+    for (auto& bomb : m_bombs) {
+        positions.emplace_back(bomb.get_position());
+    }
+    return positions;
+}
 
-vec2 const World::mousePosition() {
+vec2 World::getCityPosition() const {
+    return m_background.get_position();
+}
+
+
+vec2 const  World::mousePosition(){
     return get_mousePos(aimDirNorm);
 }
 
@@ -519,6 +559,18 @@ bool World::spawn_playerBullet() {
         return true;
     }
     fprintf(stderr, "Failed to spawn player bullet");
+    return false;
+}
+
+bool World::spawn_bomb()
+{
+    Bomb bomb;
+    if (bomb.init(textures_path("normal_bomb.png")))
+    {
+        m_bombs.emplace_back(bomb);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn bomb");
     return false;
 }
 
@@ -561,14 +613,13 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     }
 
     //SHOOTING
-    if (key == GLFW_KEY_SPACE) {
-        if (action == GLFW_PRESS) {
+ /*   if (key == GLFW_KEY_SPACE){
+        if (action == GLFW_PRESS){
             is_shot = true;
-        } else if (action == GLFW_RELEASE) {
+        }else if (action == GLFW_RELEASE){
             is_shot = false;
-        }
+        }*/
 
-    }
 
 
 
@@ -610,4 +661,14 @@ void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {
     float newOrientation = -1.f * atan((playerMouseXDist / playerMouseYDist));
     if (playerMouseYDist < 0.f) newOrientation += 3.1415f;
     m_player.setRotation(newOrientation);
+}
+
+void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) {
+            is_shot = true;
+        } else if (action == GLFW_RELEASE) {
+            is_shot = false;
+        }
+    }
 }

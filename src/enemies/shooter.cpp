@@ -14,7 +14,7 @@ Texture Shooter::shooterTexture;
 int Shooter::maxNumberOfBullets = 5;
 int Shooter::bulletDelayMS = 1000;
 
-Shooter::Shooter(ShooterAI& ai) : m_ai(ai), m_nextShooterBulletSpawn(0.f), m_rotation(0.f) {}
+Shooter::Shooter(ShooterAI& ai) : m_ai(ai), m_nextShooterBulletSpawn(0.f) {}
 
 bool Shooter::init() {
 
@@ -82,54 +82,7 @@ void Shooter::destroy(){
 }
 
 void Shooter::update(World *world, float ms) {
-//    m_ai.doNextAction(world, this, ms);
-
-    //TODO: remove//////////////////////////
-    // only continue moving if not in range
-    if (m_position.y <= 250) {
-        const float SHOOTER_SPEED = 200.f;
-        float step = -SHOOTER_SPEED * (ms / 1000);
-        m_position.y -= step;
-    }
-
-    // if in range, and player is within cone
-    if (m_position.y > 250) {
-
-        float targetAngle;
-        if (isPlayerInVision(world->getPlayerPosition())) {
-            float yDiff = world->getPlayerPosition().y - m_position.y;
-            float xDiff = world->getPlayerPosition().x - m_position.x;
-            targetAngle = -1.f * atanf(xDiff / yDiff);
-        }
-        else {
-            // default rotation
-            targetAngle = 0.f;
-        }
-
-        if (targetAngle > m_rotation) m_rotation = std::min(targetAngle, m_rotation + 0.01f);
-        if (targetAngle < m_rotation) m_rotation = std::max(targetAngle, m_rotation - 0.01f);
-    }
-
-
-
-    ////////////////////////////////////////
-
-    m_nextShooterBulletSpawn -= ms;
-
-    if (m_shooterBullets.size() <= Shooter::maxNumberOfBullets && m_nextShooterBulletSpawn < 0.f) {
-        if (!spawnBullet()) {
-            return;
-        }
-
-        ShooterBullet& newBullet = m_shooterBullets.back();
-        newBullet.setPosition(m_position);
-
-        float bulletAngle = m_rotation + 3.1415f / 2.f;
-        newBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
-
-        m_nextShooterBulletSpawn = Shooter::bulletDelayMS;
-
-    }
+    m_ai.doNextAction(world, this, ms);
 
     for (auto& shooterBullet : m_shooterBullets) {
         shooterBullet.update(ms);
@@ -146,7 +99,6 @@ void Shooter::update(World *world, float ms) {
 
         ++shooterBullet_it;
     }
-
 }
 
 void Shooter::draw(const mat3& projection){
@@ -210,8 +162,21 @@ vec2 Shooter::getBoundingBox()const
 
 //vec2 get_bounding_box()const;
 
-void Shooter::attack() {
+void Shooter::attack(float ms) {
+    m_nextShooterBulletSpawn -= ms;
 
+    if (m_shooterBullets.size() <= Shooter::maxNumberOfBullets && m_nextShooterBulletSpawn < 0.f) {
+        if (!spawnBullet()) {
+            return;
+        }
+        ShooterBullet& newBullet = m_shooterBullets.back();
+        newBullet.setPosition(m_position);
+
+        float bulletAngle = m_rotation + 3.1415f / 2.f;
+        newBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
+
+        m_nextShooterBulletSpawn = Shooter::bulletDelayMS;
+    }
 }
 
 bool Shooter::spawnBullet() {
@@ -225,17 +190,17 @@ bool Shooter::spawnBullet() {
     return false;
 }
 
-bool Shooter::isPlayerInVision(vec2 playerPosition) {
+bool Shooter::isObjectInVision(vec2 objPosition) {
     // vision is represented by an invisible "triangle" that extends from the shooter's current position
     float shooterVisionAngleFromNormal = 3.1415f / 6;
 
-    if (playerPosition.y > m_position.y) {
-        float verticalDiff = playerPosition.y - m_position.y;
+    if (objPosition.y > m_position.y) {
+        float verticalDiff = objPosition.y - m_position.y;
 
         float distanceToVisionBoundaryFromNormal = verticalDiff * tanf(shooterVisionAngleFromNormal);
 
-        if (playerPosition.x < m_position.x + distanceToVisionBoundaryFromNormal &&
-                playerPosition.x > m_position.x - distanceToVisionBoundaryFromNormal) {
+        if (objPosition.x < m_position.x + distanceToVisionBoundaryFromNormal &&
+                objPosition.x > m_position.x - distanceToVisionBoundaryFromNormal) {
             return true;
         }
     }

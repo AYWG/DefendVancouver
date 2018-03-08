@@ -5,7 +5,10 @@
 #pragma once
 
 
+#include <vector>
 #include "../common.hpp"
+#include "../bomb.hpp"
+
 class World;
 
 class Enemy {
@@ -24,15 +27,32 @@ public:
 
     void setPosition(vec2 position);
 
+    float getRotation() const;
+
+    void setRotation(float rotation);
+
+    float getAngleToTarget() const;
+
+    void setAngleToTarget(float angle);
+
+    void setBombsInVision(std::vector<vec2> &bombs);
+
+    std::vector<vec2> getBombsInVision() const;
+
     /**
      * Every enemy has a different attack.
      */
-    virtual void attack() = 0;
+    virtual void attack(float ms) = 0;
 
 protected:
     vec2 m_position;
     vec2 m_scale;
     float m_rotation;
+    float m_maxSpeed;
+
+    float m_angleToTarget;
+
+    std::vector<vec2> m_bombsInVision;
 };
 
 

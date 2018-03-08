@@ -34,7 +34,7 @@ public:
 
     vec2 getBoundingBox() const override;
 
-    void attack() override;
+    void attack(float ms) override;
 
 
 private:
@@ -48,10 +48,8 @@ private:
 
     float m_nextShooterBulletSpawn;
 
-    float m_rotation;
-
     bool spawnBullet();
 
-    bool isPlayerInVision(vec2 playerPosition);
+    bool isObjectInVision(vec2 objPosition);
 
 };

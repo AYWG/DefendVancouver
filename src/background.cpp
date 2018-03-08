@@ -58,8 +58,8 @@ bool background::init() {
         return false;
     b_scale.x = 1.0f;
     b_scale.y = 1.0f;
-    b_position.x = 0;
-    b_position.y = 750;
+    b_position.x = 2500;
+    b_position.y = 759;
 
     return true;
 }

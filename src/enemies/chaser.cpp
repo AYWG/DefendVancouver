@@ -7,7 +7,10 @@
 #include "../world.hpp"
 
 #include <cmath>
-#include <bits/stdc++.h>
+#include <stack>
+#include <cfloat>
+#include <set>
+
 
 using namespace std;
 
@@ -150,7 +153,7 @@ vec2 Chaser::move(vec2 off){
 
 }
 
-void Chaser::attack() {
+void Chaser::attack(float ms) {
 
 }
 

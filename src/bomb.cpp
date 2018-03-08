@@ -59,9 +59,6 @@ bool Bomb::init(const char *path) {
     frameCount = 9;
     b_scale.x = 0.25f;
     b_scale.y = 0.25f;
-    b_position.x = 200;
-    b_position.y = 200;
-
 
     return true;
 
@@ -116,8 +113,6 @@ void Bomb::draw(const mat3& projection){
 bool Bomb::update(float ms){
     if(frameCount != 0){
         frameCount = frameCount - 1;
-    } else {
-        isHit = false;
     }
 
     switch (frameCount){
@@ -211,7 +206,17 @@ vec2 Bomb::get_position() const{
     return b_position;
 }
 
+
+
+void Bomb::set_position(vec2 position){
+    b_position = position;
+}
+
 void Bomb::animate()
 {
     isHit = true;
+}
+
+int Bomb::getFrameCount() const {
+    return frameCount;
 }
