@@ -4,12 +4,8 @@
 
 #include "bullet.hpp"
 
-Bullet::Bullet() : m_scale({1.f, 1.f}), m_direction({0.f, 0.f}), m_speed(0.f) {}
+Bullet::Bullet() : m_scale({1.f, 1.f}), m_velocity({0.f, 0.f}) {}
 
-void Bullet::setDirection(vec2 direction) {
-    m_direction = direction;
-}
-
-void Bullet::setSpeed(float speed) {
-    m_speed = speed;
+void Bullet::setVelocity(vec2 velocity) {
+    m_velocity = velocity;
 }

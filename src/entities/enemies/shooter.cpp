@@ -170,8 +170,7 @@ void Shooter::attack(float ms) {
         newBullet.setPosition(m_position);
 
         float bulletAngle = m_rotation + 3.1415f / 2.f;
-        newBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
-        newBullet.setSpeed(325.0f);
+        newBullet.setVelocity({ cosf(bulletAngle) * 325.0f, sinf(bulletAngle) * 325.0f});
         m_nextBulletSpawn = Shooter::bulletDelayMS;
     }
 }

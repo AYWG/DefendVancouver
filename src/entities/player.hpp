@@ -10,8 +10,6 @@
 
 class Player : public Renderable {
 
-    static Texture player_texture;
-
 public:
     typedef enum {
         LEFT, FORWARD, RIGHT, BACKWARD
@@ -45,6 +43,8 @@ public:
     void destroy();
 
     float getRotation() const;
+
+    vec2 getVelocity() const;
 
 private:
     vec2 m_position; // Window coordinates

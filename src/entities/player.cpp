@@ -11,7 +11,6 @@
 #include <math.h>
 
 
-Texture Player::player_texture;
 
 
 bool Player::init() {
@@ -216,6 +215,10 @@ void Player::setFlying(DIRECTION dir, bool isFlying) {
 
 float Player::getRotation() const {
     return m_rotation;
+}
+
+vec2 Player::getVelocity() const {
+    return m_velocity;
 }
 
 float Player::getMovementOrientation(DIRECTION dir) {

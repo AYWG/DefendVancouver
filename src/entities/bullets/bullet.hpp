@@ -15,19 +15,14 @@ public:
 
     virtual void update(float ms) = 0;
 
-    void setDirection(vec2 direction);
-
     virtual vec2 getBoundingBox() const = 0;
 
-    void setSpeed(float speed);
+    void setVelocity(vec2 velocity);
 
 protected:
     vec2 m_scale;
 
-    // A unit vector representing the bullet's direction
-    vec2 m_direction;
-
-    float m_speed;
+    vec2 m_velocity;
 };
 
 

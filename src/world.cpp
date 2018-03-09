@@ -141,10 +141,18 @@ bool World::update(float elapsed_ms) {
         Bullet &new_pBullet = m_bullets.back();
         new_pBullet.setPosition(m_player.get_position());
 
-        float bulletAngle = m_player.getRotation() + 3.1415f / 2.f;
+        vec2 playerVelocity = m_player.getVelocity();
+        float bulletInitialSpeed = 1000.f;
+        float bulletAngleRelativeToPlayer = m_player.getRotation() + 3.1415f / 2.f;
+        vec2 bulletDirectionRelativeToPlayer = {cosf(bulletAngleRelativeToPlayer), sinf(bulletAngleRelativeToPlayer)};
 
-        new_pBullet.setDirection({ cosf(bulletAngle), sinf(bulletAngle)});
-        new_pBullet.setSpeed(325.0f);
+        // bullet's initial velocity (in the world)
+        // is sum of player's current velocity and the initial velocity relative to the player
+        vec2 bulletVelocityRelativeToPlayer = {bulletInitialSpeed * bulletDirectionRelativeToPlayer.x, bulletInitialSpeed * bulletDirectionRelativeToPlayer.y};
+
+        vec2 bulletVelocityRelativeToWorld = {playerVelocity.x + bulletVelocityRelativeToPlayer.x, playerVelocity.y + bulletVelocityRelativeToPlayer.y};
+
+        new_pBullet.setVelocity(bulletVelocityRelativeToWorld);
         m_next_bullet_spawn = BULLET_DELAY_MS;
     }
 
