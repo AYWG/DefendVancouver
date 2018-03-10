@@ -6,6 +6,8 @@
 
 #include "../../common.hpp"
 #include "bullet.hpp"
+#include "../enemies/shooter.hpp"
+#include "../enemies/chaser.hpp"
 
 
 class PlayerBullet : public Bullet, public Renderable {
@@ -21,4 +23,8 @@ public:
     vec2 getBoundingBox() const override;
 
     unsigned int getMass() const override;
+
+    bool collisionCheck(Shooter shooter);
+    bool collisionCheck(Chaser chaser);
+    bool collisionCheck(Bomber& bomber);
 };

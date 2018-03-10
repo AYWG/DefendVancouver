@@ -122,3 +122,26 @@ unsigned int PlayerBullet::getMass() const {
     return 10;
 }
 
+bool PlayerBullet::collisionCheck(Shooter shooter) {
+    float dx = (m_position.x - shooter.getPosition().x) ;
+    float dy = (m_position.y - shooter.getPosition().y) ;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y);
+    float my_r = std::max(getBoundingBox().x , getBoundingBox().y);
+    float r = std::max(other_r, my_r);
+    r *= 0.5f;
+    if (d_sq < r * r)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool PlayerBullet::collisionCheck(Chaser chaser) {
+    return false;
+}
+
+bool PlayerBullet::collisionCheck(Bomber& bomber) {
+    return false;
+}
+

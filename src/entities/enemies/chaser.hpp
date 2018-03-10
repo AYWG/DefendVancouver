@@ -11,7 +11,6 @@
 
 
 // Basic alien enemies for the game (grey spaceship)
-
 using  namespace std;
 
 #define  ROW 100

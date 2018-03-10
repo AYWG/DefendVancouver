@@ -7,8 +7,12 @@
 #define NUM_DIRECTIONS 4
 
 #include "../common.hpp"
+#include "enemies/shooter.hpp"
+#include "enemies/bomber.hpp"
 
 class Player : public Renderable {
+
+    FILE* mesh_file;
 
 public:
     typedef enum {
@@ -33,7 +37,6 @@ public:
     //set rotation
     void setRotation(float radians);
 
-
     void set_velocity(float velocity, DIRECTION dir);
 
     void swap_velocity(DIRECTION dir1, DIRECTION dir2);
@@ -45,6 +48,14 @@ public:
     float getRotation() const;
 
     vec2 getVelocity() const;
+
+    int getLives();
+
+    void hit();
+
+    bool collisionCheck(Shooter shooter);
+    bool collisionCheck(Bomber& bomber);
+    bool collisionCheck(ShooterBullet sb);
 
 private:
     vec2 m_position; // Window coordinates

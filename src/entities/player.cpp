@@ -18,7 +18,7 @@ bool Player::init() {
     std::vector<uint16_t> indices;
 
     // Reads the salmon mesh from a file, which contains a list of vertices and indices
-    FILE *mesh_file = fopen(mesh_path("player.mesh"), "r");
+    mesh_file = fopen(mesh_path("player.mesh"), "r");
     if (mesh_file == nullptr) {
         std::cout << "mesh file not loaded";
         return false;
@@ -231,4 +231,35 @@ vec2 Player::getNewVelocity(vec2 oldVelocity, vec2 delta) {
     vec2 newDirection = normalize(newVelocity);
 
     return {newDirection.x * newMagnitude, newDirection.y * newMagnitude};
+}
+
+int Player::getLives() {
+    return m_lives;
+}
+
+void Player::hit() {
+    m_lives--;
+}
+
+bool Player::collisionCheck(Shooter shooter) {
+    float dx = (m_position.x - shooter.getPosition().x) ;
+    float dy = (m_position.y - shooter.getPosition().y) ;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y);
+    float my_r = std::max(m_scale.x , m_scale.y);
+    float r = std::max(other_r, my_r);
+    r *= 0.5f;
+    if (d_sq < r * r)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Player::collisionCheck(Bomber& bomber) {
+    return false;
+}
+
+bool Player::collisionCheck(ShooterBullet sb) {
+    return false;
 }
