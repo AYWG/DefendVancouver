@@ -34,6 +34,8 @@ public:
 
     unsigned int getMass() const override;
 
+    std::vector<ShooterBullet> getBullets() const;
+
 
 private:
     ShooterAI m_ai;

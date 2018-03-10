@@ -7,6 +7,16 @@
 
 Texture PlayerBullet::playerBulletTexture;
 
+PlayerBullet* PlayerBullet::spawn() {
+    auto playerBullet = new PlayerBullet();
+    if (playerBullet->init())
+    {
+        return playerBullet;
+    }
+    fprintf(stderr, "Failed to spawn player bullet");
+    return nullptr;
+}
+
 bool PlayerBullet::init() {
 
     //Load texture

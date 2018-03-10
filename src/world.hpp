@@ -41,7 +41,6 @@ public:
     // Should the game be over ?
     bool is_over() const;
 
-
     vec2 getPlayerPosition() const;
 
     std::vector<vec2> getBombPositions() const;
@@ -50,24 +49,12 @@ public:
 
 
     vec2 playerCenter;
-    vec2 mousePos;
-    vec2 aimDir;
-    vec2 baimDir;
-    vec2 aimDirNorm;
 	bool is_shot = false;
-    bool is_shoted = false;
-    vec2 mouseAimDir;
-
-    //static vec2 shotDir;
 
 private:
-
-    //spawn shooter
     bool spawnShooter();
 
     bool spawnChaser();
-
-    bool spawn_playerBullet();
 
     bool spawn_bomb();
 
@@ -80,10 +67,6 @@ private:
 
     void onMouseClick(GLFWwindow *window, int buttton, int action, int mod);
 
-    vec2 const mousePosition();
-
-
-
 private:
     // Window handle
     GLFWwindow *m_window;
@@ -95,32 +78,20 @@ private:
     // Game entities
     Player m_player;
 
-    std::vector<PlayerBullet> m_bullets;
+    std::vector<PlayerBullet*> m_bullets;
     std::vector<Bomb> m_bombs;
-
-
-
-
-
-
-
     std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;
 
-
-
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;
-    float m_current_speed;
-    bool m_is_advanced_mode;
-    float  m_next_bullet_spawn;
+    float m_next_bullet_spawn;
     float m_next_bomb_spawn;
 
     // C++ rng
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist; // default 0..1
     static Texture world_texture;
-
 
     vec2 m_size;
 

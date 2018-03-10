@@ -96,9 +96,6 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_size = worldSize;
     m_camera.setSize(screenSize);
 
-    m_current_speed = 1.f;
-    m_is_advanced_mode = false;
-
     m_background.init();
 
     m_camera.setFocusPoint(m_player.get_position());
@@ -134,12 +131,12 @@ bool World::update(float elapsed_ms) {
     //bullet
     m_next_bullet_spawn -= elapsed_ms;
     if (is_shot && m_next_bullet_spawn < 0.f) {
-        if (!spawn_playerBullet()) {
-            return false;
+        if (auto newPlayerBullet = PlayerBullet::spawn()) {
+            m_bullets.emplace_back(newPlayerBullet);
         }
 
-        Bullet &new_pBullet = m_bullets.back();
-        new_pBullet.setPosition(m_player.get_position());
+        auto newPlayerBulletPtr = m_bullets.back();
+        newPlayerBulletPtr->setPosition(m_player.get_position());
 
         vec2 playerVelocity = m_player.getVelocity();
         float bulletInitialSpeed = 1000.f;
@@ -152,22 +149,22 @@ bool World::update(float elapsed_ms) {
 
         vec2 bulletVelocityRelativeToWorld = {playerVelocity.x + bulletVelocityRelativeToPlayer.x, playerVelocity.y + bulletVelocityRelativeToPlayer.y};
 
-        new_pBullet.setVelocity(bulletVelocityRelativeToWorld);
+        newPlayerBulletPtr->setVelocity(bulletVelocityRelativeToWorld);
         m_next_bullet_spawn = BULLET_DELAY_MS;
     }
 
-    for (auto& bullet : m_bullets){
-        bullet.update(elapsed_ms);
+    for (auto bullet : m_bullets){
+        bullet->update(elapsed_ms);
     }
 
 
     auto pbullet_it = m_bullets.begin();
 
     while (pbullet_it != m_bullets.end()) {
-        if (pbullet_it->getPosition().y >  m_camera.getBottomBoundary() ||
-            pbullet_it->getPosition().y  <  m_camera.getTopBoundary() ||
-            pbullet_it->getPosition().x > m_camera.getRightBoundary() ||
-            pbullet_it->getPosition().x < m_camera.getLeftBoundary()) {
+        if ((*pbullet_it)->getPosition().y >  m_camera.getBottomBoundary() ||
+            (*pbullet_it)->getPosition().y  <  m_camera.getTopBoundary() ||
+            (*pbullet_it)->getPosition().x > m_camera.getRightBoundary() ||
+            (*pbullet_it)->getPosition().x < m_camera.getLeftBoundary()) {
             pbullet_it = m_bullets.erase(pbullet_it);
             continue;
         }
@@ -176,7 +173,7 @@ bool World::update(float elapsed_ms) {
     }
 
 
-    m_next_shooter_spawn -= elapsed_ms * m_current_speed;
+    m_next_shooter_spawn -= elapsed_ms;
     if (m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn) {
 
         ////////////////////TODO////////////////
@@ -193,7 +190,7 @@ bool World::update(float elapsed_ms) {
     }
 
     for (auto &bEnemy : m_shooters)
-        bEnemy.update(this, elapsed_ms * m_current_speed);
+        bEnemy.update(this, elapsed_ms);
 
     // Removing out of screen shooters
     auto shooterIt = m_shooters.begin();
@@ -225,7 +222,7 @@ bool World::update(float elapsed_ms) {
 */
 
 //////////////////CHASER///////////////////
-    m_next_chaser_spawn -= elapsed_ms * m_current_speed;
+    m_next_chaser_spawn -= elapsed_ms;
     if (m_chasers.size() <= MAX_CHASER && m_next_chaser_spawn) {
 
         ////////////////////TODO////////////////
@@ -243,7 +240,7 @@ bool World::update(float elapsed_ms) {
     }
 
     for (auto &m_chaser : m_chasers)
-        m_chaser.update(this, elapsed_ms * m_current_speed);
+        m_chaser.update(this, elapsed_ms);
 
     // Removing out of screen cEnemy
     auto cenemy_it = m_chasers.begin();
@@ -269,7 +266,6 @@ bool World::update(float elapsed_ms) {
         }
     }
 
-
     bool srcFound = false;
     bool destFound = false;
 
@@ -278,21 +274,6 @@ bool World::update(float elapsed_ms) {
 
     float width = 26.6f;
     float height = 11.5f;
-
-
-/*    for (auto& m_shooter : m_shooters) {
-        int r = ceil(m_shooter.getPosition().x / width);
-        int s = ceil(m_shooter.getPosition().y / height);
-
-        std::cout << grid << std::endl;
-
-        grid[s][r] = 0;
-        grid[s+1][r] = 0;
-        grid[s-1][r] = 0;
-        grid[s][r+1] = 0;
-        grid[s][r-1] = 0;
-    }*/
-
 
     for (auto &m_chaser : m_chasers) {
         if (!srcFound) {
@@ -369,7 +350,7 @@ bool World::update(float elapsed_ms) {
 
     // trigger bomb animation
     for (auto& bomb : m_bombs)
-        bomb.update(elapsed_ms * m_current_speed);
+        bomb.update(elapsed_ms);
 
     // removing bombs from screen
     auto bomb_it = m_bombs.begin();
@@ -454,13 +435,7 @@ void World::draw() {
 
     m_background.draw(projection_2D);
 
-    //   m_plbullet.draw(projection_2D);
-
 	m_player.draw(projection_2D);
-
-    //m_bomber.draw(projection_2D);
-
-    // m_shooter.draw(projection_2D);
 
     for (auto &m_chaser : m_chasers)
         m_chaser.draw(projection_2D);
@@ -469,8 +444,8 @@ void World::draw() {
         shooter.draw(projection_2D);
 
 
-       for (auto &bullet : m_bullets) {
-                bullet.draw(projection_2D);
+       for (auto bullet : m_bullets) {
+                bullet->draw(projection_2D);
            }
 
 
@@ -503,17 +478,6 @@ vec2 World::getCityPosition() const {
     return m_background.getPosition();
 }
 
-
-vec2 const  World::mousePosition(){
-    return get_mousePos(aimDirNorm);
-}
-
-vec2 World::get_mousePos(vec2 mousePos) {
-    mousePos = mouseAimDir;
-    return mousePos;
-}
-
-
 bool World::spawnShooter() {
     ShooterAI ai;
     Shooter shooter(ai);
@@ -532,18 +496,6 @@ bool World::spawnChaser() {
         m_chasers.emplace_back(chaser);
         return true;
     }
-    return false;
-}
-
-bool World::spawn_playerBullet()
-{
-    PlayerBullet playerBullet;
-    if (playerBullet.init())
-    {
-        m_bullets.emplace_back(playerBullet);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn player bullet");
     return false;
 }
 
@@ -597,18 +549,6 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
-    //SHOOTING
- /*   if (key == GLFW_KEY_SPACE){
-        if (action == GLFW_PRESS){
-            is_shot = true;
-        }else if (action == GLFW_RELEASE){
-            is_shot = false;
-        }*/
-
-
-
-
-
     // Resetting game
     if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
         int w, h;
@@ -616,24 +556,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
         m_player.init();
 
-        m_current_speed = 1.f;
-
-        if (key == GLFW_KEY_A) {
-            m_is_advanced_mode = true;
-        }
-        if (key == GLFW_KEY_B) {
-            m_is_advanced_mode = false;
-        }
     }
-
-
-    // Control the current speed with `<` `>`
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
-        m_current_speed -= 0.1f;
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-        m_current_speed += 0.1f;
-
-    m_current_speed = fmax(0.f, m_current_speed);
 }
 
 
