@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include "../common.hpp"
+#include "../../common.hpp"
 #include "enemy.hpp"
 // Basic alien enemies for the game (grey spaceship)
 
@@ -23,4 +23,5 @@ public:
 
     // vec2 getBoundingBox() const override;
 
+    unsigned int getMass() const override;
 };

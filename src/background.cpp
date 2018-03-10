@@ -58,8 +58,8 @@ bool background::init() {
         return false;
     b_scale.x = 1.0f;
     b_scale.y = 1.0f;
-    b_position.x = 2500;
-    b_position.y = 759;
+    m_position.x = 2500;
+    m_position.y = 759;
 
     return true;
 }
@@ -69,7 +69,7 @@ void background::draw(const mat3& projection){
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
     transform_begin();
-    transform_translate(b_position);
+    transform_translate(m_position);
     transform_scale(b_scale);
     transform_end();
     glUseProgram(effect.program);
@@ -108,12 +108,4 @@ void background::draw(const mat3& projection){
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-vec2 background::get_position()const{
-    return b_position;
-}
-
-void background::set_position(vec2 position)
-{
-    b_position = position;
 }

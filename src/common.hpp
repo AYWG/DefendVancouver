@@ -48,6 +48,8 @@ mat3 mul(const mat3 &l, const mat3 &r);
 
 vec2 normalize(vec2 v);
 
+float magnitude(vec2 v);
+
 // OpenGL utilities
 // cleans error buffer
 void gl_flush_errors();

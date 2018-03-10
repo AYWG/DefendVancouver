@@ -8,7 +8,6 @@
 #include "../actionNode.hpp"
 #include "../../../common.hpp"
 #include "../../../world.hpp"
-#include "../../../enemies/enemy.hpp"
 
 class MoveIntoRange : public ActionNode {
 public:

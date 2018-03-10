@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../common.hpp"
+#include "../../common.hpp"
 #include "bullet.hpp"
 
 
@@ -19,4 +19,6 @@ public:
     void update(float ms) override;
 
     vec2 getBoundingBox() const override;
+
+    unsigned int getMass() const override;
 };

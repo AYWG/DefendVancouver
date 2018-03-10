@@ -3,11 +3,11 @@
 //
 #pragma once
 
-#include "../common.hpp"
+#include "../../common.hpp"
 
 #include "../player.hpp"
 #include "enemy.hpp"
-#include "../ai/chaserAI.hpp"
+#include "../../ai/chaserAI.hpp"
 
 
 // Basic alien enemies for the game (grey spaceship)
@@ -76,6 +76,8 @@ public:
     vec2 move(vec2 off);
 
     void attack(float ms) override ;
+
+    unsigned int getMass() const override;
 
 private:
     ChaserAI m_ai;

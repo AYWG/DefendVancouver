@@ -4,7 +4,7 @@
 
 #include "chaser.hpp"
 #include "shooter.hpp"
-#include "../world.hpp"
+#include "../../world.hpp"
 
 #include <cmath>
 #include <stack>
@@ -155,6 +155,10 @@ vec2 Chaser::move(vec2 off){
 
 void Chaser::attack(float ms) {
 
+}
+
+unsigned int Chaser::getMass() const {
+    return 90;
 }
 
 // A Utility Function to check whether given cell (row, col)

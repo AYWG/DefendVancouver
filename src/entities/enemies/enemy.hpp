@@ -6,14 +6,17 @@
 
 
 #include <vector>
-#include "../common.hpp"
+#include "../../common.hpp"
 #include "../bomb.hpp"
+#include "../entity.hpp"
+#include "../movable.hpp"
 
 class World;
 
-class Enemy {
+class Enemy : public Entity, public Movable {
 public:
     Enemy();
+    virtual ~Enemy() = default;
 
     virtual bool init() = 0;
 
@@ -22,10 +25,6 @@ public:
     virtual void update(World *world, float ms) = 0;
 
     virtual vec2 getBoundingBox() const = 0;
-
-    vec2 getPosition() const;
-
-    void setPosition(vec2 position);
 
     float getRotation() const;
 
@@ -45,7 +44,6 @@ public:
     virtual void attack(float ms) = 0;
 
 protected:
-    vec2 m_position;
     vec2 m_scale;
     float m_rotation;
     float m_maxSpeed;

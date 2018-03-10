@@ -105,12 +105,16 @@ void ShooterBullet::draw(const mat3 &projection) {
 }
 
 void ShooterBullet::update(float ms) {
-    float x_step = m_speed * (ms / 1000) * m_direction.x;
-    float y_step = m_speed * (ms / 1000) * m_direction.y;
+    float x_step = m_velocity.x * (ms / 1000);
+    float y_step = m_velocity.y * (ms / 1000);
 
     setPosition({getPosition().x + x_step, getPosition().y + y_step});
 }
 
 vec2 ShooterBullet::getBoundingBox() const {
 
+}
+
+unsigned int ShooterBullet::getMass() const {
+    return 10;
 }

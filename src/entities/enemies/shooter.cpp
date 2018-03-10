@@ -1,27 +1,33 @@
 //
-// Created by gowth on 2018-02-09.
+// Created by Shrey Swades Nayak on 2018-02-08.
 //
-#include "playerBullet.hpp"
-#include <cmath>
+
+#include "shooter.hpp"
+#include "../../world.hpp"
 
 
-Texture PlayerBullet::playerBulletTexture;
+Texture Shooter::shooterTexture;
 
-bool PlayerBullet::init() {
+int Shooter::maxNumberOfBullets = 5;
+int Shooter::bulletDelayMS = 1000;
+
+Shooter::Shooter(ShooterAI& ai) : m_ai(ai), m_nextBulletSpawn(0.f) {}
+
+bool Shooter::init() {
 
     //Load texture
-    if (!playerBulletTexture.is_valid())
+    if (!shooterTexture.is_valid())
     {
-        if (!playerBulletTexture.load_from_file(textures_path("playerBullet.png")))
+        if (!shooterTexture.load_from_file(textures_path("shooter_new.png")))
         {
-            fprintf(stderr, "Failed to load player bullet texture!");
+            fprintf(stderr, "Failed to load shooter texture!");
             return false;
         }
     }
 
     //center of texture
-    float width = playerBulletTexture.width * 0.1f;
-    float height = playerBulletTexture.height * 0.1f;
+    float width = shooterTexture.width * 0.1f;
+    float height = shooterTexture.height * 0.1f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -width, +height, -0.01f };
@@ -58,20 +64,44 @@ bool PlayerBullet::init() {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
+    // Setting initial values, scale is negative to make it face the opposite way
+    // 1.0 would be as big as the original texture
+    m_scale.x = 1.5f;
+    m_scale.y = 1.5f;
+    m_rotation = 0.f;
+
+
     return true;
 }
 
-void PlayerBullet::update(float ms){
-    float x_step = m_speed * (ms / 1000) * m_direction.x;
-    float y_step = m_speed * (ms / 1000) * m_direction.y;
+void Shooter::destroy(){
 
-    setPosition({getPosition().x + x_step, getPosition().y + y_step});
 }
 
+void Shooter::update(World *world, float ms) {
+    m_ai.doNextAction(world, this, ms);
 
-void PlayerBullet::draw(const mat3 &projection){
+    for (auto& bullet : m_bullets) {
+        bullet.update(ms);
+    }
+
+    // remove out of screen bullets - remove once we have proper collisions
+    auto bulletIt = m_bullets.begin();
+
+    while (bulletIt != m_bullets.end()) {
+        if (bulletIt->getPosition().y >  1000) {
+            bulletIt = m_bullets.erase(bulletIt);
+            continue;
+        }
+
+        ++bulletIt;
+    }
+}
+
+void Shooter::draw(const mat3& projection){
     transform_begin();
     transform_translate(m_position);
+    transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
 
@@ -102,7 +132,7 @@ void PlayerBullet::draw(const mat3 &projection){
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, playerBulletTexture.id);
+    glBindTexture(GL_TEXTURE_2D, shooterTexture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -112,10 +142,50 @@ void PlayerBullet::draw(const mat3 &projection){
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+
+    for (auto& bullet : m_bullets) {
+        bullet.draw(projection);
+    }
 }
 
-vec2 PlayerBullet::getBoundingBox() const {
-    return { std::fabs(m_scale.x) * playerBulletTexture.width, std::fabs(m_scale.y) * playerBulletTexture.height};
+// Returns the local bounding coordinates scaled by the current size of the turtle
+vec2 Shooter::getBoundingBox()const
+{
+    // fabs is to avoid negative scale due to the facing direction
+    return { std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height };
 }
 
 
+
+//vec2 get_bounding_box()const;
+
+void Shooter::attack(float ms) {
+    m_nextBulletSpawn -= ms;
+
+    if (m_bullets.size() <= Shooter::maxNumberOfBullets && m_nextBulletSpawn < 0.f) {
+        if (!spawnBullet()) {
+            return;
+        }
+        ShooterBullet& newBullet = m_bullets.back();
+        newBullet.setPosition(m_position);
+
+        float bulletAngle = m_rotation + 3.1415f / 2.f;
+        newBullet.setVelocity({ cosf(bulletAngle) * 325.0f, sinf(bulletAngle) * 325.0f});
+        m_nextBulletSpawn = Shooter::bulletDelayMS;
+    }
+}
+
+unsigned int Shooter::getMass() const {
+    return 100;
+}
+
+bool Shooter::spawnBullet() {
+    ShooterBullet bullet;
+    if (bullet.init())
+    {
+        m_bullets.emplace_back(bullet);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn shooter bullet");
+    return false;
+}

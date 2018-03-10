@@ -5,7 +5,7 @@
 #pragma once
 
 
-#include "../common.hpp"
+#include "../../common.hpp"
 #include "bullet.hpp"
 
 class ShooterBullet : public Bullet, public Renderable {
@@ -19,6 +19,8 @@ public:
     void update(float ms) override;
 
     vec2 getBoundingBox() const override;
+
+    unsigned int getMass() const override;
 };
 
 

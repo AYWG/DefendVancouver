@@ -7,7 +7,7 @@
 
 #include "../conditionNode.hpp"
 #include "../../../world.hpp"
-#include "../../../enemies/enemy.hpp"
+#include "../../../entities/enemies/enemy.hpp"
 
 class IsPlayerNearBomb : public ConditionNode {
 public:
