@@ -34,6 +34,8 @@ public:
 
     unsigned int getMass() const override;
 
+    std::vector<std::shared_ptr<ShooterBullet>>& getBullets();
+
 
 private:
     ShooterAI m_ai;
@@ -41,11 +43,9 @@ private:
 
 //    vec2 get_bounding_box()const;
 
-    std::vector<ShooterBullet> m_bullets;
+    std::vector<std::shared_ptr<ShooterBullet>> m_bullets;
 
 
     float m_nextBulletSpawn;
-
-    bool spawnBullet();
 
 };

@@ -33,7 +33,6 @@ public:
     //set rotation
     void setRotation(float radians);
 
-
     void set_velocity(float velocity, DIRECTION dir);
 
     void swap_velocity(DIRECTION dir1, DIRECTION dir2);

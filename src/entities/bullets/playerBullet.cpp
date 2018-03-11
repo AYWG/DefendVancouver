@@ -7,6 +7,16 @@
 
 Texture PlayerBullet::playerBulletTexture;
 
+std::shared_ptr<PlayerBullet> PlayerBullet::spawn() {
+    auto playerBullet = std::make_shared<PlayerBullet>();
+    if (playerBullet->init())
+    {
+        return playerBullet;
+    }
+    fprintf(stderr, "Failed to spawn player bullet");
+    return nullptr;
+}
+
 bool PlayerBullet::init() {
 
     //Load texture

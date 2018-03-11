@@ -6,6 +6,15 @@
 
 Texture ShooterBullet::shooterBulletTexture;
 
+std::shared_ptr<ShooterBullet> ShooterBullet::spawn() {
+    auto bullet = std::make_shared<ShooterBullet>();
+    if (bullet->init()) {
+        return bullet;
+    }
+    fprintf(stderr, "Failed to spawn shooter bullet");
+    return nullptr;
+}
+
 bool ShooterBullet::init() {
     //Load texture
     if (!shooterBulletTexture.is_valid()) {
