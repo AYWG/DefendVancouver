@@ -58,8 +58,6 @@ private:
 
     bool spawn_bomb();
 
-    vec2 get_mousePos(vec2 mousePos);
-
     // !!! INPUT CALLBACK FUNCTIONS
     void onKey(GLFWwindow *, int key, int, int action, int mod);
 
@@ -78,7 +76,7 @@ private:
     // Game entities
     Player m_player;
 
-    std::vector<PlayerBullet*> m_bullets;
+    std::vector<std::shared_ptr<PlayerBullet>> m_bullets;
     std::vector<Bomb> m_bombs;
     std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;

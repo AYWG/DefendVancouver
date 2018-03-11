@@ -4,18 +4,17 @@
 
 #pragma once
 
-#include <memory>
 
+#include <memory>
 #include "../../common.hpp"
 #include "bullet.hpp"
 
-using std::unique_ptr;
 
 class PlayerBullet : public Bullet, public Renderable {
     static Texture playerBulletTexture;
 
 public:
-    static PlayerBullet* spawn();
+    static std::shared_ptr<PlayerBullet> spawn();
 
     bool init();
 

@@ -116,7 +116,6 @@ bool World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
 
-    // faster based on acceleration
     m_player.update(elapsed_ms);
     vec2 playerPos = m_player.get_position();
 
@@ -153,10 +152,9 @@ bool World::update(float elapsed_ms) {
         m_next_bullet_spawn = BULLET_DELAY_MS;
     }
 
-    for (auto bullet : m_bullets){
+    for (auto &bullet : m_bullets){
         bullet->update(elapsed_ms);
     }
-
 
     auto pbullet_it = m_bullets.begin();
 
@@ -168,19 +166,14 @@ bool World::update(float elapsed_ms) {
             pbullet_it = m_bullets.erase(pbullet_it);
             continue;
         }
-
         ++pbullet_it;
     }
 
-
     m_next_shooter_spawn -= elapsed_ms;
     if (m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn) {
-
-        ////////////////////TODO////////////////
         if (!spawnShooter()) {
             return false;
         }
-
         Shooter& shooter = m_shooters.back();
 
         // Setting random initial position
@@ -189,25 +182,22 @@ bool World::update(float elapsed_ms) {
         m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
     }
 
-    for (auto &bEnemy : m_shooters)
-        bEnemy.update(this, elapsed_ms);
-
-    // Removing out of screen shooters
-    auto shooterIt = m_shooters.begin();
-    while (shooterIt != m_shooters.end())
-    {
-        float w = shooterIt->getBoundingBox().x / 2;
-        if (shooterIt->getPosition().y + w > screen.y)
-        {
-            shooterIt = m_shooters.erase(shooterIt);
-            continue;
+    for (auto &shooter : m_shooters) {
+        shooter.update(this, elapsed_ms);
+        for (auto &shooterBullet : shooter.getBullets()) {
+            shooterBullet->update(elapsed_ms);
         }
 
-        ++shooterIt;
+        // remove out of screen shooter bullets - remove once we have proper collisions
+        auto shooterBulletIt = shooter.getBullets().begin();
+        while (shooterBulletIt != shooter.getBullets().end()) {
+            if ((*shooterBulletIt)->getPosition().y > 1000) {
+                shooterBulletIt = shooter.getBullets().erase(shooterBulletIt);
+                continue;
+            }
+            ++shooterBulletIt;
+        }
     }
-
-
-
 /*
     auto benemy_col = m_shooters.begin();
     auto pbullet_col = m_bullets.begin();
@@ -242,17 +232,6 @@ bool World::update(float elapsed_ms) {
     for (auto &m_chaser : m_chasers)
         m_chaser.update(this, elapsed_ms);
 
-    // Removing out of screen cEnemy
-    auto cenemy_it = m_chasers.begin();
-    while (cenemy_it != m_chasers.end()) {
-        float w = cenemy_it->getBoundingBox().x / 2;
-        if (cenemy_it->getPosition().y + w > screen.y) {
-            cenemy_it = m_chasers.erase(cenemy_it);
-            continue;
-        }
-
-        ++cenemy_it;
-    }
     //////////////SPAWNDONE/////////////////
     //ASTAR
     int j = 0;
@@ -380,9 +359,6 @@ bool World::update(float elapsed_ms) {
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
     }
 
-
-
-
     return true;
 }
 
@@ -432,7 +408,6 @@ void World::draw() {
                        {tx,  ty,  1.f}};
 
     // Drawing entities
-
     m_background.draw(projection_2D);
 
 	m_player.draw(projection_2D);
@@ -440,8 +415,12 @@ void World::draw() {
     for (auto &m_chaser : m_chasers)
         m_chaser.draw(projection_2D);
 
-    for (auto &shooter : m_shooters)
+    for (auto &shooter : m_shooters) {
         shooter.draw(projection_2D);
+        for (auto &bullet : shooter.getBullets()) {
+            bullet->draw(projection_2D);
+        }
+    }
 
 
        for (auto bullet : m_bullets) {

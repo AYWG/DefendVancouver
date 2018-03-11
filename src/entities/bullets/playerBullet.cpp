@@ -7,8 +7,8 @@
 
 Texture PlayerBullet::playerBulletTexture;
 
-PlayerBullet* PlayerBullet::spawn() {
-    auto playerBullet = new PlayerBullet();
+std::shared_ptr<PlayerBullet> PlayerBullet::spawn() {
+    auto playerBullet = std::make_shared<PlayerBullet>();
     if (playerBullet->init())
     {
         return playerBullet;

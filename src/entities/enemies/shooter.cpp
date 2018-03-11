@@ -78,21 +78,6 @@ void Shooter::destroy() {
 
 void Shooter::update(World *world, float ms) {
     m_ai.doNextAction(world, this, ms);
-
-    for (auto &bullet : m_bullets) {
-        bullet.update(ms);
-    }
-
-    // remove out of screen bullets - remove once we have proper collisions
-    auto bulletIt = m_bullets.begin();
-
-    while (bulletIt != m_bullets.end()) {
-        if (bulletIt->getPosition().y > 1000) {
-            bulletIt = m_bullets.erase(bulletIt);
-            continue;
-        }
-        ++bulletIt;
-    }
 }
 
 void Shooter::draw(const mat3 &projection) {
@@ -140,10 +125,6 @@ void Shooter::draw(const mat3 &projection) {
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-
-    for (auto &bullet : m_bullets) {
-        bullet.draw(projection);
-    }
 }
 
 // Returns the local bounding coordinates scaled by the current size of the turtle
@@ -158,16 +139,15 @@ vec2 Shooter::getBoundingBox() const {
 
 void Shooter::attack(float ms) {
     m_nextBulletSpawn -= ms;
-
     if (m_bullets.size() <= Shooter::maxNumberOfBullets && m_nextBulletSpawn < 0.f) {
-        if (!spawnBullet()) {
-            return;
+        if (auto newShooterBullet = ShooterBullet::spawn()) {
+            m_bullets.emplace_back(newShooterBullet);
         }
-        ShooterBullet &newBullet = m_bullets.back();
-        newBullet.setPosition(m_position);
+        auto newShooterBulletPtr = m_bullets.back();
+        newShooterBulletPtr->setPosition(m_position);
 
         float bulletAngle = m_rotation + 3.1415f / 2.f;
-        newBullet.setVelocity({cosf(bulletAngle) * 325.0f, sinf(bulletAngle) * 325.0f});
+        newShooterBulletPtr->setVelocity({cosf(bulletAngle) * 325.0f, sinf(bulletAngle) * 325.0f});
         m_nextBulletSpawn = Shooter::bulletDelayMS;
     }
 }
@@ -176,16 +156,6 @@ unsigned int Shooter::getMass() const {
     return 100;
 }
 
-std::vector<ShooterBullet> Shooter::getBullets() const {
+std::vector<std::shared_ptr<ShooterBullet>>& Shooter::getBullets() {
     return m_bullets;
-}
-
-bool Shooter::spawnBullet() {
-    ShooterBullet bullet;
-    if (bullet.init()) {
-        m_bullets.emplace_back(bullet);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn shooter bullet");
-    return false;
 }
