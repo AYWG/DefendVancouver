@@ -406,13 +406,10 @@ bool World::update(float elapsed_ms) {
             if (bbullet_it->collisionCheck(*benemy_it)) {
                 benemy_it = m_shooters.erase(benemy_it);
                 continue;
-            } /*else if (benemy_it->getPosition().y + w > screen.y) {
-                benemy_it = m_shooters.erase(benemy_it);
-                continue;
-            }*/
-
+            }
             ++benemy_it;
         }
+        ++bbullet_it;
     }
 
 

@@ -130,11 +130,8 @@ bool PlayerBullet::collisionCheck(Shooter shooter) {
     float my_r = std::max(getBoundingBox().x , getBoundingBox().y);
     float r = std::max(other_r, my_r);
     r *= 0.5f;
-    if (d_sq < r * r)
-    {
-        return true;
-    }
-    return false;
+
+    return d_sq < r * r;
 }
 
 bool PlayerBullet::collisionCheck(Chaser chaser) {
