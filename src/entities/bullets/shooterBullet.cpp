@@ -16,8 +16,8 @@ bool ShooterBullet::init() {
     }
 
     //center of texture
-    float width = shooterBulletTexture.width * 0.1f;
-    float height = shooterBulletTexture.height * 0.1f;
+    float width = shooterBulletTexture.width * 0.5f;
+    float height = shooterBulletTexture.height * 0.5f;
 
     TexturedVertex vertices[4];
     vertices[0].position = {-width, +height, -0.01f};
@@ -54,7 +54,8 @@ bool ShooterBullet::init() {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
-
+    m_scale.x = 0.2f;
+    m_scale.y = 0.4f;
     return true;
 }
 

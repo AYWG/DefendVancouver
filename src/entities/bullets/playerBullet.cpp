@@ -20,8 +20,8 @@ bool PlayerBullet::init() {
     }
 
     //center of texture
-    float width = playerBulletTexture.width * 0.1f;
-    float height = playerBulletTexture.height * 0.1f;
+    float width = playerBulletTexture.width * 0.5f;
+    float height = playerBulletTexture.height * 0.5f;
 
     TexturedVertex vertices[4];
     vertices[0].position = { -width, +height, -0.01f };
@@ -58,11 +58,13 @@ bool PlayerBullet::init() {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
+    m_scale.x = 0.2f;
+    m_scale.y = 0.4f;
+
     return true;
 }
 
 void PlayerBullet::update(float ms){
-    printf("player bullet position: %f %f\n", m_position.x, m_position.y);
     float x_step = m_velocity.x * (ms / 1000);
     float y_step = m_velocity.y * (ms / 1000);
 
@@ -125,9 +127,9 @@ unsigned int PlayerBullet::getMass() const {
 
 bool PlayerBullet::collisionCheck(Shooter shooter) {
     auto d = magnitude({m_position.x - shooter.getPosition().x, m_position.y - shooter.getPosition().y});
-    auto other_r = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y) / 2;
-    auto my_r = std::max(getBoundingBox().x , getBoundingBox().y) / 2;
-    return d < other_r + my_r;
+    auto shooterRadius = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y) / 2;
+    auto bulletRadius = std::max(getBoundingBox().x , getBoundingBox().y) / 2;
+    return d < shooterRadius + bulletRadius;
 }
 
 bool PlayerBullet::collisionCheck(Chaser chaser) {

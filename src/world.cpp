@@ -178,7 +178,6 @@ bool World::update(float elapsed_ms) {
         ++pbullet_it;
     }
 
-
     m_next_shooter_spawn -= elapsed_ms * m_current_speed;
     if (m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn) {
 
@@ -209,21 +208,6 @@ bool World::update(float elapsed_ms) {
 
         ++shooterIt;
     }
-
-
-
-/*
-    auto benemy_col = m_shooters.begin();
-    auto pbullet_col = m_bullets.begin();
-    float boundBullet = pbullet_col->getBoundingBox().x/2;
-    float boundEnemy = benemy_col->getBoundingBox().x / 2;
-    while (pbullet_col != m_bullets.end() && benemy_col != m_shooters.end()) {
-        if (pbullet_col->getPosition().y + boundBullet <
-                benemy_col->getPosition().y + boundEnemy){
-            std::cout<<"hit";
-            benemy_col = m_shooters.erase(benemy_col);
-            pbullet_col = m_bullets.erase(pbullet_col);
-*/
 
 //////////////////CHASER///////////////////
     m_next_chaser_spawn -= elapsed_ms * m_current_speed;
@@ -367,7 +351,6 @@ bool World::update(float elapsed_ms) {
         }
     }
 
-
     // trigger bomb animation
     for (auto &bomb : m_bombs)
         bomb.update(elapsed_ms * m_current_speed);
@@ -397,22 +380,21 @@ bool World::update(float elapsed_ms) {
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
     }
 
-
-    auto bbullet_it = m_bullets.begin();
-    while (bbullet_it != m_bullets.end()) {
+    auto playerBulletIt = m_bullets.begin();
+    while (playerBulletIt != m_bullets.end()) {
         bool isColliding = false;
         auto benemy_it = m_shooters.begin();
         while (benemy_it != m_shooters.end() ) {
-            if (bbullet_it->collisionCheck(*benemy_it)) {
+            if (playerBulletIt->collisionCheck(*benemy_it)) {
                 benemy_it = m_shooters.erase(benemy_it);
-                bbullet_it = m_bullets.erase(bbullet_it);
+                playerBulletIt = m_bullets.erase(playerBulletIt);
                 isColliding = true;
                 break;
             }
             ++benemy_it;
         }
         if (!isColliding) {
-            ++bbullet_it;
+            ++playerBulletIt;
         }
     }
     return true;
