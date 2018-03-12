@@ -33,7 +33,7 @@ public:
     // Steps the game ahead by ms milliseconds
     bool update(float ms);
 
-    bool elapsedUpdate (float ms);
+    bool elapsedUpdate(float ms);
 
     // Renders our scene
     void draw();
@@ -47,9 +47,7 @@ public:
 
     vec2 getCityPosition() const;
 
-
     vec2 playerCenter;
-	bool is_shot = false;
 
 private:
     bool spawnShooter();
@@ -76,21 +74,17 @@ private:
     // Game entities
     Player m_player;
 
-    std::vector<std::shared_ptr<PlayerBullet>> m_bullets;
     std::vector<Bomb> m_bombs;
     std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;
 
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;
-    float m_next_bullet_spawn;
     float m_next_bomb_spawn;
-
-    float m_timeSincePlayerLastShot;
 
     // C++ rng
     std::default_random_engine m_rng;
-    std::uniform_real_distribution<float> m_dist{-1, 1}; // default 0..1
+    std::uniform_real_distribution<float> m_dist; // default 0..1
     static Texture world_texture;
 
     vec2 m_size;

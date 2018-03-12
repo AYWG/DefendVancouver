@@ -8,7 +8,6 @@
 
 Texture Shooter::shooterTexture;
 
-int Shooter::maxNumberOfBullets = 5;
 int Shooter::bulletDelayMS = 1000;
 
 Shooter::Shooter(ShooterAI &ai) : m_ai(ai), m_nextBulletSpawn(0.f) {}
@@ -139,7 +138,7 @@ vec2 Shooter::getBoundingBox() const {
 
 void Shooter::attack(float ms) {
     m_nextBulletSpawn -= ms;
-    if (m_bullets.size() <= Shooter::maxNumberOfBullets && m_nextBulletSpawn < 0.f) {
+    if (m_nextBulletSpawn < 0.f) {
         if (auto newShooterBullet = ShooterBullet::spawn()) {
             m_bullets.emplace_back(newShooterBullet);
         }

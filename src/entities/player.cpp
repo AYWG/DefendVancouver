@@ -2,16 +2,11 @@
 // Created by gowth on 2018-02-08.
 //
 #include "player.hpp"
-#include "../common.hpp"
 
-#include <vector>
-#include <string>
 #include <iostream>
 #include <algorithm>
-#include <math.h>
 
-
-
+int Player::bulletDelayMS = 200;
 
 bool Player::init() {
     std::vector<Vertex> vertices;
@@ -87,7 +82,8 @@ bool Player::init() {
     m_position = { 700.f, 500.f };
     m_rotation = 0.f;
     m_maxSpeed = 500.f;
-    m_isShooting = false;
+    m_isShootingEnabled = false;
+    m_timeSinceLastBulletShot = 1000.f;
     m_rng = std::default_random_engine(std::random_device()());
     return true;
 }
@@ -130,6 +126,12 @@ void Player::update(float ms) {
     auto y_step = m_velocity.y * (ms / 1000);
 
     move({x_step, y_step});
+
+    m_nextBulletSpawn = std::max(0.f, m_nextBulletSpawn - ms);
+    m_timeSinceLastBulletShot = std::min(1000.f, m_timeSinceLastBulletShot);
+    if (m_isShootingEnabled) {
+        shoot(ms);
+    }
 }
 
 
@@ -208,8 +210,8 @@ void Player::setFlying(DIRECTION dir, bool isFlying) {
     m_isFlying[dir] = isFlying;
 }
 
-void Player::setIsShooting(bool isShooting) {
-    m_isShooting = isShooting;
+void Player::enableShooting(bool isShooting) {
+    m_isShootingEnabled = isShooting;
 }
 
 float Player::getRotation() const {
@@ -223,6 +225,37 @@ vec2 Player::getVelocity() const {
 unsigned int Player::getMass() const {
     return 100;
 }
+
+void Player::shoot(float ms) {
+    if (m_nextBulletSpawn == 0.f) {
+        if (auto newPlayerBullet = PlayerBullet::spawn()) {
+            m_bullets.emplace_back(newPlayerBullet);
+        }
+        auto newPlayerBulletPtr = m_bullets.back();
+        newPlayerBulletPtr->setPosition(m_position);
+
+        float bulletInitialSpeed = 1000.f;
+        float bulletAngleRelativeToPlayer = m_rotation + 3.1415f / 2.f +
+                                            3.1415f / 12.f * (1000 - m_timeSinceLastBulletShot) / 1000 * m_dist(m_rng);
+        vec2 bulletDirectionRelativeToPlayer = {cosf(bulletAngleRelativeToPlayer), sinf(bulletAngleRelativeToPlayer)};
+
+        // bullet's initial velocity (in the world)
+        // is sum of player's current velocity and the initial velocity relative to the player
+        vec2 bulletVelocityRelativeToPlayer = {bulletInitialSpeed * bulletDirectionRelativeToPlayer.x, bulletInitialSpeed * bulletDirectionRelativeToPlayer.y};
+
+        vec2 bulletVelocityRelativeToWorld = {m_velocity.x + bulletVelocityRelativeToPlayer.x, m_velocity.y + bulletVelocityRelativeToPlayer.y};
+
+        newPlayerBulletPtr->setVelocity(bulletVelocityRelativeToWorld);
+        m_nextBulletSpawn = Player::bulletDelayMS;
+        m_timeSinceLastBulletShot = 0.f;
+    }
+}
+
+std::vector<std::shared_ptr<PlayerBullet>>& Player::getBullets() {
+    return m_bullets;
+}
+
+// Private methods
 
 float Player::getMovementOrientation(DIRECTION dir) {
     return m_rotation + dir * 3.1415f / 2;

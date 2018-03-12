@@ -15,6 +15,8 @@
 
 class Player : public Entity, public Movable, public Renderable {
 
+    static int bulletDelayMS;
+
 public:
     typedef enum {
         LEFT, FORWARD, RIGHT, BACKWARD
@@ -41,7 +43,7 @@ public:
 
     void setFlying(DIRECTION dir, bool isFlying);
 
-    void setIsShooting(bool isShooting);
+    void enableShooting(bool isShooting);
 
     void destroy();
 
@@ -51,6 +53,10 @@ public:
 
     unsigned int getMass() const override;
 
+    void shoot(float ms);
+
+    std::vector<std::shared_ptr<PlayerBullet>>& getBullets();
+
 private:
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     float m_rotation; // in radians
@@ -59,15 +65,14 @@ private:
     float m_maxSpeed;
     size_t m_num_indices;
     int m_lives;
-    bool m_isShooting;
+    bool m_isShootingEnabled;
+    float m_nextBulletSpawn;
+    float m_timeSinceLastBulletShot;
 
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist{-1.f, 1.f};
-    float m_nextBulletSpawn;
     std::vector<std::shared_ptr<PlayerBullet>> m_bullets;
 
     float getMovementOrientation(DIRECTION dir);
     vec2 getNewVelocity(vec2 oldVelocity, vec2 delta);
-
-
 };

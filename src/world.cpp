@@ -15,10 +15,7 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    const size_t MAX_BASENEMIES = 1;
-    const size_t MAX_BULLET = 1;
     const size_t MAX_BOMBS = 5;
-    const size_t BENEMY_DELAY_MS = 2000;
     const size_t BULLET_DELAY_MS = 200;
     const size_t MAX_SHOOTERS = 15;
     const size_t MAX_CHASER = 0;
@@ -35,7 +32,6 @@ namespace {
 
 World::World() :
 	m_points(0),
-    m_next_bullet_spawn(0.f),
     m_next_shooter_spawn(0.f),
     m_next_chaser_spawn(0.f),
     m_next_bomb_spawn(0.f)
@@ -93,7 +89,6 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
-    m_timeSincePlayerLastShot = 1500.f;
     m_size = worldSize;
     m_camera.setSize(screenSize);
 
@@ -128,49 +123,21 @@ bool World::update(float elapsed_ms) {
         m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
     }
 
-    //bullet
-    m_next_bullet_spawn -= elapsed_ms;
-    m_timeSincePlayerLastShot = std::min(1000.f, m_timeSincePlayerLastShot + elapsed_ms);
-    if (is_shot && m_next_bullet_spawn < 0.f) {
-        if (auto newPlayerBullet = PlayerBullet::spawn()) {
-            m_bullets.emplace_back(newPlayerBullet);
-        }
-
-        auto newPlayerBulletPtr = m_bullets.back();
-        newPlayerBulletPtr->setPosition(m_player.getPosition());
-
-        vec2 playerVelocity = m_player.getVelocity();
-        float bulletInitialSpeed = 1000.f;
-        float bulletAngleRelativeToPlayer = m_player.getRotation() + 3.1415f / 2.f +
-                                            3.1415f / 12.f * (1000 - m_timeSincePlayerLastShot) / 1000 * m_dist(m_rng);
-        vec2 bulletDirectionRelativeToPlayer = {cosf(bulletAngleRelativeToPlayer), sinf(bulletAngleRelativeToPlayer)};
-
-        // bullet's initial velocity (in the world)
-        // is sum of player's current velocity and the initial velocity relative to the player
-        vec2 bulletVelocityRelativeToPlayer = {bulletInitialSpeed * bulletDirectionRelativeToPlayer.x, bulletInitialSpeed * bulletDirectionRelativeToPlayer.y};
-
-        vec2 bulletVelocityRelativeToWorld = {playerVelocity.x + bulletVelocityRelativeToPlayer.x, playerVelocity.y + bulletVelocityRelativeToPlayer.y};
-
-        newPlayerBulletPtr->setVelocity(bulletVelocityRelativeToWorld);
-        m_next_bullet_spawn = BULLET_DELAY_MS;
-        m_timeSincePlayerLastShot = 0.f;
+    for (auto &playerBullet : m_player.getBullets()){
+        playerBullet->update(elapsed_ms);
     }
 
-    for (auto &bullet : m_bullets){
-        bullet->update(elapsed_ms);
-    }
-
-    auto pbullet_it = m_bullets.begin();
-
-    while (pbullet_it != m_bullets.end()) {
-        if ((*pbullet_it)->getPosition().y >  m_camera.getBottomBoundary() ||
-            (*pbullet_it)->getPosition().y  <  m_camera.getTopBoundary() ||
-            (*pbullet_it)->getPosition().x > m_camera.getRightBoundary() ||
-            (*pbullet_it)->getPosition().x < m_camera.getLeftBoundary()) {
-            pbullet_it = m_bullets.erase(pbullet_it);
+    // remove out of screen player bullets
+    auto playerBulletIt = m_player.getBullets().begin();
+    while (playerBulletIt != m_player.getBullets().end()) {
+        if ((*playerBulletIt)->getPosition().y >  m_camera.getBottomBoundary() ||
+            (*playerBulletIt)->getPosition().y  <  m_camera.getTopBoundary() ||
+            (*playerBulletIt)->getPosition().x > m_camera.getRightBoundary() ||
+            (*playerBulletIt)->getPosition().x < m_camera.getLeftBoundary()) {
+            playerBulletIt = m_player.getBullets().erase(playerBulletIt);
             continue;
         }
-        ++pbullet_it;
+        ++playerBulletIt;
     }
 
     m_next_shooter_spawn -= elapsed_ms;
@@ -427,9 +394,9 @@ void World::draw() {
     }
 
 
-       for (auto bullet : m_bullets) {
-                bullet->draw(projection_2D);
-           }
+   for (auto &bullet : m_player.getBullets()) {
+        bullet->draw(projection_2D);
+   }
 
 
     for (auto& bomb : m_bombs){
@@ -557,9 +524,9 @@ void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {
 void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         if (action == GLFW_PRESS) {
-            is_shot = true;
+            m_player.enableShooting(true);
         } else if (action == GLFW_RELEASE) {
-            is_shot = false;
+            m_player.enableShooting(false);
         }
     }
 }
