@@ -93,12 +93,13 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
+    m_timeSincePlayerLastShot = 1500.f;
     m_size = worldSize;
     m_camera.setSize(screenSize);
 
     m_background.init();
 
-    m_camera.setFocusPoint(m_player.get_position());
+    m_camera.setFocusPoint(m_player.getPosition());
 	return m_player.init();
 
 }
@@ -117,7 +118,7 @@ bool World::update(float elapsed_ms) {
     vec2 screen = {(float) w, (float) h};
 
     m_player.update(elapsed_ms);
-    vec2 playerPos = m_player.get_position();
+    vec2 playerPos = m_player.getPosition();
 
     // update camera
     if (playerPos.x - screen.x / 2 >= 0 && playerPos.x + screen.x / 2 <= m_size.x) {
@@ -129,17 +130,19 @@ bool World::update(float elapsed_ms) {
 
     //bullet
     m_next_bullet_spawn -= elapsed_ms;
+    m_timeSincePlayerLastShot = std::min(1000.f, m_timeSincePlayerLastShot + elapsed_ms);
     if (is_shot && m_next_bullet_spawn < 0.f) {
         if (auto newPlayerBullet = PlayerBullet::spawn()) {
             m_bullets.emplace_back(newPlayerBullet);
         }
 
         auto newPlayerBulletPtr = m_bullets.back();
-        newPlayerBulletPtr->setPosition(m_player.get_position());
+        newPlayerBulletPtr->setPosition(m_player.getPosition());
 
         vec2 playerVelocity = m_player.getVelocity();
         float bulletInitialSpeed = 1000.f;
-        float bulletAngleRelativeToPlayer = m_player.getRotation() + 3.1415f / 2.f;
+        float bulletAngleRelativeToPlayer = m_player.getRotation() + 3.1415f / 2.f +
+                                            3.1415f / 12.f * (1000 - m_timeSincePlayerLastShot) / 1000 * m_dist(m_rng);
         vec2 bulletDirectionRelativeToPlayer = {cosf(bulletAngleRelativeToPlayer), sinf(bulletAngleRelativeToPlayer)};
 
         // bullet's initial velocity (in the world)
@@ -150,6 +153,7 @@ bool World::update(float elapsed_ms) {
 
         newPlayerBulletPtr->setVelocity(bulletVelocityRelativeToWorld);
         m_next_bullet_spawn = BULLET_DELAY_MS;
+        m_timeSincePlayerLastShot = 0.f;
     }
 
     for (auto &bullet : m_bullets){
@@ -290,15 +294,15 @@ bool World::update(float elapsed_ms) {
         if (!destFound) {
             for (float k = /*0*/-600.f; k <= /*1200*/2060.f; k += width) {
                 for (float i = -150.f; i <= 1000.f; i += height) {
-                    if (m_player.get_position().y >= 0.f && m_player.get_position().y < height
-                        && m_player.get_position().x >= 0.f && m_player.get_position().x < width) {
+                    if (m_player.getPosition().y >= 0.f && m_player.getPosition().y < height
+                        && m_player.getPosition().x >= 0.f && m_player.getPosition().x < width) {
                         //Pair dest = make_pair(0, 0);
                         destFound = true;
                         if (destFound) {
                             break;
                         }
-                    } else if ((m_player.get_position().y >= (i) && m_player.get_position().y < (i + height))
-                               && (m_player.get_position().x >= (k) && m_player.get_position().x < (k + width))) {
+                    } else if ((m_player.getPosition().y >= (i) && m_player.getPosition().y < (i + height))
+                               && (m_player.getPosition().x >= (k) && m_player.getPosition().x < (k + width))) {
                         //Pair dest = make_pair(a,b);
                         destFound = true;
                         if (destFound) {
@@ -442,7 +446,7 @@ bool World::is_over() const {
 }
 
 vec2 World::getPlayerPosition() const {
-    return m_player.get_position();
+    return m_player.getPosition();
 }
 
 std::vector<vec2> World::getBombPositions() const {
@@ -541,8 +545,8 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
 void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {
 
-    playerCenter = {m_player.get_position().x - m_camera.getLeftBoundary(),
-                    m_player.get_position().y - m_camera.getTopBoundary()};
+    playerCenter = {m_player.getPosition().x - m_camera.getLeftBoundary(),
+                    m_player.getPosition().y - m_camera.getTopBoundary()};
     auto playerMouseXDist = float(xpos - playerCenter.x);
     auto playerMouseYDist = float(ypos - playerCenter.y);
     float newOrientation = -1.f * atan((playerMouseXDist / playerMouseYDist));

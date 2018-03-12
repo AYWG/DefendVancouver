@@ -87,7 +87,8 @@ bool Player::init() {
     m_position = { 700.f, 500.f };
     m_rotation = 0.f;
     m_maxSpeed = 500.f;
-
+    m_isShooting = false;
+    m_rng = std::default_random_engine(std::random_device()());
     return true;
 }
 
@@ -194,12 +195,6 @@ void Player::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, (GLsizei) m_num_indices, GL_UNSIGNED_SHORT, nullptr);
 }
 
-
-vec2 Player::get_position() const {
-    return m_position;
-}
-
-
 void Player::setRotation(float radians) {
     m_rotation = radians;
 }
@@ -213,12 +208,20 @@ void Player::setFlying(DIRECTION dir, bool isFlying) {
     m_isFlying[dir] = isFlying;
 }
 
+void Player::setIsShooting(bool isShooting) {
+    m_isShooting = isShooting;
+}
+
 float Player::getRotation() const {
     return m_rotation;
 }
 
 vec2 Player::getVelocity() const {
     return m_velocity;
+}
+
+unsigned int Player::getMass() const {
+    return 100;
 }
 
 float Player::getMovementOrientation(DIRECTION dir) {

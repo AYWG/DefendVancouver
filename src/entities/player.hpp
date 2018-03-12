@@ -6,9 +6,14 @@
 
 #define NUM_DIRECTIONS 4
 
+#include <vector>
+#include <random>
 #include "../common.hpp"
+#include "entity.hpp"
+#include "movable.hpp"
+#include "bullets/playerBullet.hpp"
 
-class Player : public Renderable {
+class Player : public Entity, public Movable, public Renderable {
 
 public:
     typedef enum {
@@ -27,9 +32,6 @@ public:
     //UPDATE
     void update(float ms);
 
-    //get position
-    vec2 get_position() const;
-
     //set rotation
     void setRotation(float radians);
 
@@ -39,14 +41,17 @@ public:
 
     void setFlying(DIRECTION dir, bool isFlying);
 
+    void setIsShooting(bool isShooting);
+
     void destroy();
 
     float getRotation() const;
 
     vec2 getVelocity() const;
 
+    unsigned int getMass() const override;
+
 private:
-    vec2 m_position; // Window coordinates
     vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     float m_rotation; // in radians
     vec2 m_velocity;
@@ -54,6 +59,12 @@ private:
     float m_maxSpeed;
     size_t m_num_indices;
     int m_lives;
+    bool m_isShooting;
+
+    std::default_random_engine m_rng;
+    std::uniform_real_distribution<float> m_dist{-1.f, 1.f};
+    float m_nextBulletSpawn;
+    std::vector<std::shared_ptr<PlayerBullet>> m_bullets;
 
     float getMovementOrientation(DIRECTION dir);
     vec2 getNewVelocity(vec2 oldVelocity, vec2 delta);

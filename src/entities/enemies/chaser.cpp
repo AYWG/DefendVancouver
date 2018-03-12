@@ -261,7 +261,7 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
             /////////////////////////////
 
         }else if (isDestination(p.first, p.second, dest) == true) {
-            move({speed * m_player.get_position().x,speed * m_player.get_position().x} );
+            move({speed * m_player.getPosition().x,speed * m_player.getPosition().x} );
         }
     }
         return;

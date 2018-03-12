@@ -86,9 +86,11 @@ private:
     float m_next_bullet_spawn;
     float m_next_bomb_spawn;
 
+    float m_timeSincePlayerLastShot;
+
     // C++ rng
     std::default_random_engine m_rng;
-    std::uniform_real_distribution<float> m_dist; // default 0..1
+    std::uniform_real_distribution<float> m_dist{-1, 1}; // default 0..1
     static Texture world_texture;
 
     vec2 m_size;
