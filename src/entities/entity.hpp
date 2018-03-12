@@ -18,6 +18,7 @@ public:
 
 protected:
     vec2 m_position;
+    vec2 m_scale;
 
 };
 

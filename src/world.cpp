@@ -398,21 +398,23 @@ bool World::update(float elapsed_ms) {
     }
 
 
-    auto benemy_it = m_shooters.begin();
     auto bbullet_it = m_bullets.begin();
     while (bbullet_it != m_bullets.end()) {
+        bool isColliding = false;
+        auto benemy_it = m_shooters.begin();
         while (benemy_it != m_shooters.end() ) {
-            float w = benemy_it->getBoundingBox().x / 2;
             if (bbullet_it->collisionCheck(*benemy_it)) {
                 benemy_it = m_shooters.erase(benemy_it);
-                continue;
+                bbullet_it = m_bullets.erase(bbullet_it);
+                isColliding = true;
+                break;
             }
             ++benemy_it;
         }
-        ++bbullet_it;
+        if (!isColliding) {
+            ++bbullet_it;
+        }
     }
-
-
     return true;
 }
 

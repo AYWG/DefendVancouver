@@ -44,7 +44,6 @@ public:
     virtual void attack(float ms) = 0;
 
 protected:
-    vec2 m_scale;
     float m_rotation;
     float m_maxSpeed;
 

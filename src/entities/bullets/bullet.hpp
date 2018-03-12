@@ -20,7 +20,6 @@ public:
     void setVelocity(vec2 velocity);
 
 protected:
-    vec2 m_scale;
 
     vec2 m_velocity;
 };

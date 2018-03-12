@@ -62,10 +62,11 @@ bool PlayerBullet::init() {
 }
 
 void PlayerBullet::update(float ms){
+    printf("player bullet position: %f %f\n", m_position.x, m_position.y);
     float x_step = m_velocity.x * (ms / 1000);
     float y_step = m_velocity.y * (ms / 1000);
 
-    setPosition({getPosition().x + x_step, getPosition().y + y_step});
+    setPosition({m_position.x + x_step, m_position.y + y_step});
 }
 
 
@@ -123,15 +124,10 @@ unsigned int PlayerBullet::getMass() const {
 }
 
 bool PlayerBullet::collisionCheck(Shooter shooter) {
-    float dx = (m_position.x - shooter.getPosition().x) ;
-    float dy = (m_position.y - shooter.getPosition().y) ;
-    float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y);
-    float my_r = std::max(getBoundingBox().x , getBoundingBox().y);
-    float r = std::max(other_r, my_r);
-    r *= 0.5f;
-
-    return d_sq < r * r;
+    auto d = magnitude({m_position.x - shooter.getPosition().x, m_position.y - shooter.getPosition().y});
+    auto other_r = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y) / 2;
+    auto my_r = std::max(getBoundingBox().x , getBoundingBox().y) / 2;
+    return d < other_r + my_r;
 }
 
 bool PlayerBullet::collisionCheck(Chaser chaser) {

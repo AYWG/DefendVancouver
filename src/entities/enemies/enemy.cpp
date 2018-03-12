@@ -4,9 +4,7 @@
 
 #include "enemy.hpp"
 
-Enemy::Enemy()
-        : m_scale({1.f, 1.f}),
-          m_rotation(0.f) {
+Enemy::Enemy() : m_rotation(0.f) {
 
 }
 
