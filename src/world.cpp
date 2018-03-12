@@ -23,7 +23,7 @@ namespace {
     const size_t MAX_SHOOTERS = 15;
     const size_t MAX_CHASER = 0;
     const size_t SHOOTER_DELAY_MS = 2000;
-    const size_t BOMB_DELAY_MS = 5000;
+    const size_t BOMB_DELAY_MS = 2000;
 
 
     namespace {
@@ -374,7 +374,7 @@ bool World::update(float elapsed_ms) {
             return false;
         Bomb &new_bomb = m_bombs.back();
 
-        //new_bomb.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
+        //new_bomb.set_position({ 50 + m_dist(m_rng) * (screen.x), screen.y - 800  });
         new_bomb.set_position(getPlayerPosition());
 
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
