@@ -20,8 +20,8 @@ namespace {
     const size_t MAX_BOMBS = 5;
     const size_t BENEMY_DELAY_MS = 2000;
     const size_t BULLET_DELAY_MS = 200;
-    const size_t MAX_SHOOTERS = 15;
-    const size_t MAX_CHASER = 0;
+    const size_t MAX_SHOOTERS = 2;
+    const size_t MAX_CHASER = 1;
     const size_t SHOOTER_DELAY_MS = 2000;
     const size_t BOMB_DELAY_MS = 5000;
 
@@ -375,7 +375,7 @@ bool World::update(float elapsed_ms) {
         Bomb &new_bomb = m_bombs.back();
 
         //new_bomb.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
-        new_bomb.set_position(getPlayerPosition());
+        new_bomb.setPosition(getPlayerPosition());
 
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
     }
@@ -389,6 +389,7 @@ bool World::update(float elapsed_ms) {
                 benemy_it = m_shooters.erase(benemy_it);
                 playerBulletIt = m_bullets.erase(playerBulletIt);
                 isColliding = true;
+                m_points = m_points + 5;
                 break;
             }
             ++benemy_it;
@@ -397,6 +398,29 @@ bool World::update(float elapsed_ms) {
             ++playerBulletIt;
         }
     }
+
+    // Player shooting Chaser
+    playerBulletIt = m_bullets.begin();
+    while (playerBulletIt != m_bullets.end()) {
+        bool chaserCol = false;
+        auto benemy_it = m_chasers.begin();
+        while (benemy_it != m_chasers.end() ) {
+            if (playerBulletIt->collisionCheck(*benemy_it)) {
+                std::cout << "collided" << std::endl;
+                benemy_it = m_chasers.erase(benemy_it);
+                playerBulletIt = m_bullets.erase(playerBulletIt);
+                chaserCol = true;
+                m_points = m_points + 10;
+                break;
+            }
+            ++benemy_it;
+        }
+        if (!chaserCol) {
+            ++playerBulletIt;
+        }
+    }
+
+
     return true;
 }
 
@@ -489,7 +513,7 @@ vec2 World::getPlayerPosition() const {
 std::vector<vec2> World::getBombPositions() const {
     auto positions = std::vector<vec2>();
     for (auto &bomb : m_bombs) {
-        positions.emplace_back(bomb.get_position());
+        positions.emplace_back(bomb.getPosition());
     }
     return positions;
 }

@@ -202,13 +202,13 @@ bool Bomb::update(float ms){
     return true;
 }
 
-vec2 Bomb::get_position() const{
+vec2 Bomb::getPosition() const{
     return b_position;
 }
 
 
 
-void Bomb::set_position(vec2 position){
+void Bomb::setPosition(vec2 position){
     b_position = position;
 }
 

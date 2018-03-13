@@ -144,7 +144,7 @@ void Chaser::draw(const mat3& projection){
 }
 
 vec2 Chaser::getBoundingBox() const {
-
+    return { std::fabs(m_scale.x) * chaserTexture.width, std::fabs(m_scale.y) * chaserTexture.height };
 }
 
 vec2 Chaser::move(vec2 off){

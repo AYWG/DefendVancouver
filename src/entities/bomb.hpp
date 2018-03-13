@@ -17,11 +17,11 @@ public:
     //init bomb
     bool init(const char *path);
 
-    vec2 get_position()const;
+    vec2 getPosition()const;
 
     int getFrameCount()const;
 
-    void set_position(vec2 position);
+    void setPosition(vec2 position);
 
     void draw(const mat3 &projection);
 
