@@ -31,6 +31,6 @@ public:
 
     bool collisionCheck(Shooter shooter);
     bool collisionCheck(Chaser chaser);
-    bool collisionCheck(Bomber& bomber);
+   // bool collisionCheck(Bomber& bomber);
     bool collisionCheck(Bomb& bomb);
 };

@@ -146,9 +146,9 @@ bool PlayerBullet::collisionCheck(Chaser chaser) {
     return false;
 }
 
-bool PlayerBullet::collisionCheck(Bomber& bomber) {
-    return false;
-}
+//bool PlayerBullet::collisionCheck(Bomber& bomber) {
+//    return false;
+//}
 
 bool PlayerBullet::collisionCheck(Bomb& bomb){
 //    float dx = m_position.x - bomb.get_position().x;
