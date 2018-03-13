@@ -10,6 +10,7 @@
 #include "camera.hpp"
 #include "entities/bomb.hpp"
 #include "entities/bullets/playerBullet.hpp"
+#include "explosion.hpp"
 
 // stlib
 #include <vector>

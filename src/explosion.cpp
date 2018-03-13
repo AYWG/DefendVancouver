@@ -4,6 +4,7 @@
 
 #include "Explosion.hpp"
 
+
 // Set our static (per class NOT per object!) variable values
 const GLfloat Explosion::GRAVITY        = 0.05f;
 const GLfloat Explosion::baselineYSpeed = -4.0f;
@@ -110,6 +111,6 @@ void Explosion::explode()
     }
     else // Once the alpha hits zero, then reset the Explosion
     {
-        initialise();
+
     }
 }

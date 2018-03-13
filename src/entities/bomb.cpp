@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 #include "bomb.hpp"
 
 Texture Bomb::bomb_texture;
@@ -202,11 +203,17 @@ bool Bomb::update(float ms){
     return true;
 }
 
-vec2 Bomb::get_position() const{
+vec2 Bomb::get_position() const
+{
     return b_position;
 }
 
-
+// Returns the local bounding coordinates scaled by the current size of the bomb
+vec2 Bomb::getBoundingBox()const
+{
+    // fabs is to avoid negative scale due to the facing direction
+    return { std::fabs(b_scale.x) * (bomb_texture.width/3), std::fabs(b_scale.y) * (bomb_texture.height/3) };
+}
 
 void Bomb::set_position(vec2 position){
     b_position = position;

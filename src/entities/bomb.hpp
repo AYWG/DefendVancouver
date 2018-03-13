@@ -23,9 +23,11 @@ public:
 
     void set_position(vec2 position);
 
-    void draw(const mat3 &projection);
+    void draw(const mat3 &projection) override;
 
     bool update(float ms);
+
+    vec2 getBoundingBox()const;
 
     void animate();
 

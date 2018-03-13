@@ -9,6 +9,9 @@
 #include <sstream>
 #include <iostream>
 #include <math.h>
+#include <OpenGL/OpenGL.h>
+#include <GLFW/glfw3.h>
+#include <GL/glut.h>
 
 typedef pair<int, int> Pair;
 
@@ -372,10 +375,10 @@ bool World::update(float elapsed_ms) {
     if (m_bombs.size() <= MAX_BOMBS && m_next_bomb_spawn < 0.f) {
         if (!spawn_bomb())
             return false;
-        Bomb &new_bomb = m_bombs.back();
 
-        //new_bomb.set_position({ 50 + m_dist(m_rng) * (screen.x), screen.y - 800  });
-        new_bomb.set_position(getPlayerPosition());
+        Bomb& new_bomb = m_bombs.back();
+
+        new_bomb.set_position({ 50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
 
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
     }
