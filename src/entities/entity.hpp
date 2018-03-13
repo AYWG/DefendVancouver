@@ -11,6 +11,7 @@ class Entity {
 
 public:
     Entity();
+    virtual ~Entity() = default;
 
     vec2 getPosition() const;
 

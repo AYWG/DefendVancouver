@@ -4,6 +4,8 @@
 
 #pragma once
 
+
+#include <memory>
 #include "../../common.hpp"
 #include "bullet.hpp"
 #include "../enemies/shooter.hpp"
@@ -15,6 +17,8 @@ class PlayerBullet : public Bullet, public Renderable {
     static Texture playerBulletTexture;
 
 public:
+    static std::shared_ptr<PlayerBullet> spawn();
+
     bool init();
 
     void draw(const mat3 &projection) override;
