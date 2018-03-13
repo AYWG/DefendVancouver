@@ -337,6 +337,8 @@ bool World::update(float elapsed_ms) {
 
 
     float bounceBackSpeed = -80.f;
+    bulletAngleRelativeToPlayer = m_player.getRotation() + 3.1415f / 2.f;
+    bulletDirectionRelativeToPlayer = {cosf(bulletAngleRelativeToPlayer), sinf(bulletAngleRelativeToPlayer)};
 
     playerBulletIt = m_player.getBullets().begin();
     //collision detection for bomb and player bullet
@@ -350,6 +352,7 @@ bool World::update(float elapsed_ms) {
                 vec2 diff = {diffX, diffY};
                 float distance = magnitude(diff);
                 if (distance < 200.f){
+                    printf("close");
                     vec2 bounceBackDist = {(bounceBackSpeed * bulletDirectionRelativeToPlayer.x),
                                            (bounceBackSpeed * bulletDirectionRelativeToPlayer.y)};
                     m_player.move(bounceBackDist);

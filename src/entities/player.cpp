@@ -204,6 +204,10 @@ void Player::setRotation(float radians) {
     m_rotation = radians;
 }
 
+float Player::getRotation() {
+    return m_rotation;
+}
+
 void Player::move(vec2 off) {
     m_position.x += off.x;
     m_position.y += off.y;
