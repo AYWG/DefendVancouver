@@ -417,12 +417,11 @@ bool World::update(float elapsed_ms) {
                 float diffX = m_player.get_position().x - bomb.getPosition().x;
                 float diffY = m_player.get_position().x - bomb.getPosition().x;
                 vec2 diff = {diffX, diffY};
-                float distance = sqrt(dot(diff, diff));
-                if (distance < 300.f){
+                float distance = magnitude(diff);
+                if (distance < 200.f){
                     vec2 bounceBackDist = {(bounceBackSpeed * bulletDirectionRelativeToPlayer.x),
                                            (bounceBackSpeed * bulletDirectionRelativeToPlayer.y)};
                     m_player.move(bounceBackDist);
-                    printf("close!");
                 }
 
                 bomb.animate();

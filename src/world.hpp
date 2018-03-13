@@ -99,7 +99,6 @@ private:
     background m_background;
     // Game entities
     Player m_player;
-
     std::vector<PlayerBullet> m_bullets;
     std::vector<Bomb> m_bombs;
 
