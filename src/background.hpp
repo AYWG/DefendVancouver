@@ -16,8 +16,6 @@ public:
     bool init();
 
     void draw(const mat3 &projection);
-private:
-    vec2 b_scale; // 1.f in each dimension. 1.f is as big as the associated texture
 };
 
 

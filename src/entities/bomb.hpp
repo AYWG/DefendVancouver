@@ -8,24 +8,23 @@
 #pragma once
 
 #include "../common.hpp"
+#include "entity.hpp"
 
 
-class Bomb : public Renderable{
+class Bomb : public Entity, public Renderable{
 
     static Texture bomb_texture;
 public:
     //init bomb
     bool init(const char *path);
 
-    vec2 get_position()const;
-
     int getFrameCount()const;
 
-    void set_position(vec2 position);
-
-    void draw(const mat3 &projection);
+    void draw(const mat3 &projection) override;
 
     bool update(float ms);
+
+    vec2 getBoundingBox()const;
 
     void animate();
 
@@ -33,12 +32,9 @@ public:
 private:
     TexturedVertex vertices[4];
 
-    vec2 b_position;
     bool isHit;
-    vec2 b_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     // true if bomb is hit
     int frameCount;
-
 
 };
 

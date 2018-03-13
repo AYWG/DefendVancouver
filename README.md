@@ -30,3 +30,10 @@ Project for CPSC 436D
 * Implemented player lives and health
 * Created powerups
 * Implemented bomb blasts in the game
+
+## Physics milestone features:
+* Created collision detection for Shooter AI
+* Created collision detection for Chaser AI
+* Created collision detection for Bomb
+* Added recoil effect
+* Added pushback effect for bomb explosion

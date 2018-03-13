@@ -3,8 +3,6 @@
 //
 
 #include "chaser.hpp"
-#include "shooter.hpp"
-#include "../../world.hpp"
 
 #include <cmath>
 #include <stack>
@@ -144,7 +142,7 @@ void Chaser::draw(const mat3& projection){
 }
 
 vec2 Chaser::getBoundingBox() const {
-
+    return { std::fabs(m_scale.x) * chaserTexture.width, std::fabs(m_scale.y) * chaserTexture.height };
 }
 
 vec2 Chaser::move(vec2 off){
@@ -203,7 +201,7 @@ double Chaser::calculateHValue(int row, int col, Pair dest)
 // A Utility Function to trace the path from the source
 // to destination
 void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
-    printf("\nThe Path is ");
+   // printf("\nThe Path is ");
     int row = dest.first;
     int col = dest.second;
 
@@ -222,7 +220,7 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
     while (!Path.empty()) {
         pair<int, int> p = Path.top();
         Path.pop();
-        printf("-> (%d,%d) ", p.first, p.second);
+        //printf("-> (%d,%d) ", p.first, p.second);
         float speed = 1.0f;
         if (!Path.empty()) {
             pair<int, int> np = Path.top();
@@ -260,31 +258,28 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
             }
             /////////////////////////////
 
-        }else if (isDestination(p.first, p.second, dest) == true) {
-            move({speed * m_player.get_position().x,speed * m_player.get_position().x} );
         }
     }
         return;
-
 }
 
 void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
     //if src us outta range
     if (isValid(src.first, src.second) == false){
-        printf("source is invalid");
+        //printf("source is invalid");
         return;
     }
 
     //if dest is outta range
     if(isValid(dest.first, dest.second) == false){
-        printf("dentination is invalid");
+        //printf("dentination is invalid");
         return;
     }
 
     //if source or destination is blocked
     if (isUnBlocked(grid, src.first, src.second) == false ||
         isUnBlocked(grid, dest.first, dest.second) == false){
-        printf ("Source or the destination is blocked\n");
+       // printf ("Source or the destination is blocked\n");
        //    move({-5, 0});
         return;
     }
@@ -292,7 +287,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
     // If the destination cell is the same as source
     if (isDestination(src.first, src.second, dest) == true)
     {
-        printf ("We are already at the destination\n");
+       // printf ("We are already at the destination\n");
         return;
     }
 
@@ -373,7 +368,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i - 1][j].parent_i = i;
                 cellDetails[i - 1][j].parent_j = j;
-                printf("The destination cell is found\n");
+               // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -419,7 +414,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i + 1][j].parent_i = i;
                 cellDetails[i + 1][j].parent_j = j;
-                printf("The destination cell is found\n");
+               // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -465,7 +460,8 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i][j + 1].parent_i = i;
                 cellDetails[i][j + 1].parent_j = j;
-                printf("The destination cell is found\n");
+               //
+                // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -511,7 +507,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i][j - 1].parent_i = i;
                 cellDetails[i][j - 1].parent_j = j;
-                printf("The destination cell is found\n");
+               // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -557,7 +553,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i - 1][j + 1].parent_i = i;
                 cellDetails[i - 1][j + 1].parent_j = j;
-                printf("The destination cell is found\n");
+                //printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -603,7 +599,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i - 1][j - 1].parent_i = i;
                 cellDetails[i - 1][j - 1].parent_j = j;
-                printf("The destination cell is found\n");
+                //printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -649,7 +645,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i + 1][j + 1].parent_i = i;
                 cellDetails[i + 1][j + 1].parent_j = j;
-                printf("The destination cell is found\n");
+               // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -695,7 +691,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i + 1][j - 1].parent_i = i;
                 cellDetails[i + 1][j - 1].parent_j = j;
-                printf("The destination cell is found\n");
+               // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -735,7 +731,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
 
     if (foundDest == false)
     {
-        printf("can't find dest");
+       // printf("can't find dest");
     }
 
 

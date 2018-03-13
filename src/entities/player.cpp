@@ -2,23 +2,18 @@
 // Created by gowth on 2018-02-08.
 //
 #include "player.hpp"
-#include "../common.hpp"
 
-#include <vector>
-#include <string>
 #include <iostream>
 #include <algorithm>
-#include <math.h>
 
+int Player::bulletDelayMS = 200;
 
-
-
-bool Player::init() {
+bool Player::init(vec2 worldSize) {
     std::vector<Vertex> vertices;
     std::vector<uint16_t> indices;
 
     // Reads the salmon mesh from a file, which contains a list of vertices and indices
-    FILE *mesh_file = fopen(mesh_path("player.mesh"), "r");
+    mesh_file = fopen(mesh_path("player.mesh"), "r");
     if (mesh_file == nullptr) {
         std::cout << "mesh file not loaded";
         return false;
@@ -85,9 +80,12 @@ bool Player::init() {
 
     m_num_indices = indices.size();
     m_position = { 700.f, 500.f };
+    m_worldSize = worldSize;
     m_rotation = 0.f;
     m_maxSpeed = 500.f;
-
+    m_isShootingEnabled = false;
+    m_timeSinceLastBulletShot = 1000.f;
+    m_rng = std::default_random_engine(std::random_device()());
     return true;
 }
 
@@ -128,7 +126,15 @@ void Player::update(float ms) {
     auto x_step = m_velocity.x * (ms / 1000);
     auto y_step = m_velocity.y * (ms / 1000);
 
-    move({x_step, y_step});
+    auto newXPos = std::min(m_worldSize.x - 50.f, std::max(50.f, m_position.x + x_step));
+    auto newYPos = std::min(m_worldSize.y - 50.f, std::max(50.f, m_position.y + y_step));
+    m_position = {newXPos, newYPos};
+
+    m_nextBulletSpawn = std::max(0.f, m_nextBulletSpawn - ms);
+    m_timeSinceLastBulletShot = std::min(1000.f, m_timeSinceLastBulletShot + ms);
+    if (m_isShootingEnabled) {
+        shoot();
+    }
 }
 
 
@@ -194,12 +200,6 @@ void Player::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, (GLsizei) m_num_indices, GL_UNSIGNED_SHORT, nullptr);
 }
 
-
-vec2 Player::get_position() const {
-    return m_position;
-}
-
-
 void Player::setRotation(float radians) {
     m_rotation = radians;
 }
@@ -213,13 +213,44 @@ void Player::setFlying(DIRECTION dir, bool isFlying) {
     m_isFlying[dir] = isFlying;
 }
 
-float Player::getRotation() const {
-    return m_rotation;
+void Player::enableShooting(bool isShooting) {
+    m_isShootingEnabled = isShooting;
 }
 
-vec2 Player::getVelocity() const {
-    return m_velocity;
+unsigned int Player::getMass() const {
+    return 100;
 }
+
+void Player::shoot() {
+    if (m_nextBulletSpawn == 0.f) {
+        if (auto newPlayerBullet = PlayerBullet::spawn()) {
+            m_bullets.emplace_back(newPlayerBullet);
+        }
+        auto newPlayerBulletPtr = m_bullets.back();
+        newPlayerBulletPtr->setPosition(m_position);
+
+        float bulletInitialSpeed = 1000.f;
+        float bulletAngleRelativeToPlayer = m_rotation + 3.1415f / 2.f +
+                                            3.1415f / 12.f * (1000 - m_timeSinceLastBulletShot) / 1000 * m_dist(m_rng);
+        vec2 bulletDirectionRelativeToPlayer = {cosf(bulletAngleRelativeToPlayer), sinf(bulletAngleRelativeToPlayer)};
+
+        // bullet's initial velocity (in the world)
+        // is sum of player's current velocity and the initial velocity relative to the player
+        vec2 bulletVelocityRelativeToPlayer = {bulletInitialSpeed * bulletDirectionRelativeToPlayer.x, bulletInitialSpeed * bulletDirectionRelativeToPlayer.y};
+
+        vec2 bulletVelocityRelativeToWorld = {m_velocity.x + bulletVelocityRelativeToPlayer.x, m_velocity.y + bulletVelocityRelativeToPlayer.y};
+
+        newPlayerBulletPtr->setVelocity(bulletVelocityRelativeToWorld);
+        m_nextBulletSpawn = Player::bulletDelayMS;
+        m_timeSinceLastBulletShot = 0.f;
+    }
+}
+
+std::vector<std::shared_ptr<PlayerBullet>>& Player::getBullets() {
+    return m_bullets;
+}
+
+// Private methods
 
 float Player::getMovementOrientation(DIRECTION dir) {
     return m_rotation + dir * 3.1415f / 2;
@@ -231,4 +262,35 @@ vec2 Player::getNewVelocity(vec2 oldVelocity, vec2 delta) {
     vec2 newDirection = normalize(newVelocity);
 
     return {newDirection.x * newMagnitude, newDirection.y * newMagnitude};
+}
+
+int Player::getLives() {
+    return m_lives;
+}
+
+void Player::hit() {
+    m_lives--;
+}
+
+bool Player::collisionCheck(Shooter shooter) {
+    float dx = (m_position.x - shooter.getPosition().x) ;
+    float dy = (m_position.y - shooter.getPosition().y) ;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y);
+    float my_r = std::max(m_scale.x , m_scale.y);
+    float r = std::max(other_r, my_r);
+    r *= 0.5f;
+    if (d_sq < r * r)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Player::collisionCheck(Bomber& bomber) {
+    return false;
+}
+
+bool Player::collisionCheck(ShooterBullet sb) {
+    return false;
 }

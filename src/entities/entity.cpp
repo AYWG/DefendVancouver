@@ -4,7 +4,7 @@
 
 #include "entity.hpp"
 
-Entity::Entity() : m_position({0.f, 0.f}) {}
+Entity::Entity() : m_position({0.f, 0.f}), m_scale({1.f, 1.f}) {}
 
 vec2 Entity::getPosition() const {
     return m_position;

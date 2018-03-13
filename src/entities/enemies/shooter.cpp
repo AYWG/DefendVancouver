@@ -8,7 +8,6 @@
 
 Texture Shooter::shooterTexture;
 
-int Shooter::maxNumberOfBullets = 5;
 int Shooter::bulletDelayMS = 1000;
 
 Shooter::Shooter(ShooterAI &ai) : m_ai(ai), m_nextBulletSpawn(0.f) {}
@@ -24,8 +23,8 @@ bool Shooter::init() {
     }
 
     //center of texture
-    float width = shooterTexture.width * 0.1f;
-    float height = shooterTexture.height * 0.1f;
+    float width = shooterTexture.width * 0.5f;
+    float height = shooterTexture.height * 0.5f;
 
     TexturedVertex vertices[4];
     vertices[0].position = {-width, +height, -0.01f};
@@ -62,12 +61,8 @@ bool Shooter::init() {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
-    // Setting initial values, scale is negative to make it face the opposite way
-    // 1.0 would be as big as the original texture
-    m_scale.x = 1.5f;
-    m_scale.y = 1.5f;
-    m_rotation = 0.f;
-
+    m_scale.x = 0.4f;
+    m_scale.y = 0.4;
 
     return true;
 }
@@ -139,7 +134,7 @@ vec2 Shooter::getBoundingBox() const {
 
 void Shooter::attack(float ms) {
     m_nextBulletSpawn -= ms;
-    if (m_bullets.size() <= Shooter::maxNumberOfBullets && m_nextBulletSpawn < 0.f) {
+    if (m_nextBulletSpawn < 0.f) {
         if (auto newShooterBullet = ShooterBullet::spawn()) {
             m_bullets.emplace_back(newShooterBullet);
         }
