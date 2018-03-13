@@ -10,6 +10,7 @@
 #include "camera.hpp"
 #include "entities/bomb.hpp"
 #include "entities/bullets/playerBullet.hpp"
+#include "explosion.hpp"
 
 // stlib
 #include <vector>
@@ -45,9 +46,20 @@ public:
 
     std::vector<vec2> getBombPositions() const;
 
+    bool inCloseDistance();
+
     vec2 getCityPosition() const;
 
     vec2 playerCenter;
+    vec2 mousePos;
+    vec2 aimDir;
+    vec2 baimDir;
+    vec2 aimDirNorm;
+	bool is_shot = false;
+    bool is_shoted = false;
+    vec2 mouseAimDir;
+    float bulletAngleRelativeToPlayer;
+    vec2 bulletDirectionRelativeToPlayer;
 
 private:
     bool spawnShooter();
@@ -73,7 +85,7 @@ private:
     background m_background;
     // Game entities
     Player m_player;
-
+    std::vector<PlayerBullet> m_bullets;
     std::vector<Bomb> m_bombs;
     std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;

@@ -24,6 +24,8 @@ public:
 
     bool update(float ms);
 
+    vec2 getBoundingBox()const;
+
     void animate();
 
 

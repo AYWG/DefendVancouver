@@ -53,6 +53,8 @@ public:
 
     std::vector<std::shared_ptr<PlayerBullet>>& getBullets();
 
+    vec2 getVelocity() const;
+
     int getLives();
 
     void hit();

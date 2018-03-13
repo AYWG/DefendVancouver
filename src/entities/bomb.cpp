@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 #include "bomb.hpp"
 
 Texture Bomb::bomb_texture;
@@ -111,7 +112,7 @@ void Bomb::draw(const mat3& projection){
 }
 
 bool Bomb::update(float ms){
-    if(frameCount != 0){
+    if(isHit && frameCount != 0){
         frameCount = frameCount - 1;
     }
 
@@ -201,6 +202,14 @@ bool Bomb::update(float ms){
 
     return true;
 }
+
+// Returns the local bounding coordinates scaled by the current size of the bomb
+vec2 Bomb::getBoundingBox()const
+{
+    // fabs is to avoid negative scale due to the facing direction
+    return { std::fabs(m_scale.x) * (bomb_texture.width/3), std::fabs(m_scale.y) * (bomb_texture.height/3) };
+}
+
 
 void Bomb::animate()
 {
