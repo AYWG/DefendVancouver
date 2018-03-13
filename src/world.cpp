@@ -116,12 +116,9 @@ bool World::update(float elapsed_ms) {
     vec2 playerPos = m_player.getPosition();
 
     // update camera
-    if (playerPos.x - screen.x / 2 >= 0 && playerPos.x + screen.x / 2 <= m_size.x) {
-        m_camera.setFocusPoint({playerPos.x, m_camera.getFocusPoint().y});
-    }
-    if (playerPos.y - screen.y / 2 >= 0 && playerPos.y + screen.y / 2 <= m_size.y) {
-        m_camera.setFocusPoint({m_camera.getFocusPoint().x, playerPos.y});
-    }
+    auto newCameraFocusPointX = std::min(m_size.x - screen.x/2, std::max(screen.x / 2, playerPos.x));
+    auto newCameraFocusPointY = std::min(m_size.y - screen.y/2, std::max(screen.y / 2, playerPos.y));
+    m_camera.setFocusPoint({newCameraFocusPointX, newCameraFocusPointY});
 
     for (auto &playerBullet : m_player.getBullets()){
         playerBullet->update(elapsed_ms);
