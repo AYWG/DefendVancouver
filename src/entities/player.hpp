@@ -23,7 +23,7 @@ public:
     } DIRECTION;
 
     //init ship
-    bool init();
+    bool init(vec2 worldSize);
 
     // Renders the salmon
     void draw(const mat3& projection) override;
@@ -37,23 +37,15 @@ public:
     //set rotation
     void setRotation(float radians);
 
-    void set_velocity(float velocity, DIRECTION dir);
-
-    void swap_velocity(DIRECTION dir1, DIRECTION dir2);
-
     void setFlying(DIRECTION dir, bool isFlying);
 
     void enableShooting(bool isShooting);
 
     void destroy();
 
-    float getRotation() const;
-
-    vec2 getVelocity() const;
-
     unsigned int getMass() const override;
 
-    void shoot(float ms);
+    void shoot();
 
     std::vector<std::shared_ptr<PlayerBullet>>& getBullets();
 
@@ -68,6 +60,7 @@ private:
     bool m_isShootingEnabled;
     float m_nextBulletSpawn;
     float m_timeSinceLastBulletShot;
+    vec2 m_worldSize;
 
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist{-1.f, 1.f};

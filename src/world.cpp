@@ -95,7 +95,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_background.init();
 
     m_camera.setFocusPoint(m_player.getPosition());
-	return m_player.init();
+	return m_player.init(worldSize);
 
 }
 
@@ -501,7 +501,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         int w, h;
         glfwGetWindowSize(m_window, &w, &h);
 
-        m_player.init();
+        m_player.init(m_size);
 
     }
 }

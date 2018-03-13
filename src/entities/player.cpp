@@ -8,7 +8,7 @@
 
 int Player::bulletDelayMS = 200;
 
-bool Player::init() {
+bool Player::init(vec2 worldSize) {
     std::vector<Vertex> vertices;
     std::vector<uint16_t> indices;
 
@@ -80,6 +80,7 @@ bool Player::init() {
 
     m_num_indices = indices.size();
     m_position = { 700.f, 500.f };
+    m_worldSize = worldSize;
     m_rotation = 0.f;
     m_maxSpeed = 500.f;
     m_isShootingEnabled = false;
@@ -125,12 +126,14 @@ void Player::update(float ms) {
     auto x_step = m_velocity.x * (ms / 1000);
     auto y_step = m_velocity.y * (ms / 1000);
 
-    move({x_step, y_step});
+    auto newXPos = std::min(m_worldSize.x - 50.f, std::max(50.f, m_position.x + x_step));
+    auto newYPos = std::min(m_worldSize.y - 50.f, std::max(50.f, m_position.y + y_step));
+    m_position = {newXPos, newYPos};
 
     m_nextBulletSpawn = std::max(0.f, m_nextBulletSpawn - ms);
     m_timeSinceLastBulletShot = std::min(1000.f, m_timeSinceLastBulletShot);
     if (m_isShootingEnabled) {
-        shoot(ms);
+        shoot();
     }
 }
 
@@ -214,19 +217,11 @@ void Player::enableShooting(bool isShooting) {
     m_isShootingEnabled = isShooting;
 }
 
-float Player::getRotation() const {
-    return m_rotation;
-}
-
-vec2 Player::getVelocity() const {
-    return m_velocity;
-}
-
 unsigned int Player::getMass() const {
     return 100;
 }
 
-void Player::shoot(float ms) {
+void Player::shoot() {
     if (m_nextBulletSpawn == 0.f) {
         if (auto newPlayerBullet = PlayerBullet::spawn()) {
             m_bullets.emplace_back(newPlayerBullet);
