@@ -47,6 +47,8 @@ public:
 
     std::vector<vec2> getBombPositions() const;
 
+    bool inCloseDistance();
+
     vec2 getCityPosition() const;
 
 
@@ -58,6 +60,8 @@ public:
 	bool is_shot = false;
     bool is_shoted = false;
     vec2 mouseAimDir;
+    float bulletAngleRelativeToPlayer;
+    vec2 bulletDirectionRelativeToPlayer;
 
     //static vec2 shotDir;
 

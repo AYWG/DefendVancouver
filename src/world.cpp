@@ -9,9 +9,9 @@
 #include <sstream>
 #include <iostream>
 #include <math.h>
-#include <OpenGL/OpenGL.h>
+//#include <OpenGL/OpenGL.h>
 #include <GLFW/glfw3.h>
-#include <GL/glut.h>
+//#include <GL/glut.h>
 
 typedef pair<int, int> Pair;
 
@@ -147,8 +147,8 @@ bool World::update(float elapsed_ms) {
 
         vec2 playerVelocity = m_player.getVelocity();
         float bulletInitialSpeed = 1000.f;
-        float bulletAngleRelativeToPlayer = m_player.getRotation() + 3.1415f / 2.f;
-        vec2 bulletDirectionRelativeToPlayer = {cosf(bulletAngleRelativeToPlayer), sinf(bulletAngleRelativeToPlayer)};
+        bulletAngleRelativeToPlayer = m_player.getRotation() + 3.1415f / 2.f;
+        bulletDirectionRelativeToPlayer = {cosf(bulletAngleRelativeToPlayer), sinf(bulletAngleRelativeToPlayer)};
 
         // bullet's initial velocity (in the world)
         // is sum of player's current velocity and the initial velocity relative to the player
@@ -404,12 +404,27 @@ bool World::update(float elapsed_ms) {
         }
     }
 
+
+    float bounceBackSpeed = -80.f;
+
     playerBulletIt = m_bullets.begin();
     //collision detection for bomb and player bullet
     while (playerBulletIt != m_bullets.end()) {
         bool isColliding = false;
         for (auto &bomb : m_bombs){
             if (playerBulletIt->collisionCheck(bomb)) {
+                //float diff = sqrt(dot(m_player.get_position() - bomb.getPosition(), m_player.get_position() - bomb.getPosition()));
+                float diffX = m_player.get_position().x - bomb.getPosition().x;
+                float diffY = m_player.get_position().x - bomb.getPosition().x;
+                vec2 diff = {diffX, diffY};
+                float distance = sqrt(dot(diff, diff));
+                if (distance < 300.f){
+                    vec2 bounceBackDist = {(bounceBackSpeed * bulletDirectionRelativeToPlayer.x),
+                                           (bounceBackSpeed * bulletDirectionRelativeToPlayer.y)};
+                    m_player.move(bounceBackDist);
+                    printf("close!");
+                }
+
                 bomb.animate();
                 playerBulletIt = m_bullets.erase(playerBulletIt);
                 isColliding = true;
@@ -515,6 +530,10 @@ std::vector<vec2> World::getBombPositions() const {
         positions.emplace_back(bomb.getPosition());
     }
     return positions;
+}
+
+bool World::inCloseDistance() {
+
 }
 
 vec2 World::getCityPosition() const {
