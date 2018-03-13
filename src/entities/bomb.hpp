@@ -17,7 +17,7 @@ public:
     //init bomb
     bool init(const char *path);
 
-    vec2 get_position()const;
+    vec2 getPosition()const;
 
     int getFrameCount()const;
 

@@ -355,8 +355,8 @@ bool World::update(float elapsed_ms) {
     }
 
     // trigger bomb animation
-    for (auto &bomb : m_bombs)
-        bomb.update(elapsed_ms * m_current_speed);
+//    for (auto &bomb : m_bombs)
+//        bomb.update(elapsed_ms * m_current_speed);
 
     // removing bombs from screen
     auto bomb_it = m_bombs.begin();
@@ -378,12 +378,15 @@ bool World::update(float elapsed_ms) {
 
         Bomb& new_bomb = m_bombs.back();
 
-        new_bomb.set_position({ 50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
+        //new_bomb.set_position({ 50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
+        new_bomb.set_position(getPlayerPosition());
 
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
     }
 
     auto playerBulletIt = m_bullets.begin();
+
+    //collision between playerbullet and shooter
     while (playerBulletIt != m_bullets.end()) {
         bool isColliding = false;
         auto benemy_it = m_shooters.begin();
@@ -395,6 +398,25 @@ bool World::update(float elapsed_ms) {
                 break;
             }
             ++benemy_it;
+        }
+        if (!isColliding) {
+            ++playerBulletIt;
+        }
+    }
+
+    playerBulletIt = m_bullets.begin();
+    //collision detection for bomb and player bullet
+    while (playerBulletIt != m_bullets.end()) {
+        bool isColliding = false;
+        for (auto &bomb : m_bombs){
+            if (playerBulletIt->collisionCheck(bomb)) {
+                while(bomb.getFrameCount() > 0){
+                    bomb.update(elapsed_ms * m_current_speed);
+                }
+                playerBulletIt = m_bullets.erase(playerBulletIt);
+                isColliding = true;
+                break;
+            }
         }
         if (!isColliding) {
             ++playerBulletIt;
@@ -492,7 +514,7 @@ vec2 World::getPlayerPosition() const {
 std::vector<vec2> World::getBombPositions() const {
     auto positions = std::vector<vec2>();
     for (auto &bomb : m_bombs) {
-        positions.emplace_back(bomb.get_position());
+        positions.emplace_back(bomb.getPosition());
     }
     return positions;
 }
