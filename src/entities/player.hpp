@@ -41,7 +41,6 @@ public:
     //set rotation
     void setRotation(float radians);
 
-    void set_velocity(float velocity, DIRECTION dir);
     void setFlying(DIRECTION dir, bool isFlying);
 
     void enableShooting(bool isShooting);
@@ -65,7 +64,6 @@ public:
     bool collisionCheck(ShooterBullet sb);
 
 private:
-    vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     float m_rotation; // in radians
     vec2 m_velocity;
     bool m_isFlying[NUM_DIRECTIONS];

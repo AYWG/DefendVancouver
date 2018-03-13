@@ -4,12 +4,11 @@
 #pragma once
 
 #include "../../common.hpp"
+
 #include "enemy.hpp"
 #include "../../ai/chaserAI.hpp"
-#include "../player.hpp"
 
 
-// Basic alien enemies for the game (grey spaceship)
 using  namespace std;
 
 #define  ROW 100
@@ -21,10 +20,6 @@ typedef  pair<int, int> Pair;
 //creating a shortcut for pair<int, pair<int, int>> type
 typedef  pair<double , pair<int, int> > pPair;
 
-
-//#include "../world.hpp"
-
-// Basic alien enemies for the game (grey spaceship)
 
 class Chaser : public Enemy, public Renderable {
 
@@ -80,7 +75,6 @@ public:
 private:
     ChaserAI m_ai;
     float m_nextChaserBulletSpawn;
-    Player m_player;
     float m_rotation;
     vec2 curr_pos;
     vec2 curr_scale;

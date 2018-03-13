@@ -58,8 +58,8 @@ bool Bomb::init(const char *path) {
 
     isHit = false;
     frameCount = 9;
-    b_scale.x = 0.25f;
-    b_scale.y = 0.25f;
+    m_scale.x = 0.25f;
+    m_scale.y = 0.25f;
 
     return true;
 
@@ -70,8 +70,8 @@ void Bomb::draw(const mat3& projection){
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
     transform_begin();
-    transform_translate(b_position);
-    transform_scale(b_scale);
+    transform_translate(m_position);
+    transform_scale(m_scale);
     transform_end();
     glUseProgram(effect.program);
 
@@ -203,21 +203,13 @@ bool Bomb::update(float ms){
     return true;
 }
 
-vec2 Bomb::getPosition() const
-{
-    return b_position;
-}
-
 // Returns the local bounding coordinates scaled by the current size of the bomb
 vec2 Bomb::getBoundingBox()const
 {
     // fabs is to avoid negative scale due to the facing direction
-    return { std::fabs(b_scale.x) * (bomb_texture.width/3), std::fabs(b_scale.y) * (bomb_texture.height/3) };
+    return { std::fabs(m_scale.x) * (bomb_texture.width/3), std::fabs(m_scale.y) * (bomb_texture.height/3) };
 }
 
-void Bomb::set_position(vec2 position){
-    b_position = position;
-}
 
 void Bomb::animate()
 {

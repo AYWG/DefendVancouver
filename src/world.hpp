@@ -73,7 +73,7 @@ private:
 
     void onMouseMove(GLFWwindow *window, double xpos, double ypos);
 
-    void onMouseClick(GLFWwindow *window, int buttton, int action, int mod);
+    void onMouseClick(GLFWwindow *window, int button, int action, int mod);
 
 private:
     // Window handle

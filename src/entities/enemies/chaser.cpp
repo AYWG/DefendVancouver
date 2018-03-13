@@ -3,8 +3,6 @@
 //
 
 #include "chaser.hpp"
-#include "shooter.hpp"
-#include "../../world.hpp"
 
 #include <cmath>
 #include <stack>
@@ -144,7 +142,7 @@ void Chaser::draw(const mat3& projection){
 }
 
 vec2 Chaser::getBoundingBox() const {
-
+    return { std::fabs(m_scale.x) * chaserTexture.width, std::fabs(m_scale.y) * chaserTexture.height };
 }
 
 vec2 Chaser::move(vec2 off){
@@ -260,12 +258,9 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
             }
             /////////////////////////////
 
-        }else if (isDestination(p.first, p.second, dest) == true) {
-            move({speed * m_player.getPosition().x,speed * m_player.getPosition().x} );
         }
     }
         return;
-
 }
 
 void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){

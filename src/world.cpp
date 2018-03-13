@@ -20,8 +20,8 @@ namespace {
 
     const size_t MAX_BOMBS = 5;
     const size_t BULLET_DELAY_MS = 200;
-    const size_t MAX_SHOOTERS = 15;
-    const size_t MAX_CHASER = 0;
+    const size_t MAX_SHOOTERS = 2;
+    const size_t MAX_CHASER = 1;
     const size_t SHOOTER_DELAY_MS = 2000;
     const size_t BOMB_DELAY_MS = 2000;
 
@@ -34,14 +34,12 @@ namespace {
 }
 
 World::World() :
-	m_points(0),
-    m_next_shooter_spawn(0.f),
-    m_next_chaser_spawn(0.f),
-    m_next_bomb_spawn(0.f)
-
-{
-	// Seeding rng with random device
-	m_rng = std::default_random_engine(std::random_device()());
+        m_points(0),
+        m_next_shooter_spawn(0.f),
+        m_next_chaser_spawn(0.f),
+        m_next_bomb_spawn(0.f) {
+    // Seeding rng with random device
+    m_rng = std::default_random_engine(std::random_device()());
 }
 
 World::~World() {
@@ -101,7 +99,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_background.init();
 
     m_camera.setFocusPoint(m_player.getPosition());
-	return m_player.init(worldSize);
+    return m_player.init(worldSize);
 
 }
 
@@ -172,18 +170,6 @@ bool World::update(float elapsed_ms) {
             ++shooterBulletIt;
         }
     }
-/*
-    auto benemy_col = m_shooters.begin();
-    auto pbullet_col = m_bullets.begin();
-    float boundBullet = pbullet_col->getBoundingBox().x/2;
-    float boundEnemy = benemy_col->getBoundingBox().x / 2;
-    while (pbullet_col != m_bullets.end() && benemy_col != m_shooters.end()) {
-        if (pbullet_col->getPosition().y + boundBullet <
-                benemy_col->getPosition().y + boundEnemy){
-            std::cout<<"hit";
-            benemy_col = m_shooters.erase(benemy_col);
-            pbullet_col = m_bullets.erase(pbullet_col);
-*/
 
 //////////////////CHASER///////////////////
     m_next_chaser_spawn -= elapsed_ms;
@@ -301,8 +287,8 @@ bool World::update(float elapsed_ms) {
     }
 
     // trigger bomb animation
-    for (auto &bomb : m_bombs)
-        bomb.update(elapsed_ms * m_current_speed);
+    for (auto& bomb : m_bombs)
+        bomb.update(elapsed_ms);
 
     // removing bombs from screen
     auto bomb_it = m_bombs.begin();
@@ -324,23 +310,22 @@ bool World::update(float elapsed_ms) {
 
         Bomb& new_bomb = m_bombs.back();
 
-        new_bomb.set_position({ 50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
-        //new_bomb.set_position(getPlayerPosition());
+        new_bomb.setPosition({ 50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
+        //new_bomb.setPosition(getPlayerPosition());
 
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
     }
 
-    auto playerBulletIt = m_bullets.begin();
-
-    //collision between playerbullet and shooter
-    while (playerBulletIt != m_bullets.end()) {
+    playerBulletIt = m_player.getBullets().begin();
+    while (playerBulletIt != m_player.getBullets().end()) {
         bool isColliding = false;
         auto benemy_it = m_shooters.begin();
         while (benemy_it != m_shooters.end() ) {
-            if (playerBulletIt->collisionCheck(*benemy_it)) {
+            if ((*playerBulletIt)->collisionCheck(*benemy_it)) {
                 benemy_it = m_shooters.erase(benemy_it);
-                playerBulletIt = m_bullets.erase(playerBulletIt);
+                playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 isColliding = true;
+                m_points = m_points + 5;
                 break;
             }
             ++benemy_it;
@@ -353,15 +338,15 @@ bool World::update(float elapsed_ms) {
 
     float bounceBackSpeed = -80.f;
 
-    playerBulletIt = m_bullets.begin();
+    playerBulletIt = m_player.getBullets().begin();
     //collision detection for bomb and player bullet
-    while (playerBulletIt != m_bullets.end()) {
+    while (playerBulletIt != m_player.getBullets().end()) {
         bool isColliding = false;
         for (auto &bomb : m_bombs){
-            if (playerBulletIt->collisionCheck(bomb)) {
+            if ((*playerBulletIt)->collisionCheck(bomb)) {
                 //float diff = sqrt(dot(m_player.get_position() - bomb.getPosition(), m_player.get_position() - bomb.getPosition()));
-                float diffX = m_player.get_position().x - bomb.getPosition().x;
-                float diffY = m_player.get_position().x - bomb.getPosition().x;
+                float diffX = m_player.getPosition().x - bomb.getPosition().x;
+                float diffY = m_player.getPosition().x - bomb.getPosition().x;
                 vec2 diff = {diffX, diffY};
                 float distance = magnitude(diff);
                 if (distance < 200.f){
@@ -371,7 +356,7 @@ bool World::update(float elapsed_ms) {
                 }
 
                 bomb.animate();
-                playerBulletIt = m_bullets.erase(playerBulletIt);
+                playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 isColliding = true;
                 break;
             }
@@ -380,6 +365,29 @@ bool World::update(float elapsed_ms) {
             ++playerBulletIt;
         }
     }
+
+    // Player shooting Chaser
+    playerBulletIt = m_player.getBullets().begin();
+    while (playerBulletIt != m_player.getBullets().end()) {
+        bool chaserCol = false;
+        auto benemy_it = m_chasers.begin();
+        while (benemy_it != m_chasers.end() ) {
+            if ((*playerBulletIt)->collisionCheck(*benemy_it)) {
+                std::cout << "collided" << std::endl;
+                benemy_it = m_chasers.erase(benemy_it);
+                playerBulletIt = m_player.getBullets().erase(playerBulletIt);
+                chaserCol = true;
+                m_points = m_points + 10;
+                break;
+            }
+            ++benemy_it;
+        }
+        if (!chaserCol) {
+            ++playerBulletIt;
+        }
+    }
+
+
     return true;
 }
 
@@ -482,17 +490,6 @@ vec2 World::getCityPosition() const {
     return m_background.getPosition();
 }
 
-
-vec2 const World::mousePosition() {
-    return get_mousePos(aimDirNorm);
-}
-
-vec2 World::get_mousePos(vec2 mousePos) {
-    mousePos = mouseAimDir;
-    return mousePos;
-}
-
-
 bool World::spawnShooter() {
     ShooterAI ai;
     Shooter shooter(ai);
@@ -514,17 +511,8 @@ bool World::spawnChaser() {
     return false;
 }
 
-bool World::spawn_playerBullet() {
-    PlayerBullet playerBullet;
-    if (playerBullet.init()) {
-        m_bullets.emplace_back(playerBullet);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn player bullet");
-    return false;
-}
-
-bool World::spawn_bomb() {
+bool World::spawn_bomb()
+{
     Bomb bomb;
     if (bomb.init(textures_path("normal_bomb.png"))) {
         m_bombs.emplace_back(bomb);

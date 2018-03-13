@@ -46,7 +46,7 @@ public:
 protected:
     float m_rotation;
     float m_maxSpeed;
-
+    vec2 m_scale;
     float m_angleToTarget;
 
     std::vector<vec2> m_bombsInVision;

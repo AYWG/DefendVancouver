@@ -131,7 +131,7 @@ void Player::update(float ms) {
     m_position = {newXPos, newYPos};
 
     m_nextBulletSpawn = std::max(0.f, m_nextBulletSpawn - ms);
-    m_timeSinceLastBulletShot = std::min(1000.f, m_timeSinceLastBulletShot);
+    m_timeSinceLastBulletShot = std::min(1000.f, m_timeSinceLastBulletShot + ms);
     if (m_isShootingEnabled) {
         shoot();
     }
