@@ -112,7 +112,7 @@ void Bomb::draw(const mat3& projection){
 }
 
 bool Bomb::update(float ms){
-    if(frameCount != 0){
+    if(isHit && frameCount != 0){
         frameCount = frameCount - 1;
     }
 

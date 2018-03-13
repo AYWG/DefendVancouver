@@ -355,8 +355,8 @@ bool World::update(float elapsed_ms) {
     }
 
     // trigger bomb animation
-//    for (auto &bomb : m_bombs)
-//        bomb.update(elapsed_ms * m_current_speed);
+    for (auto &bomb : m_bombs)
+        bomb.update(elapsed_ms * m_current_speed);
 
     // removing bombs from screen
     auto bomb_it = m_bombs.begin();
@@ -378,8 +378,8 @@ bool World::update(float elapsed_ms) {
 
         Bomb& new_bomb = m_bombs.back();
 
-        //new_bomb.set_position({ 50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
-        new_bomb.set_position(getPlayerPosition());
+        new_bomb.set_position({ 50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
+        //new_bomb.set_position(getPlayerPosition());
 
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
     }
@@ -410,9 +410,7 @@ bool World::update(float elapsed_ms) {
         bool isColliding = false;
         for (auto &bomb : m_bombs){
             if (playerBulletIt->collisionCheck(bomb)) {
-                while(bomb.getFrameCount() > 0){
-                    bomb.update(elapsed_ms * m_current_speed);
-                }
+                bomb.animate();
                 playerBulletIt = m_bullets.erase(playerBulletIt);
                 isColliding = true;
                 break;
