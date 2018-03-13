@@ -17,8 +17,8 @@ namespace {
 
     const size_t MAX_BOMBS = 5;
     const size_t BULLET_DELAY_MS = 200;
-    const size_t MAX_SHOOTERS = 15;
-    const size_t MAX_CHASER = 0;
+    const size_t MAX_SHOOTERS = 2;
+    const size_t MAX_CHASER = 1;
     const size_t SHOOTER_DELAY_MS = 2000;
     const size_t BOMB_DELAY_MS = 5000;
 
@@ -31,14 +31,12 @@ namespace {
 }
 
 World::World() :
-	m_points(0),
-    m_next_shooter_spawn(0.f),
-    m_next_chaser_spawn(0.f),
-    m_next_bomb_spawn(0.f)
-
-{
-	// Seeding rng with random device
-	m_rng = std::default_random_engine(std::random_device()());
+        m_points(0),
+        m_next_shooter_spawn(0.f),
+        m_next_chaser_spawn(0.f),
+        m_next_bomb_spawn(0.f) {
+    // Seeding rng with random device
+    m_rng = std::default_random_engine(std::random_device()());
 }
 
 World::~World() {
@@ -75,18 +73,21 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     // Load OpenGL function pointers
     gl3wInit();
 
-	// Setting callbacks to member functions (that's why the redirect is needed)
-	// Input is handled using GLFW, for more info see
-	// http://www.glfw.org/docs/latest/input_guide.html
-	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) {
-        ((World *) glfwGetWindowUserPointer(wnd))->onKey(wnd, _0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) {
-        ((World *) glfwGetWindowUserPointer(wnd))->onMouseMove(wnd, _0, _1); };
-    auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
-        ((World *) glfwGetWindowUserPointer(wnd))->onMouseClick(wnd, _0, _1, _2); };
-	glfwSetKeyCallback(m_window, key_redirect);
-	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+    // Setting callbacks to member functions (that's why the redirect is needed)
+    // Input is handled using GLFW, for more info see
+    // http://www.glfw.org/docs/latest/input_guide.html
+    glfwSetWindowUserPointer(m_window, this);
+    auto key_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2, int _3) {
+        ((World *) glfwGetWindowUserPointer(wnd))->onKey(wnd, _0, _1, _2, _3);
+    };
+    auto cursor_pos_redirect = [](GLFWwindow *wnd, double _0, double _1) {
+        ((World *) glfwGetWindowUserPointer(wnd))->onMouseMove(wnd, _0, _1);
+    };
+    auto mouse_button_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2) {
+        ((World *) glfwGetWindowUserPointer(wnd))->onMouseClick(wnd, _0, _1, _2);
+    };
+    glfwSetKeyCallback(m_window, key_redirect);
+    glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
     m_size = worldSize;
@@ -95,7 +96,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_background.init();
 
     m_camera.setFocusPoint(m_player.getPosition());
-	return m_player.init(worldSize);
+    return m_player.init(worldSize);
 
 }
 
@@ -145,7 +146,7 @@ bool World::update(float elapsed_ms) {
         Shooter& shooter = m_shooters.back();
 
         // Setting random initial position
-        shooter.setPosition({ 50 + m_dist(m_rng) * screen.x, -200.f  });
+        shooter.setPosition({50 + m_dist(m_rng) * screen.x, -200.f});
         // Next spawn
         m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
     }
@@ -166,18 +167,6 @@ bool World::update(float elapsed_ms) {
             ++shooterBulletIt;
         }
     }
-/*
-    auto benemy_col = m_shooters.begin();
-    auto pbullet_col = m_bullets.begin();
-    float boundBullet = pbullet_col->getBoundingBox().x/2;
-    float boundEnemy = benemy_col->getBoundingBox().x / 2;
-    while (pbullet_col != m_bullets.end() && benemy_col != m_shooters.end()) {
-        if (pbullet_col->getPosition().y + boundBullet <
-                benemy_col->getPosition().y + boundEnemy){
-            std::cout<<"hit";
-            benemy_col = m_shooters.erase(benemy_col);
-            pbullet_col = m_bullets.erase(pbullet_col);
-*/
 
 //////////////////CHASER///////////////////
     m_next_chaser_spawn -= elapsed_ms;
@@ -294,18 +283,15 @@ bool World::update(float elapsed_ms) {
         }
     }
 
-
     // trigger bomb animation
     for (auto& bomb : m_bombs)
         bomb.update(elapsed_ms);
 
     // removing bombs from screen
     auto bomb_it = m_bombs.begin();
-    while (bomb_it != m_bombs.end())
-    {
+    while (bomb_it != m_bombs.end()) {
         int fc = bomb_it->getFrameCount();
-        if (fc == 0)
-        {
+        if (fc == 0) {
             bomb_it = m_bombs.erase(bomb_it);
             continue;
         }
@@ -315,17 +301,57 @@ bool World::update(float elapsed_ms) {
 
     // Spawn new regular bombs
     m_next_bomb_spawn -= elapsed_ms;
-    if (m_bombs.size() <= MAX_BOMBS && m_next_bomb_spawn < 0.f)
-    {
+    if (m_bombs.size() <= MAX_BOMBS && m_next_bomb_spawn < 0.f) {
         if (!spawn_bomb())
             return false;
-        Bomb& new_bomb = m_bombs.back();
+        Bomb &new_bomb = m_bombs.back();
 
         //new_bomb.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
-        new_bomb.set_position(getPlayerPosition());
+        new_bomb.setPosition(getPlayerPosition());
 
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
     }
+
+    playerBulletIt = m_player.getBullets().begin();
+    while (playerBulletIt != m_player.getBullets().end()) {
+        bool isColliding = false;
+        auto benemy_it = m_shooters.begin();
+        while (benemy_it != m_shooters.end() ) {
+            if ((*playerBulletIt)->collisionCheck(*benemy_it)) {
+                benemy_it = m_shooters.erase(benemy_it);
+                playerBulletIt = m_player.getBullets().erase(playerBulletIt);
+                isColliding = true;
+                m_points = m_points + 5;
+                break;
+            }
+            ++benemy_it;
+        }
+        if (!isColliding) {
+            ++playerBulletIt;
+        }
+    }
+
+    // Player shooting Chaser
+    playerBulletIt = m_player.getBullets().begin();
+    while (playerBulletIt != m_player.getBullets().end()) {
+        bool chaserCol = false;
+        auto benemy_it = m_chasers.begin();
+        while (benemy_it != m_chasers.end() ) {
+            if ((*playerBulletIt)->collisionCheck(*benemy_it)) {
+                std::cout << "collided" << std::endl;
+                benemy_it = m_chasers.erase(benemy_it);
+                playerBulletIt = m_player.getBullets().erase(playerBulletIt);
+                chaserCol = true;
+                m_points = m_points + 10;
+                break;
+            }
+            ++benemy_it;
+        }
+        if (!chaserCol) {
+            ++playerBulletIt;
+        }
+    }
+
 
     return true;
 }
@@ -396,7 +422,7 @@ void World::draw() {
    }
 
 
-    for (auto& bomb : m_bombs){
+    for (auto &bomb : m_bombs) {
         bomb.draw(projection_2D);
     }
 
@@ -415,8 +441,8 @@ vec2 World::getPlayerPosition() const {
 
 std::vector<vec2> World::getBombPositions() const {
     auto positions = std::vector<vec2>();
-    for (auto& bomb : m_bombs) {
-        positions.emplace_back(bomb.get_position());
+    for (auto &bomb : m_bombs) {
+        positions.emplace_back(bomb.getPosition());
     }
     return positions;
 }
@@ -449,8 +475,7 @@ bool World::spawnChaser() {
 bool World::spawn_bomb()
 {
     Bomb bomb;
-    if (bomb.init(textures_path("normal_bomb.png")))
-    {
+    if (bomb.init(textures_path("normal_bomb.png"))) {
         m_bombs.emplace_back(bomb);
         return true;
     }

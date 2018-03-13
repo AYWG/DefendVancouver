@@ -12,10 +12,14 @@
 #include "entity.hpp"
 #include "movable.hpp"
 #include "bullets/playerBullet.hpp"
+#include "enemies/shooter.hpp"
+#include "enemies/bomber.hpp"
 
 class Player : public Entity, public Movable, public Renderable {
 
     static int bulletDelayMS;
+
+    FILE* mesh_file;
 
 public:
     typedef enum {
@@ -49,8 +53,15 @@ public:
 
     std::vector<std::shared_ptr<PlayerBullet>>& getBullets();
 
+    int getLives();
+
+    void hit();
+
+    bool collisionCheck(Shooter shooter);
+    bool collisionCheck(Bomber& bomber);
+    bool collisionCheck(ShooterBullet sb);
+
 private:
-    vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
     float m_rotation; // in radians
     vec2 m_velocity;
     bool m_isFlying[NUM_DIRECTIONS];

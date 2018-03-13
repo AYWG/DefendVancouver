@@ -56,8 +56,8 @@ bool background::init() {
     // Loading shaders
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
-    b_scale.x = 1.0f;
-    b_scale.y = 1.0f;
+    m_scale.x = 1.0f;
+    m_scale.y = 1.0f;
     m_position.x = 2500;
     m_position.y = 759;
 
@@ -70,7 +70,7 @@ void background::draw(const mat3& projection){
     // Setting shaders
     transform_begin();
     transform_translate(m_position);
-    transform_scale(b_scale);
+    transform_scale(m_scale);
     transform_end();
     glUseProgram(effect.program);
 

@@ -57,8 +57,8 @@ bool Bomb::init(const char *path) {
 
     isHit = false;
     frameCount = 9;
-    b_scale.x = 0.25f;
-    b_scale.y = 0.25f;
+    m_scale.x = 0.25f;
+    m_scale.y = 0.25f;
 
     return true;
 
@@ -69,8 +69,8 @@ void Bomb::draw(const mat3& projection){
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
     transform_begin();
-    transform_translate(b_position);
-    transform_scale(b_scale);
+    transform_translate(m_position);
+    transform_scale(m_scale);
     transform_end();
     glUseProgram(effect.program);
 
@@ -200,16 +200,6 @@ bool Bomb::update(float ms){
         return false;
 
     return true;
-}
-
-vec2 Bomb::get_position() const{
-    return b_position;
-}
-
-
-
-void Bomb::set_position(vec2 position){
-    b_position = position;
 }
 
 void Bomb::animate()
