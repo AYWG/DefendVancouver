@@ -13,7 +13,6 @@
 class Shooter : public Enemy, public Renderable {
 
     static Texture shooterTexture;
-    static int maxNumberOfBullets;
     static int bulletDelayMS;
 
 public:
