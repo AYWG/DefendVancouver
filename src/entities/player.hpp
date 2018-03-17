@@ -39,11 +39,6 @@ public:
     //UPDATE
     void update(float ms);
 
-    //set rotation
-    void setRotation(float radians);
-
-    float getRotation();
-
     void setFlying(DIRECTION dir, bool isFlying);
 
     void enableShooting(bool isShooting);
@@ -73,7 +68,6 @@ public:
     bool collisionCheck(BomberBomb &bomb);
 
 private:
-    float m_rotation; // in radians
     vec2 m_velocity;
     bool m_isFlying[NUM_DIRECTIONS];
     float m_maxSpeed;

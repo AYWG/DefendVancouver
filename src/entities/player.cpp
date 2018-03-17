@@ -199,14 +199,6 @@ void Player::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, (GLsizei) m_num_indices, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void Player::setRotation(float radians) {
-    m_rotation = radians;
-}
-
-float Player::getRotation() {
-    return m_rotation;
-}
-
 void Player::move(vec2 off) {
     m_position.x += off.x;
     m_position.y += off.y;
@@ -246,6 +238,7 @@ void Player::shoot() {
                                               m_velocity.y + bulletVelocityRelativeToPlayer.y};
 
         newPlayerBulletPtr->setVelocity(bulletVelocityRelativeToWorld);
+        newPlayerBulletPtr->setRotation(atanf(bulletVelocityRelativeToWorld.y / bulletVelocityRelativeToWorld.x) + 3.1415f / 2);
         m_nextBulletSpawn = Player::bulletDelayMS;
         m_timeSinceLastBulletShot = 0.f;
     }

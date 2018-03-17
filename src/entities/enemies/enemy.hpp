@@ -15,8 +15,6 @@ class World;
 
 class Enemy : public Entity, public Movable {
 public:
-    Enemy();
-
     virtual ~Enemy() = default;
 
     virtual bool init() = 0;
@@ -26,10 +24,6 @@ public:
     virtual void update(World *world, float ms) = 0;
 
     virtual vec2 getBoundingBox() const = 0;
-
-    float getRotation() const;
-
-    void setRotation(float rotation);
 
     float getAngleToTarget() const;
 
@@ -45,9 +39,7 @@ public:
     virtual void attack(float ms) = 0;
 
 protected:
-    float m_rotation;
     float m_maxSpeed;
-    vec2 m_scale;
     float m_angleToTarget;
 
     std::vector<vec2> m_bombsInVision;

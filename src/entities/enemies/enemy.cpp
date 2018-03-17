@@ -4,18 +4,6 @@
 
 #include "enemy.hpp"
 
-Enemy::Enemy() : m_rotation(0.f) {
-
-}
-
-float Enemy::getRotation() const {
-    return m_rotation;
-}
-
-void Enemy::setRotation(float rotation) {
-    m_rotation = rotation;
-}
-
 float Enemy::getAngleToTarget() const {
     return m_angleToTarget;
 }

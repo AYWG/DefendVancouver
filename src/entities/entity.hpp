@@ -18,9 +18,14 @@ public:
 
     void setPosition(vec2 position);
 
+    float getRotation() const;
+
+    void setRotation(float radians);
+
 protected:
     vec2 m_position;
     vec2 m_scale;
+    float m_rotation;
 
 };
 

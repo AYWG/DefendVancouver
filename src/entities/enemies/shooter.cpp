@@ -141,8 +141,10 @@ void Shooter::attack(float ms) {
         auto newShooterBulletPtr = m_bullets.back();
         newShooterBulletPtr->setPosition(m_position);
 
-        float bulletAngle = m_rotation + 3.1415f / 2.f;
-        newShooterBulletPtr->setVelocity({cosf(bulletAngle) * 325.0f, sinf(bulletAngle) * 325.0f});
+        auto bulletAngle = m_rotation + 3.1415f / 2.f;
+        vec2 bulletVelocity = {cosf(bulletAngle) * 325.0f, sinf(bulletAngle) * 325.0f};
+        newShooterBulletPtr->setVelocity(bulletVelocity);
+        newShooterBulletPtr->setRotation(atanf(bulletVelocity.y / bulletVelocity.x) + 3.1415f / 2);
         m_nextBulletSpawn = Shooter::bulletDelayMS;
     }
 }

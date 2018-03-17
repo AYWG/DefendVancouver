@@ -4,7 +4,7 @@
 
 #include "entity.hpp"
 
-Entity::Entity() : m_position({0.f, 0.f}), m_scale({1.f, 1.f}) {}
+Entity::Entity() : m_position({0.f, 0.f}), m_rotation(0.f), m_scale({1.f, 1.f}) {}
 
 vec2 Entity::getPosition() const {
     return m_position;
@@ -12,4 +12,12 @@ vec2 Entity::getPosition() const {
 
 void Entity::setPosition(vec2 position) {
     m_position = position;
+}
+
+float Entity::getRotation() const {
+    return m_rotation;
+}
+
+void Entity::setRotation(float radians) {
+    m_rotation = radians;
 }
