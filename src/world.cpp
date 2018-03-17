@@ -656,3 +656,14 @@ void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
         }
     }
 }
+
+////////////////////// Private methods
+
+/**
+ * Initialize all of the UI elements
+ * @return
+ */
+bool World::initUI() {
+    return m_crosshair.init();
+}
+
