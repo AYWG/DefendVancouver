@@ -76,6 +76,7 @@ bool Chaser::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
     m_rotation = 0.f;
+  //  m_position = {500,600};
 
 
     return true;
@@ -86,7 +87,7 @@ void Chaser::destroy(){
 }
 
 void Chaser::update(World *world, float ms){
-    float velcity = 1;
+    float velcity = 100;
     float x_step = velcity * (ms/1000);
     float  y_step = velcity * (ms/1000);
 
@@ -231,7 +232,7 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
             if ((p.first > np.first) && (p.second > np.second) ) {
                 move({-speed, -speed});
             }
-            if ((p.first > np.first) && (p.second < np.second) ) {
+            if ((p.first > np.first) && (p.second == np.second) ) {
                 move({0, -speed});
             }
             ///////////////////////////
@@ -266,20 +267,21 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
 void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
     //if src us outta range
     if (isValid(src.first, src.second) == false){
-        //printf("source is invalid");
+        printf("source is invalid");
+        move({0, 10});
         return;
     }
 
     //if dest is outta range
     if(isValid(dest.first, dest.second) == false){
-        //printf("dentination is invalid");
+        printf("dentination is invalid");
         return;
     }
 
     //if source or destination is blocked
     if (isUnBlocked(grid, src.first, src.second) == false ||
         isUnBlocked(grid, dest.first, dest.second) == false){
-       // printf ("Source or the destination is blocked\n");
+        printf ("Source or the destination is blocked\n");
        //    move({-5, 0});
         return;
     }
@@ -287,7 +289,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
     // If the destination cell is the same as source
     if (isDestination(src.first, src.second, dest) == true)
     {
-       // printf ("We are already at the destination\n");
+        //printf ("We are already at the destination\n");
         return;
     }
 

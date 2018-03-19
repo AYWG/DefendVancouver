@@ -201,8 +201,21 @@ bool World::update(float elapsed_ms) {
     //width -> -600 to 2060
     //height -> -150 to 1000
 
-    float width = 26.6f;
-    float height = 11.5f;
+/*    float width = 2660.f / COL;
+    float height = 1150.f / ROW;*/
+/*    float width = 2660.f / COL;
+    float height = 1150.f / ROW;*/
+    float width = 4900.f / COL;
+    float height = 900.f / ROW;
+    //std::cout<<width<<endl;
+
+    int grid[ROW][COL];
+
+    for (int p = 0; p < ROW; p++) {
+        for (int h = 0; h < COL; h++) {
+            grid[p][h] = 1;
+        }
+    }
 
     for (auto &m_chaser : m_chasers) {
         bool srcFound = false;
@@ -211,21 +224,17 @@ bool World::update(float elapsed_ms) {
         int j = 0;
         int l = 0;
 
-        int grid[ROW][COL];
 
-        for (int i = 0; i <= 99; i++) {
-            for (int j = 0; j <= 99; j++) {
-                grid[i][j] = 1;
-            }
-        }
 
 
         if (!srcFound) {
-            for (float k = -600.f/*0.f*/; k <= 2060 /*1200.f*/; k += width) {
-                for (float i = /*0*/-150.f; i <= 1000.f; i += height) {
-                    if (m_chaser.getPosition().y >= 0.f && m_chaser.getPosition().y < height
-                        && m_chaser.getPosition().x >= 0.f && m_chaser.getPosition().x < width) {
+            for (float k = 50.f/*0.f*/; k <= 4950.f /*1200.f*/; k += width) {
+                for (float i = /*0*/50.f; i <= 950.f; i += height) {
+                    if (m_chaser.getPosition().y >= 50.f && m_chaser.getPosition().y < height
+                        && m_chaser.getPosition().x >= 50.f && m_chaser.getPosition().x < width) {
                         //  Pair src = make_pair(0, 0);
+                        j = 0;
+                        l = 0;
                         srcFound = true;
                         if (srcFound) {
                             break;
@@ -253,11 +262,13 @@ bool World::update(float elapsed_ms) {
         int b = 0;
 
         if (!destFound) {
-            for (float k = /*0*/-600.f; k <= /*1200*/2060.f; k += width) {
-                for (float i = -150.f; i <= 1000.f; i += height) {
-                    if (m_player.getPosition().y >= 0.f && m_player.getPosition().y < height
-                        && m_player.getPosition().x >= 0.f && m_player.getPosition().x < width) {
+            for (float k = /*0*/50.f; k <= /*1200*/4950.f; k += width) {
+                for (float i = 50.f; i <= 950.f; i += height) {
+                    if (m_player.getPosition().y >= 50.f && m_player.getPosition().y < height
+                        && m_player.getPosition().x >= 50.f && m_player.getPosition().x < width) {
                         //Pair dest = make_pair(0, 0);
+                        a = 0;
+                        b = 0;
                         destFound = true;
                         if (destFound) {
                             break;
@@ -281,15 +292,14 @@ bool World::update(float elapsed_ms) {
             }
         }
 
-
        // m_chaser.update(this, elapsed_ms);
 
         if (destFound && srcFound) {
             Pair src = make_pair(j, l);
             Pair dest = make_pair(a, b);
             m_chaser.aStarSearch(grid, src, dest);
-            //printf("it works");
         }
+
     }
 
     // trigger bomb animation
@@ -595,8 +605,13 @@ void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         if (action == GLFW_PRESS) {
             m_player.enableShooting(true);
+
         } else if (action == GLFW_RELEASE) {
             m_player.enableShooting(false);
+
         }
     }
+
+    //50 to 950
+    //50 to 4950
 }
