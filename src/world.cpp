@@ -21,7 +21,7 @@ namespace {
     const size_t MAX_BOMBS = 5;
     const size_t BULLET_DELAY_MS = 200;
     const size_t MAX_SHOOTERS = 2;
-    const size_t MAX_CHASER = 1;
+    const size_t MAX_CHASER = 0;
     const size_t SHOOTER_DELAY_MS = 2000;
     const size_t BOMB_DELAY_MS = 2000;
 
@@ -194,19 +194,9 @@ bool World::update(float elapsed_ms) {
 
     //////////////SPAWNDONE/////////////////
     //ASTAR
-    int j = 0;
-    int l = 0;
 
-    int grid[ROW][COL];
 
-    for (int i = 0; i <= 99; i++) {
-        for (int j = 0; j <= 99; j++) {
-            grid[i][j] = 1;
-        }
-    }
 
-    bool srcFound = false;
-    bool destFound = false;
 
     //width -> -600 to 2060
     //height -> -150 to 1000
@@ -215,6 +205,21 @@ bool World::update(float elapsed_ms) {
     float height = 11.5f;
 
     for (auto &m_chaser : m_chasers) {
+        bool srcFound = false;
+        bool destFound = false;
+
+        int j = 0;
+        int l = 0;
+
+        int grid[ROW][COL];
+
+        for (int i = 0; i <= 99; i++) {
+            for (int j = 0; j <= 99; j++) {
+                grid[i][j] = 1;
+            }
+        }
+
+
         if (!srcFound) {
             for (float k = -600.f/*0.f*/; k <= 2060 /*1200.f*/; k += width) {
                 for (float i = /*0*/-150.f; i <= 1000.f; i += height) {
@@ -277,12 +282,13 @@ bool World::update(float elapsed_ms) {
         }
 
 
-        m_chaser.update(this, elapsed_ms);
+       // m_chaser.update(this, elapsed_ms);
 
         if (destFound && srcFound) {
             Pair src = make_pair(j, l);
             Pair dest = make_pair(a, b);
             m_chaser.aStarSearch(grid, src, dest);
+            //printf("it works");
         }
     }
 
