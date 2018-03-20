@@ -30,7 +30,9 @@ public:
     unsigned int getMass() const override;
 
     bool collisionCheck(Shooter shooter);
+
     bool collisionCheck(Chaser chaser);
-   // bool collisionCheck(Bomber& bomber);
-    bool collisionCheck(Bomb& bomb);
+
+    // bool collisionCheck(Bomber& bomber);
+    bool collisionCheck(Bomb &bomb);
 };

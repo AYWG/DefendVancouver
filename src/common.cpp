@@ -12,7 +12,7 @@
 #include <vector>
 #include <sstream>
 
-std::string getTexturesPath(std::string& fileName) {
+std::string getTexturesPath(std::string &fileName) {
     return (std::string("../data/textures/") + fileName);
 }
 
@@ -83,7 +83,7 @@ mat3 mul(const mat3 &l, const mat3 &r) {
 vec2 normalize(vec2 v) {
     float m = magnitude(v);
     if (m < 1.f) {
-        return { v.x, v.y };
+        return {v.x, v.y};
     }
     return {v.x / m, v.y / m};
 }

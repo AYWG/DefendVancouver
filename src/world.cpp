@@ -120,19 +120,19 @@ bool World::update(float elapsed_ms) {
     vec2 playerPos = m_player.getPosition();
 
     // update camera
-    auto newCameraFocusPointX = std::min(m_size.x - screen.x/2, std::max(screen.x / 2, playerPos.x));
-    auto newCameraFocusPointY = std::min(m_size.y - screen.y/2, std::max(screen.y / 2, playerPos.y));
+    auto newCameraFocusPointX = std::min(m_size.x - screen.x / 2, std::max(screen.x / 2, playerPos.x));
+    auto newCameraFocusPointY = std::min(m_size.y - screen.y / 2, std::max(screen.y / 2, playerPos.y));
     m_camera.setFocusPoint({newCameraFocusPointX, newCameraFocusPointY});
 
-    for (auto &playerBullet : m_player.getBullets()){
+    for (auto &playerBullet : m_player.getBullets()) {
         playerBullet->update(elapsed_ms);
     }
 
     // remove out of screen player bullets
     auto playerBulletIt = m_player.getBullets().begin();
     while (playerBulletIt != m_player.getBullets().end()) {
-        if ((*playerBulletIt)->getPosition().y >  m_camera.getBottomBoundary() ||
-            (*playerBulletIt)->getPosition().y  <  m_camera.getTopBoundary() ||
+        if ((*playerBulletIt)->getPosition().y > m_camera.getBottomBoundary() ||
+            (*playerBulletIt)->getPosition().y < m_camera.getTopBoundary() ||
             (*playerBulletIt)->getPosition().x > m_camera.getRightBoundary() ||
             (*playerBulletIt)->getPosition().x < m_camera.getLeftBoundary()) {
             playerBulletIt = m_player.getBullets().erase(playerBulletIt);
@@ -146,7 +146,7 @@ bool World::update(float elapsed_ms) {
         if (!spawnShooter()) {
             return false;
         }
-        Shooter& shooter = m_shooters.back();
+        Shooter &shooter = m_shooters.back();
 
         // Setting random initial position
         shooter.setPosition({50 + m_dist(m_rng) * screen.x, -200.f});
@@ -287,7 +287,7 @@ bool World::update(float elapsed_ms) {
     }
 
     // trigger bomb animation
-    for (auto& bomb : m_bombs)
+    for (auto &bomb : m_bombs)
         bomb.update(elapsed_ms);
 
     // removing bombs from screen
@@ -308,9 +308,9 @@ bool World::update(float elapsed_ms) {
         if (!spawn_bomb())
             return false;
 
-        Bomb& new_bomb = m_bombs.back();
+        Bomb &new_bomb = m_bombs.back();
 
-        new_bomb.setPosition({ 50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
+        new_bomb.setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
         //new_bomb.setPosition(getPlayerPosition());
 
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
@@ -320,7 +320,7 @@ bool World::update(float elapsed_ms) {
     while (playerBulletIt != m_player.getBullets().end()) {
         bool isColliding = false;
         auto benemy_it = m_shooters.begin();
-        while (benemy_it != m_shooters.end() ) {
+        while (benemy_it != m_shooters.end()) {
             if ((*playerBulletIt)->collisionCheck(*benemy_it)) {
                 benemy_it = m_shooters.erase(benemy_it);
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
@@ -342,14 +342,14 @@ bool World::update(float elapsed_ms) {
     //collision detection for bomb and player bullet
     while (playerBulletIt != m_player.getBullets().end()) {
         bool isColliding = false;
-        for (auto &bomb : m_bombs){
+        for (auto &bomb : m_bombs) {
             if ((*playerBulletIt)->collisionCheck(bomb)) {
                 //float diff = sqrt(dot(m_player.get_position() - bomb.getPosition(), m_player.get_position() - bomb.getPosition()));
                 float diffX = m_player.getPosition().x - bomb.getPosition().x;
                 float diffY = m_player.getPosition().x - bomb.getPosition().x;
                 vec2 diff = {diffX, diffY};
                 float distance = magnitude(diff);
-                if (distance < 200.f){
+                if (distance < 200.f) {
                     vec2 bounceBackDist = {(bounceBackSpeed * bulletDirectionRelativeToPlayer.x),
                                            (bounceBackSpeed * bulletDirectionRelativeToPlayer.y)};
                     m_player.move(bounceBackDist);
@@ -358,6 +358,7 @@ bool World::update(float elapsed_ms) {
                 bomb.animate();
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 isColliding = true;
+                m_points = m_points + 5;
                 break;
             }
         }
@@ -371,9 +372,8 @@ bool World::update(float elapsed_ms) {
     while (playerBulletIt != m_player.getBullets().end()) {
         bool chaserCol = false;
         auto benemy_it = m_chasers.begin();
-        while (benemy_it != m_chasers.end() ) {
+        while (benemy_it != m_chasers.end()) {
             if ((*playerBulletIt)->collisionCheck(*benemy_it)) {
-                std::cout << "collided" << std::endl;
                 benemy_it = m_chasers.erase(benemy_it);
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 chaserCol = true;
@@ -439,7 +439,7 @@ void World::draw() {
     // Drawing entities
     m_background.draw(projection_2D);
 
-	m_player.draw(projection_2D);
+    m_player.draw(projection_2D);
 
     for (auto &m_chaser : m_chasers)
         m_chaser.draw(projection_2D);
@@ -452,9 +452,9 @@ void World::draw() {
     }
 
 
-   for (auto &bullet : m_player.getBullets()) {
+    for (auto &bullet : m_player.getBullets()) {
         bullet->draw(projection_2D);
-   }
+    }
 
 
     for (auto &bomb : m_bombs) {
@@ -511,8 +511,7 @@ bool World::spawnChaser() {
     return false;
 }
 
-bool World::spawn_bomb()
-{
+bool World::spawn_bomb() {
     Bomb bomb;
     if (bomb.init(textures_path("normal_bomb.png"))) {
         m_bombs.emplace_back(bomb);

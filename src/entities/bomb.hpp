@@ -11,20 +11,20 @@
 #include "entity.hpp"
 
 
-class Bomb : public Entity, public Renderable{
+class Bomb : public Entity, public Renderable {
 
     static Texture bomb_texture;
 public:
     //init bomb
     bool init(const char *path);
 
-    int getFrameCount()const;
+    int getFrameCount() const;
 
     void draw(const mat3 &projection) override;
 
     bool update(float ms);
 
-    vec2 getBoundingBox()const;
+    vec2 getBoundingBox() const;
 
     void animate();
 

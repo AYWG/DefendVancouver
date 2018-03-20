@@ -12,10 +12,8 @@ bool Bomber::init() {
 
     //Load texture
 
-    if (!bomber_texture.is_valid())
-    {
-        if (!bomber_texture.load_from_file(textures_path("bomber.png")))
-        {
+    if (!bomber_texture.is_valid()) {
+        if (!bomber_texture.load_from_file(textures_path("bomber.png"))) {
 
             fprintf(stderr, "Failed to load turtle texture!");
             return false;

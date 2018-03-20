@@ -22,11 +22,10 @@ bool Player::init(vec2 worldSize) {
     // Reading vertices and colors
     char test[100];
     int num_vertices;
-  //  fread(test, 100, 1, mesh_file);
+    //  fread(test, 100, 1, mesh_file);
     fscanf(mesh_file, "%du\n", &num_vertices);
 
-    for (auto i = 0; i < num_vertices; ++i)
-    {
+    for (auto i = 0; i < num_vertices; ++i) {
         float x, y, z;
         float _u[3]; // unused
         int r, g, b;
@@ -40,8 +39,7 @@ bool Player::init(vec2 worldSize) {
     // Reading associated indices
     int num_indices;
     fscanf(mesh_file, "%du\n", &num_indices);
-    for (auto i = 0; i < num_indices; ++i)
-    {
+    for (auto i = 0; i < num_indices; ++i) {
         int idx[3];
         fscanf(mesh_file, "%d %d %d\n", idx, idx + 1, idx + 2);
         indices.push_back((uint16_t) idx[0]);
@@ -79,7 +77,7 @@ bool Player::init(vec2 worldSize) {
     m_scale.y = 200.f;
 
     m_num_indices = indices.size();
-    m_position = { 700.f, 500.f };
+    m_position = {700.f, 500.f};
     m_worldSize = worldSize;
     m_rotation = 0.f;
     m_maxSpeed = 500.f;
@@ -236,9 +234,11 @@ void Player::shoot() {
 
         // bullet's initial velocity (in the world)
         // is sum of player's current velocity and the initial velocity relative to the player
-        vec2 bulletVelocityRelativeToPlayer = {bulletInitialSpeed * bulletDirectionRelativeToPlayer.x, bulletInitialSpeed * bulletDirectionRelativeToPlayer.y};
+        vec2 bulletVelocityRelativeToPlayer = {bulletInitialSpeed * bulletDirectionRelativeToPlayer.x,
+                                               bulletInitialSpeed * bulletDirectionRelativeToPlayer.y};
 
-        vec2 bulletVelocityRelativeToWorld = {m_velocity.x + bulletVelocityRelativeToPlayer.x, m_velocity.y + bulletVelocityRelativeToPlayer.y};
+        vec2 bulletVelocityRelativeToWorld = {m_velocity.x + bulletVelocityRelativeToPlayer.x,
+                                              m_velocity.y + bulletVelocityRelativeToPlayer.y};
 
         newPlayerBulletPtr->setVelocity(bulletVelocityRelativeToWorld);
         m_nextBulletSpawn = Player::bulletDelayMS;
@@ -246,7 +246,7 @@ void Player::shoot() {
     }
 }
 
-std::vector<std::shared_ptr<PlayerBullet>>& Player::getBullets() {
+std::vector<std::shared_ptr<PlayerBullet>> &Player::getBullets() {
     return m_bullets;
 }
 
@@ -273,21 +273,20 @@ void Player::hit() {
 }
 
 bool Player::collisionCheck(Shooter shooter) {
-    float dx = (m_position.x - shooter.getPosition().x) ;
-    float dy = (m_position.y - shooter.getPosition().y) ;
+    float dx = (m_position.x - shooter.getPosition().x);
+    float dy = (m_position.y - shooter.getPosition().y);
     float d_sq = dx * dx + dy * dy;
     float other_r = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y);
-    float my_r = std::max(m_scale.x , m_scale.y);
+    float my_r = std::max(m_scale.x, m_scale.y);
     float r = std::max(other_r, my_r);
     r *= 0.5f;
-    if (d_sq < r * r)
-    {
+    if (d_sq < r * r) {
         return true;
     }
     return false;
 }
 
-bool Player::collisionCheck(Bomber& bomber) {
+bool Player::collisionCheck(Bomber &bomber) {
     return false;
 }
 

@@ -11,32 +11,31 @@ Texture background::background_texture;
 using namespace std;
 
 bool background::init() {
-        //load texture
-        if(!background_texture.is_valid()){
-            if(!background_texture.load_from_file(textures_path("skyline.png")))
-            {
-                fprintf(stderr, "Failed to load background texture!");
-                return false;
-            }
+    //load texture
+    if (!background_texture.is_valid()) {
+        if (!background_texture.load_from_file(textures_path("skyline.png"))) {
+            fprintf(stderr, "Failed to load background texture!");
+            return false;
         }
+    }
 
-        // The position corresponds to the center of the texture
-        float wr = background_texture.width * 0.5f;
-        float hr = background_texture.height * 0.5f;
+    // The position corresponds to the center of the texture
+    float wr = background_texture.width * 0.5f;
+    float hr = background_texture.height * 0.5f;
 
-        TexturedVertex vertices[4];
-        vertices[0].position = { -wr, +hr, -0.01f };
-        vertices[0].texcoord = { 0.f, 1.f };
-        vertices[1].position = { +wr, +hr, -0.01f };
-        vertices[1].texcoord = { 1.f, 1.f,  };
-        vertices[2].position = { +wr, -hr, -0.01f };
-        vertices[2].texcoord = { 1.f, 0.f };
-        vertices[3].position = { -wr, -hr, -0.01f };
-        vertices[3].texcoord = { 0.f, 0.f };
+    TexturedVertex vertices[4];
+    vertices[0].position = {-wr, +hr, -0.01f};
+    vertices[0].texcoord = {0.f, 1.f};
+    vertices[1].position = {+wr, +hr, -0.01f};
+    vertices[1].texcoord = {1.f, 1.f,};
+    vertices[2].position = {+wr, -hr, -0.01f};
+    vertices[2].texcoord = {1.f, 0.f};
+    vertices[3].position = {-wr, -hr, -0.01f};
+    vertices[3].texcoord = {0.f, 0.f};
 
-    uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
-        // Clearing errors
-        gl_flush_errors();
+    uint16_t indices[] = {0, 3, 1, 1, 3, 2};
+    // Clearing errors
+    gl_flush_errors();
 
     // Vertex Buffer creation
     glGenBuffers(1, &mesh.vbo);
@@ -64,7 +63,7 @@ bool background::init() {
     return true;
 }
 
-void background::draw(const mat3& projection){
+void background::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -75,7 +74,8 @@ void background::draw(const mat3& projection){
     glUseProgram(effect.program);
 
     // Enabling alpha channel for textures
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
 
     // Getting uniform locations for glUniform* calls
@@ -93,18 +93,18 @@ void background::draw(const mat3& projection){
     GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
     glEnableVertexAttribArray(in_texcoord_loc);
-    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
-    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
+    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, background_texture.id);
 
     // Setting uniform values to the currently bound program
-    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-    float color[] = { 1.f, 1.f, 1.f };
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
+    float color[] = {1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
-    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);

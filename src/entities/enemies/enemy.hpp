@@ -16,6 +16,7 @@ class World;
 class Enemy : public Entity, public Movable {
 public:
     Enemy();
+
     virtual ~Enemy() = default;
 
     virtual bool init() = 0;

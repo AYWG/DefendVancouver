@@ -10,8 +10,7 @@
 
 const GLint EXPLOSION_PARTICLES = 70;
 
-class Explosion
-{
+class Explosion {
 public:
     // Object member properties
     GLfloat x[EXPLOSION_PARTICLES];
@@ -38,7 +37,9 @@ public:
     // Object member functions
     Explosion(); // Constructor declaration
     void initialise();
+
     void move();
+
     void explode();
 };
 

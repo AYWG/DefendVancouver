@@ -55,7 +55,7 @@ public:
     vec2 aimDir;
     vec2 baimDir;
     vec2 aimDirNorm;
-	bool is_shot = false;
+    bool is_shot = false;
     bool is_shoted = false;
     vec2 mouseAimDir;
     float bulletAngleRelativeToPlayer;

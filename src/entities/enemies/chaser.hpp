@@ -9,16 +9,16 @@
 #include "../../ai/chaserAI.hpp"
 
 
-using  namespace std;
+using namespace std;
 
 #define  ROW 100
 #define  COL 100
 
 //shortcut for int, int pair type
-typedef  pair<int, int> Pair;
+typedef pair<int, int> Pair;
 
 //creating a shortcut for pair<int, pair<int, int>> type
-typedef  pair<double , pair<int, int> > pPair;
+typedef pair<double, pair<int, int> > pPair;
 
 
 class Chaser : public Enemy, public Renderable {
@@ -30,17 +30,15 @@ class Chaser : public Enemy, public Renderable {
 
 public:
 
-    explicit  Chaser(ChaserAI& ai);
+    explicit Chaser(ChaserAI &ai);
 
     //Neccesary param
-    struct cell
-    {
+    struct cell {
         //0 <= i <= ROW-1 & 0 <= j <= COL-1
         int parent_i, parent_j;
         //f = g+h
         double f, g, h;
     };
-
 
 
     bool init() override;
@@ -54,7 +52,7 @@ public:
 
     vec2 getBoundingBox() const override;
 
-    bool isValid (int row, int col);
+    bool isValid(int row, int col);
 
     bool isUnBlocked(int grid[][COL], int row, int col);
 
@@ -68,7 +66,7 @@ public:
 
     vec2 move(vec2 off);
 
-    void attack(float ms) override ;
+    void attack(float ms) override;
 
     unsigned int getMass() const override;
 
