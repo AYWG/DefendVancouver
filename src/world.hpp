@@ -60,6 +60,7 @@ public:
     vec2 mouseAimDir;
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
+    bool isGraphCreated = false;
 
 private:
     bool spawnShooter();

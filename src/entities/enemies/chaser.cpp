@@ -87,7 +87,7 @@ void Chaser::destroy(){
 }
 
 void Chaser::update(World *world, float ms){
-    float velcity = 100;
+    float velcity = 30;
     float x_step = velcity * (ms/1000);
     float  y_step = velcity * (ms/1000);
 
@@ -282,7 +282,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
     if (isUnBlocked(grid, src.first, src.second) == false ||
         isUnBlocked(grid, dest.first, dest.second) == false){
         printf ("Source or the destination is blocked\n");
-       //    move({-5, 0});
+           move({0, 10});
         return;
     }
 

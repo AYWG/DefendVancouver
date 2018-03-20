@@ -205,31 +205,89 @@ bool World::update(float elapsed_ms) {
     float height = 1150.f / ROW;*/
 /*    float width = 2660.f / COL;
     float height = 1150.f / ROW;*/
-    float width = 4900.f / COL;
-    float height = 900.f / ROW;
+    float width = 5000.f / COL;
+    float height = 1000.f / ROW;
     //std::cout<<width<<endl;
+
 
     int grid[ROW][COL];
 
-    for (int p = 0; p < ROW; p++) {
-        for (int h = 0; h < COL; h++) {
-            grid[p][h] = 1;
+    if (!isGraphCreated) {
+        for (int p = 0; p < ROW; p++) {
+            for (int h = 0; h < COL; h++) {
+                grid[p][h] = 1;
+            }
         }
+        isGraphCreated = true;
     }
+
+
+
+    for (auto &m_bomb : m_bombs){
+
+        int j = 0;
+        int l = 0;
+        for (float k = 50.f/*0.f*/; k <= 5000.f /*1200.f*/; k += width) {
+            for (float i = /*0*/50.f; i <= 1000.f; i += height) {
+                if (m_bomb.getPosition().y >= 50.f && m_bomb.getPosition().y < height
+                    && m_bomb.getPosition().x >= 50.f && m_bomb.getPosition().x < width) {
+                    //  Pair src = make_pair(0, 0);
+                    j = 0;
+                    l = 0;
+                    grid[j][l] = 0;
+                    grid[j+1][l] = 0;
+                    grid[j-1][l] = 0;
+                    grid[j][l+1] = 0;
+                    grid[j][l+1] = 0;
+                    grid[j+1][l+1] = 0;
+                    grid[j-1][l+1] = 0;
+                    grid[j+1][l-1] = 0;
+                    grid[j+1][l-1] = 0;
+
+                   // printf("FOUND!");
+
+
+                } else if ((m_bomb.getPosition().y >= (i) && m_bomb.getPosition().y < (i + height))
+                           && (m_bomb.getPosition().x >= (k) && m_bomb.getPosition().x < (k + width))) {
+                    // Pair src = make_pair(j,l);
+                    grid[j][l] = 0;
+                    grid[j+1][l] = 0;
+                    grid[j-1][l] = 0;
+                    grid[j][l+1] = 0;
+                    grid[j][l+1] = 0;
+                    grid[j+1][l+1] = 0;
+                    grid[j-1][l+1] = 0;
+                    grid[j+1][l-1] = 0;
+                    grid[j+1][l-1] = 0;
+
+                   // printf("FOUND!");
+                }
+                j++;
+            }
+
+            l++;
+            j = 0;
+        }
+
+
+    }
+
+
 
     for (auto &m_chaser : m_chasers) {
         bool srcFound = false;
         bool destFound = false;
 
+
+
+
+
+
         int j = 0;
         int l = 0;
-
-
-
-
         if (!srcFound) {
-            for (float k = 50.f/*0.f*/; k <= 4950.f /*1200.f*/; k += width) {
-                for (float i = /*0*/50.f; i <= 950.f; i += height) {
+            for (float k = 50.f/*0.f*/; k <= 5000.f /*1200.f*/; k += width) {
+                for (float i = /*0*/50.f; i <= 1000.f; i += height) {
                     if (m_chaser.getPosition().y >= 50.f && m_chaser.getPosition().y < height
                         && m_chaser.getPosition().x >= 50.f && m_chaser.getPosition().x < width) {
                         //  Pair src = make_pair(0, 0);
