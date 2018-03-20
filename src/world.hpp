@@ -8,7 +8,8 @@
 #include "entities/enemies/chaser.hpp"
 #include "background.hpp"
 #include "camera.hpp"
-#include "entities/bomb.hpp"
+#include "entities/bombs/normalBomb.hpp"
+#include "entities/bombs/bomberBomb.hpp"
 #include "entities/bullets/playerBullet.hpp"
 #include "explosion.hpp"
 
@@ -66,7 +67,15 @@ private:
 
     bool spawnChaser();
 
-    bool spawn_bomb();
+    bool spawnBomber();
+
+    bool spawnNormalBomb();
+
+    bool spawnBomberBomb();
+
+    void playerBounce(NormalBomb bomb);
+
+    bool bomberOnScreen(Bomber bomber);
 
     // !!! INPUT CALLBACK FUNCTIONS
     void onKey(GLFWwindow *, int key, int, int action, int mod);
@@ -86,13 +95,17 @@ private:
     // Game entities
     Player m_player;
     std::vector<PlayerBullet> m_bullets;
-    std::vector<Bomb> m_bombs;
     std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;
+    std::vector<Bomber> m_bombers;
+    std::vector<NormalBomb> m_normalBombs;
+    std::vector<BomberBomb> m_bomberBombs;
 
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;
-    float m_next_bomb_spawn;
+    float m_next_bomber_spawn;
+    float m_next_nbomb_spawn;
+    float m_next_bbomb_spawn;
 
     // C++ rng
     std::default_random_engine m_rng;

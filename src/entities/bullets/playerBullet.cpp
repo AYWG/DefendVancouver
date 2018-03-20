@@ -151,17 +151,7 @@ bool PlayerBullet::collisionCheck(Chaser chaser) {
 //    return false;
 //}
 
-bool PlayerBullet::collisionCheck(Bomb &bomb) {
-//    float dx = m_position.x - bomb.get_position().x;
-//    float dy = m_position.y - bomb.get_position().y;
-//    float d_sq = dx * dx + dy * dy;
-//    float other_r = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y);
-//    float my_r = std::max(m_scale.x, m_scale.y);
-//    float r = std::max(other_r, my_r);
-//    r *= 0.6f;
-//    if (d_sq < r * r)
-//        return true;
-//    return false;
+bool PlayerBullet::collisionCheck(NormalBomb &bomb) {
     auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});
     auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
     auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;

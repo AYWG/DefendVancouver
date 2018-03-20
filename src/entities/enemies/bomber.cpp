@@ -74,6 +74,11 @@ void Bomber::destroy() {
 }
 
 void Bomber::update(World *world, float ms) {
+    const float SPEED = 200.f;
+    float step = SPEED * (ms / 1000);
+    m_position.x += step;
+
+
 
 }
 

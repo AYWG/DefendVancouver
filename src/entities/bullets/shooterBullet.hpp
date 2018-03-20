@@ -8,6 +8,8 @@
 #include <memory>
 #include "../../common.hpp"
 #include "bullet.hpp"
+#include "../bombs/normalBomb.hpp"
+
 
 class ShooterBullet : public Bullet, public Renderable {
     static Texture shooterBulletTexture;
@@ -24,6 +26,8 @@ public:
     vec2 getBoundingBox() const override;
 
     unsigned int getMass() const override;
+
+    bool collisionCheck(NormalBomb &bomb);
 };
 
 

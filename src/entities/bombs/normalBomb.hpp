@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include "../common.hpp"
-#include "entity.hpp"
+#include "../../common.hpp"
+#include "../entity.hpp"
 
 
-class Bomb : public Entity, public Renderable {
+class NormalBomb : public Entity, public Renderable {
 
     static Texture bomb_texture;
 public:
     //init bomb
-    bool init(const char *path);
+    bool init();
 
     int getFrameCount() const;
 
