@@ -337,6 +337,8 @@ bool World::update(float elapsed_ms) {
 
 
     float bounceBackSpeed = -80.f;
+    bulletAngleRelativeToPlayer = m_player.getRotation() + 3.1415f / 2.f;
+    bulletDirectionRelativeToPlayer = {cosf(bulletAngleRelativeToPlayer), sinf(bulletAngleRelativeToPlayer)};
 
     playerBulletIt = m_player.getBullets().begin();
     //collision detection for bomb and player bullet

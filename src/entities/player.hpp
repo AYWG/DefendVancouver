@@ -41,6 +41,8 @@ public:
     //set rotation
     void setRotation(float radians);
 
+    float getRotation();
+
     void setFlying(DIRECTION dir, bool isFlying);
 
     void enableShooting(bool isShooting);
