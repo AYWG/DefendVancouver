@@ -23,9 +23,9 @@ public:
 
     bool update(float ms);
 
-    vec2 getBoundingBox() const;
+    bool isBlasting();
 
-    void animate();
+    vec2 getBoundingBox() const;
 
 
 private:
@@ -34,6 +34,7 @@ private:
     bool isHit;
     // true if bomb is hit
     int frameCount;
+    float countdown;
 
 };
 

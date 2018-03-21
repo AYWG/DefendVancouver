@@ -19,6 +19,7 @@ typedef pair<int, int> Pair;
 namespace {
 
     const size_t MAX_BOMBS = 4;
+    const size_t MAX_BOMBERBOMBS = 2;
     const size_t BULLET_DELAY_MS = 200;
     const size_t MAX_SHOOTERS = 2;
     const size_t MAX_CHASER = 1;
@@ -291,6 +292,8 @@ bool World::update(float elapsed_ms) {
 
     ////////CHASER DONE//////////
 
+    ////////BOMBER LOGIC///////
+
     // Spawing the bomber
     m_next_bomber_spawn -= elapsed_ms;
     if (m_bombers.size() <= MAX_BOMBER && m_next_bomber_spawn) {
@@ -312,7 +315,7 @@ bool World::update(float elapsed_ms) {
     for (auto &m_bomber : m_bombers){
         if(bomberOnScreen(m_bomber)){
             m_next_bbomb_spawn -= elapsed_ms;
-            if (m_bomberBombs.size() <= MAX_BOMBS && m_next_bbomb_spawn < 0.f) {
+            if (m_bomberBombs.size() <= MAX_BOMBERBOMBS && m_next_bbomb_spawn < 0.f) {
                 if (!spawnBomberBomb())
                     return false;
 
@@ -320,7 +323,7 @@ bool World::update(float elapsed_ms) {
 
                 new_bomb.setPosition(getPlayerPosition());
 
-                m_next_bbomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
+                m_next_bbomb_spawn = (BOMB_DELAY_MS * 2) + m_dist(m_rng) * (BOMB_DELAY_MS * 2);
             }
         }
     }
@@ -328,6 +331,20 @@ bool World::update(float elapsed_ms) {
     // trigger bomber bomb animation
     for(auto &bomb : m_bomberBombs)
         bomb.update(elapsed_ms);
+
+    // remove bomber bombs from screen
+    auto bomberBomb_it = m_bomberBombs.begin();
+    while (bomberBomb_it != m_bomberBombs.end()) {
+        int fc = bomberBomb_it->getFrameCount();
+        if (fc == 0) {
+            bomberBomb_it = m_bomberBombs.erase(bomberBomb_it);
+            continue;
+        }
+
+        ++bomberBomb_it;
+    }
+
+    //////////BOMBER DONE/////////
 
     // trigger normal bomb animation
     for (auto &bomb : m_normalBombs)
@@ -353,14 +370,15 @@ bool World::update(float elapsed_ms) {
 
         NormalBomb &new_bomb = m_normalBombs.back();
 
-        //new_bomb.setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
-        new_bomb.setPosition(getPlayerPosition());
+        new_bomb.setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
+        //new_bomb.setPosition(getPlayerPosition());
 
-        m_next_nbomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
+        m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
     }
 
     //////COLLISION DETECTION/////
 
+    // collision detection between shooter and player bullet
     playerBulletIt = m_player.getBullets().begin();
     while (playerBulletIt != m_player.getBullets().end()) {
         bool isColliding = false;
@@ -421,7 +439,7 @@ bool World::update(float elapsed_ms) {
         }
     }
 
-    // Player shooting Chaser
+    // collision detection between player bullet and chaser
     playerBulletIt = m_player.getBullets().begin();
     while (playerBulletIt != m_player.getBullets().end()) {
         bool chaserCol = false;
@@ -438,6 +456,40 @@ bool World::update(float elapsed_ms) {
         }
         if (!chaserCol) {
             ++playerBulletIt;
+        }
+    }
+
+    // collision detection between player bullet and bomber
+    playerBulletIt = m_player.getBullets().begin();
+    while (playerBulletIt != m_player.getBullets().end()) {
+        bool bomberColliding = false;
+        auto bomber_it = m_bombers.begin();
+        while (bomber_it != m_bombers.end()) {
+            if ((*playerBulletIt)->collisionCheck(*bomber_it)) {
+                bomber_it = m_bombers.erase(bomber_it);
+                playerBulletIt = m_player.getBullets().erase(playerBulletIt);
+                bomberColliding = true;
+                m_points = m_points + 10;
+                break;
+            }
+            ++bomber_it;
+        }
+        if (!bomberColliding) {
+            ++playerBulletIt;
+        }
+    }
+
+    // collision detection between player and bomber bomb
+    bomberBomb_it = m_bomberBombs.begin();
+    while (bomberBomb_it != m_bomberBombs.end()) {
+        bool isColliding = false;
+        if(((bomberBomb_it)->isBlasting()) && m_player.collisionCheck(*bomberBomb_it)){
+            isColliding = true;
+            m_player.hit();
+            break;
+        }
+        if(!isColliding){
+            ++bomberBomb_it;
         }
     }
 

@@ -14,6 +14,7 @@
 #include "bullets/playerBullet.hpp"
 #include "enemies/shooter.hpp"
 #include "enemies/bomber.hpp"
+#include "bombs/bomberBomb.hpp"
 
 class Player : public Entity, public Movable, public Renderable {
 
@@ -53,6 +54,8 @@ public:
 
     void shoot();
 
+    vec2 getBoundingBox() const;
+
     std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
 
     vec2 getVelocity() const;
@@ -66,6 +69,8 @@ public:
     bool collisionCheck(Bomber &bomber);
 
     bool collisionCheck(ShooterBullet sb);
+
+    bool collisionCheck(BomberBomb &bomb);
 
 private:
     float m_rotation; // in radians

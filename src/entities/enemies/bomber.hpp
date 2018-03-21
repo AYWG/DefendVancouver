@@ -21,7 +21,7 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    // vec2 getBoundingBox() const override;
+    vec2 getBoundingBox() const;
 
     unsigned int getMass() const;
 };

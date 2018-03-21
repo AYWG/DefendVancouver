@@ -58,6 +58,7 @@ bool BomberBomb::init() {
 
     isHit = false;
     frameCount = 9;
+    countdown = 1500.f;
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
 
@@ -113,6 +114,11 @@ void BomberBomb::draw(const mat3 &projection) {
 }
 
 bool BomberBomb::update(float ms) {
+    if(countdown > 0.f){
+        countdown -= ms;
+    } else {
+        isHit = true;
+    }
     if (isHit && frameCount != 0) {
         frameCount = frameCount - 1;
     }
@@ -210,9 +216,8 @@ vec2 BomberBomb::getBoundingBox() const {
     return {std::fabs(m_scale.x) * (bomb_texture.width / 3), std::fabs(m_scale.y) * (bomb_texture.height / 3)};
 }
 
-
-void BomberBomb::animate() {
-    isHit = true;
+bool BomberBomb::isBlasting() {
+    return isHit;
 }
 
 int BomberBomb::getFrameCount() const {

@@ -147,9 +147,12 @@ bool PlayerBullet::collisionCheck(Chaser chaser) {
     return d < chaserRadius + bulletRadius;
 }
 
-//bool PlayerBullet::collisionCheck(Bomber& bomber) {
-//    return false;
-//}
+bool PlayerBullet::collisionCheck(Bomber& bomber) {
+    auto d = magnitude({m_position.x - bomber.getPosition().x, m_position.y - bomber.getPosition().y});
+    auto bomberRadius = std::max(bomber.getBoundingBox().x, bomber.getBoundingBox().y) / 2;
+    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < bomberRadius + bulletRadius;
+}
 
 bool PlayerBullet::collisionCheck(NormalBomb &bomb) {
     auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});

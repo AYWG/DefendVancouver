@@ -74,12 +74,9 @@ void Bomber::destroy() {
 }
 
 void Bomber::update(World *world, float ms) {
-    const float SPEED = 200.f;
+    const float SPEED = 100.f;
     float step = SPEED * (ms / 1000);
     m_position.x += step;
-
-
-
 }
 
 void Bomber::draw(const mat3 &projection) {
@@ -129,7 +126,9 @@ void Bomber::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-//vec2 getBoundingBox()const;
+vec2 Bomber::getBoundingBox()const {
+    return {std::fabs(m_scale.x) * bomber_texture.width, std::fabs(m_scale.y) * bomber_texture.height};
+}
 
 unsigned int Bomber::getMass() const {
     return 110;
