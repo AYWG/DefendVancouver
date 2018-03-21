@@ -63,7 +63,7 @@ bool Bomber::init() {
     // 1.0 would be as big as the original texture
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
-    m_rotation = 0.f;
+
 
 
     return true;
@@ -85,7 +85,7 @@ void Bomber::update(World *world, float ms) {
 void Bomber::draw(const mat3 &projection) {
     transform_begin();
     transform_translate(m_position);
-    transform_rotate(m_rotation);
+    //transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
 
