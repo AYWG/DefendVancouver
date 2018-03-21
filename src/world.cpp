@@ -18,12 +18,16 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    const size_t MAX_BOMBS = 5;
     const size_t BULLET_DELAY_MS = 200;
-    const size_t MAX_SHOOTERS = 2;
-    const size_t MAX_CHASER = 1;
-    const size_t SHOOTER_DELAY_MS = 2000;
-    const size_t BOMB_DELAY_MS = 2000;
+    size_t MAX_BOMBS = 0;
+    size_t MAX_SHOOTERS = 3;
+    size_t MAX_CHASER = 0;
+    int shooters = MAX_SHOOTERS;
+    int chasers = MAX_CHASER;
+    int bombs = MAX_BOMBS;
+    const size_t SHOOTER_DELAY_MS = 5000;
+    const size_t BOMB_DELAY_MS = 10000;
+    const size_t CHASER_DELAY_MS = 10000;
 
 
     namespace {
@@ -93,6 +97,9 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
+    totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
+    waveNo = 1;
+
     m_size = worldSize;
     m_camera.setSize(screenSize);
 
@@ -114,10 +121,33 @@ void World::destroy() {
 bool World::update(float elapsed_ms) {
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
-    vec2 screen = {(float) w, (float) h};
-
+    vec2 screen = {(float) w, (float) h};/*
+    std::cout << "Wave: " << waveNo << std::endl;*/
+    std::cout << "T: " << totalEnemies << std::endl;
     m_player.update(elapsed_ms);
     vec2 playerPos = m_player.getPosition();
+
+    // Setting wave spawn conditions
+    if (totalEnemies == 0){
+        waveNo++;
+        if (waveNo % 3 == 1){
+            MAX_SHOOTERS++;
+        }
+
+        if (waveNo % 2 == 1) {
+            MAX_CHASER++;
+            MAX_BOMBS++;
+        }
+        shooters = MAX_SHOOTERS;
+        chasers = MAX_CHASER;
+        bombs = MAX_BOMBS;
+        std::cout << "W: " << waveNo << std::endl;
+        std::cout << "s: " << shooters << std::endl;
+        std::cout << "c: " << chasers << std::endl;
+        std::cout << "b: " << bombs << std::endl;
+        totalEnemies = shooters + chasers + bombs;
+        std::cout << "t: " << totalEnemies << std::endl;
+    }
 
     // update camera
     auto newCameraFocusPointX = std::min(m_size.x - screen.x / 2, std::max(screen.x / 2, playerPos.x));
@@ -142,16 +172,20 @@ bool World::update(float elapsed_ms) {
     }
 
     m_next_shooter_spawn -= elapsed_ms;
-    if (m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn) {
+    if (/*m_shooters.size() <= MAX_SHOOTERS &&*/ m_next_shooter_spawn < 0.f && shooters != 0) {
         if (!spawnShooter()) {
             return false;
         }
+
         Shooter &shooter = m_shooters.back();
 
         // Setting random initial position
         shooter.setPosition({50 + m_dist(m_rng) * screen.x, -200.f});
         // Next spawn
         m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+        // Wave system
+        shooters--;
+
     }
 
     for (auto &shooter : m_shooters) {
@@ -173,7 +207,7 @@ bool World::update(float elapsed_ms) {
 
 //////////////////CHASER///////////////////
     m_next_chaser_spawn -= elapsed_ms;
-    if (m_chasers.size() <= MAX_CHASER && m_next_chaser_spawn) {
+    if (/*m_chasers.size() <= MAX_CHASER &&*/ m_next_chaser_spawn < 0.f && chasers != 0) {
 
         ////////////////////TODO////////////////
         if (!spawnChaser()) {
@@ -186,7 +220,8 @@ bool World::update(float elapsed_ms) {
         // new_bEnemy.setPosition(({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
         new_cEnemy.setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
         // Next spawn
-        m_next_chaser_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+        m_next_chaser_spawn = (CHASER_DELAY_MS / 2) + m_dist(m_rng) * (CHASER_DELAY_MS / 2);
+        chasers--;
     }
 
     for (auto &m_chaser : m_chasers)
@@ -296,6 +331,7 @@ bool World::update(float elapsed_ms) {
         int fc = bomb_it->getFrameCount();
         if (fc == 0) {
             bomb_it = m_bombs.erase(bomb_it);
+            totalEnemies--;
             continue;
         }
 
@@ -304,7 +340,7 @@ bool World::update(float elapsed_ms) {
 
     // Spawn new regular bombs
     m_next_bomb_spawn -= elapsed_ms;
-    if (m_bombs.size() <= MAX_BOMBS && m_next_bomb_spawn < 0.f) {
+    if (/*m_bombs.size() <= MAX_BOMBS &&*/ m_next_bomb_spawn < 0.f && bombs != 0) {
         if (!spawn_bomb())
             return false;
 
@@ -314,6 +350,7 @@ bool World::update(float elapsed_ms) {
         //new_bomb.setPosition(getPlayerPosition());
 
         m_next_bomb_spawn = (BOMB_DELAY_MS / 2) + m_dist(m_rng) * (BOMB_DELAY_MS / 2);
+        bombs--;
     }
 
     playerBulletIt = m_player.getBullets().begin();
@@ -324,6 +361,7 @@ bool World::update(float elapsed_ms) {
             if ((*playerBulletIt)->collisionCheck(*benemy_it)) {
                 benemy_it = m_shooters.erase(benemy_it);
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
+                totalEnemies--;
                 isColliding = true;
                 m_points = m_points + 5;
                 break;
@@ -357,6 +395,7 @@ bool World::update(float elapsed_ms) {
 
                 bomb.animate();
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
+                totalEnemies--;
                 isColliding = true;
                 m_points = m_points + 5;
                 break;
@@ -377,6 +416,7 @@ bool World::update(float elapsed_ms) {
                 benemy_it = m_chasers.erase(benemy_it);
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 chaserCol = true;
+                totalEnemies--;
                 m_points = m_points + 10;
                 break;
             }
@@ -410,7 +450,7 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points;
+    title_ss << "Points: " << m_points << " Wave: " << waveNo << " s: " << shooters << " c: " << chasers << " b: " << bombs << " Total: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer

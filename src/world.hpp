@@ -102,4 +102,7 @@ private:
     vec2 m_size;
 
     Camera m_camera;
+
+    int waveNo;
+    int totalEnemies;
 };

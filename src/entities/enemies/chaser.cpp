@@ -84,7 +84,7 @@ void Chaser::destroy() {
 }
 
 void Chaser::update(World *world, float ms) {
-    float velcity = 1;
+    float velcity = 1.0f;
     float x_step = velcity * (ms / 1000);
     float y_step = velcity * (ms / 1000);
 
@@ -216,7 +216,7 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
         pair<int, int> p = Path.top();
         Path.pop();
         //printf("-> (%d,%d) ", p.first, p.second);
-        float speed = 1.0f;
+        float speed = 0.25f;
         if (!Path.empty()) {
             pair<int, int> np = Path.top();
             //////////////////////////
