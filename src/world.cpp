@@ -13,6 +13,7 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
+    const size_t MAX_BOMBERBOMBS = 2;
     const size_t BULLET_DELAY_MS = 200;
     size_t MAX_BOMBS = 0;
     size_t MAX_SHOOTERS = 3;
@@ -399,6 +400,7 @@ bool World::update(float elapsed_ms) {
     while (bomberBomb_it != m_bomberBombs.end()) {
         int fc = (*bomberBomb_it)->getFrameCount();
         if (fc == 0) {
+            totalEnemies--;
             bomberBomb_it = m_bomberBombs.erase(bomberBomb_it);
             totalEnemies--;
             continue;
@@ -436,6 +438,7 @@ bool World::update(float elapsed_ms) {
         auto newNormalBombPtr = m_normalBombs.back();
 
         newNormalBombPtr->setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
+        bombs--;
         m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
     }
 
