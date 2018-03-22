@@ -9,7 +9,6 @@
 int Player::bulletDelayMS = 200;
 
 bool Player::init(vec2 worldSize) {
-    std::vector<Vertex> vertices;
     std::vector<uint16_t> indices;
 
     // Reads the salmon mesh from a file, which contains a list of vertices and indices
@@ -183,10 +182,6 @@ void Player::draw(const mat3 &projection) {
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
 
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // HERE TO SET THE CORRECTLY LIGHT UP THE SALMON IF HE HAS EATEN RECENTLY
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     int light_up = 0;
 
 
@@ -294,6 +289,28 @@ bool Player::collisionCheck(Bomber &bomber) {
 
 bool Player::collisionCheck(ShooterBullet sb) {
     return false;
+}
+
+bool Player::collisionCheck(Chaser chaser) {
+    auto d = magnitude({m_position.x - chaser.getPosition().x, m_position.y - chaser.getPosition().y});
+    auto shooterRadius = std::max(chaser.getBoundingBox().x, chaser.getBoundingBox().y) / 2;
+    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < shooterRadius + bulletRadius;
+}
+
+vec2 Player::getBoundingBox() {
+    Vertex min;
+    Vertex max;
+    for (auto &vertex : vertices){
+        if (vertex.position.x > max.position.x && vertex.position.y > max.position.y){
+            max = vertex;
+        }
+        if (vertex.position.x < min.position.x && vertex.position.y < min.position.y){
+            min = vertex;
+        }
+    }
+
+    return {std::fabs(m_scale.x) * (max.position.x - min.position.x), std::fabs(m_scale.x) * (max.position.x - min.position.x)};
 }
 
 bool Player::collisionCheck(BomberBomb &bomb) {

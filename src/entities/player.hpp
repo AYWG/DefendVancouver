@@ -55,6 +55,8 @@ public:
 
     int getLives();
 
+    vec2 getBoundingBox();
+
     void hit();
 
     bool collisionCheck(Shooter shooter);
@@ -65,11 +67,14 @@ public:
 
     bool collisionCheck(BomberBomb &bomb);
 
+    bool collisionCheck(Chaser chaser);
+
 private:
     vec2 m_velocity;
     bool m_isFlying[NUM_DIRECTIONS];
     float m_maxSpeed;
     size_t m_num_indices;
+    std::vector<Vertex> vertices;
     int m_lives;
     bool m_isShootingEnabled;
     float m_nextBulletSpawn;
