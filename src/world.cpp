@@ -235,14 +235,14 @@ bool World::update(float elapsed_ms) {
                     j = 0;
                     l = 0;
                     grid[j][l] = 0;
-                    grid[j+1][l] = 0;
-                    grid[j-1][l] = 0;
-                    grid[j][l+1] = 0;
-                    grid[j][l+1] = 0;
-                    grid[j+1][l+1] = 0;
-                    grid[j-1][l+1] = 0;
-                    grid[j+1][l-1] = 0;
-                    grid[j+1][l-1] = 0;
+                    grid[j+2][l] = 0;
+                    grid[j-2][l] = 0;
+                    grid[j][l+2] = 0;
+                    grid[j][l+2] = 0;
+                    grid[j+2][l+2] = 0;
+                    grid[j-2][l+2] = 0;
+                    grid[j+2][l-2] = 0;
+                    grid[j+2][l-2] = 0;
 
                    // printf("FOUND!");
 
@@ -251,14 +251,14 @@ bool World::update(float elapsed_ms) {
                            && (m_bomb.getPosition().x >= (k) && m_bomb.getPosition().x < (k + width))) {
                     // Pair src = make_pair(j,l);
                     grid[j][l] = 0;
-                    grid[j+1][l] = 0;
-                    grid[j-1][l] = 0;
-                    grid[j][l+1] = 0;
-                    grid[j][l+1] = 0;
-                    grid[j+1][l+1] = 0;
-                    grid[j-1][l+1] = 0;
-                    grid[j+1][l-1] = 0;
-                    grid[j+1][l-1] = 0;
+                    grid[j+2][l] = 0;
+                    grid[j-2][l] = 0;
+                    grid[j][l+2] = 0;
+                    grid[j][l+2] = 0;
+                    grid[j+2][l+2] = 0;
+                    grid[j-2][l+2] = 0;
+                    grid[j+2][l-2] = 0;
+                    grid[j+2][l-2] = 0;
 
                    // printf("FOUND!");
                 }
