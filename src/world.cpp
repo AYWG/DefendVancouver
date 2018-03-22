@@ -427,6 +427,17 @@ bool World::update(float elapsed_ms) {
         }
     }
 
+    // Chaser collision check with player
+    auto cenemy_it = m_chasers.begin();
+    while (cenemy_it != m_chasers.end()){
+        if (m_player.collisionCheck(*cenemy_it)){
+            cenemy_it = m_chasers.erase(cenemy_it);
+            m_player.hit();
+            break;
+        }
+        ++cenemy_it;
+    }
+
 
     return true;
 }
