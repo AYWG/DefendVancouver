@@ -3,6 +3,7 @@
 //
 
 #include "shooterBullet.hpp"
+#include <cmath>
 
 Texture ShooterBullet::shooterBulletTexture;
 
@@ -127,4 +128,11 @@ vec2 ShooterBullet::getBoundingBox() const {
 
 unsigned int ShooterBullet::getMass() const {
     return 10;
+}
+
+bool ShooterBullet::collisionCheck(NormalBomb &bomb){
+    auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});
+    auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
+    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < bombRadius + bulletRadius;
 }

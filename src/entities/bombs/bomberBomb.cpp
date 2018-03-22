@@ -1,20 +1,20 @@
 //
-// Created by Shrey Swades Nayak on 2018-02-26.
+// Created by Shrey Swades Nayak on 2018-03-19.
 //
 
 #include <iostream>
 #include <cmath>
-#include "bomb.hpp"
+#include "bomberBomb.hpp"
 
-Texture Bomb::bomb_texture;
+Texture BomberBomb::bomb_texture;
 
 using namespace std;
 
-bool Bomb::init(const char *path) {
+bool BomberBomb::init() {
 
     //load texture
     if (!bomb_texture.is_valid()) {
-        if (!bomb_texture.load_from_file(path)) {
+        if (!bomb_texture.load_from_file(textures_path("bomber_bomb.png"))) {
             fprintf(stderr, "Failed to load spritesheet!");
             return false;
         }
@@ -58,6 +58,7 @@ bool Bomb::init(const char *path) {
 
     isHit = false;
     frameCount = 9;
+    countdown = 1500.f;
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
 
@@ -65,7 +66,7 @@ bool Bomb::init(const char *path) {
 
 }
 
-void Bomb::draw(const mat3 &projection) {
+void BomberBomb::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -112,7 +113,12 @@ void Bomb::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-bool Bomb::update(float ms) {
+bool BomberBomb::update(float ms) {
+    if(countdown > 0.f){
+        countdown -= ms;
+    } else {
+        isHit = true;
+    }
     if (isHit && frameCount != 0) {
         frameCount = frameCount - 1;
     }
@@ -205,16 +211,15 @@ bool Bomb::update(float ms) {
 }
 
 // Returns the local bounding coordinates scaled by the current size of the bomb
-vec2 Bomb::getBoundingBox() const {
+vec2 BomberBomb::getBoundingBox() const {
     // fabs is to avoid negative scale due to the facing direction
     return {std::fabs(m_scale.x) * (bomb_texture.width / 3), std::fabs(m_scale.y) * (bomb_texture.height / 3)};
 }
 
-
-void Bomb::animate() {
-    isHit = true;
+bool BomberBomb::isBlasting() {
+    return isHit;
 }
 
-int Bomb::getFrameCount() const {
+int BomberBomb::getFrameCount() const {
     return frameCount;
 }

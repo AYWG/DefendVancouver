@@ -202,6 +202,10 @@ void Player::setRotation(float radians) {
     m_rotation = radians;
 }
 
+float Player::getRotation() {
+    return m_rotation;
+}
+
 void Player::move(vec2 off) {
     m_position.x += off.x;
     m_position.y += off.y;
@@ -272,6 +276,10 @@ void Player::hit() {
     m_lives--;
 }
 
+vec2 Player::getBoundingBox() const {
+    return vec2();
+}
+
 bool Player::collisionCheck(Shooter shooter) {
     float dx = (m_position.x - shooter.getPosition().x);
     float dy = (m_position.y - shooter.getPosition().y);
@@ -293,3 +301,13 @@ bool Player::collisionCheck(Bomber &bomber) {
 bool Player::collisionCheck(ShooterBullet sb) {
     return false;
 }
+
+bool Player::collisionCheck(BomberBomb &bomb) {
+    auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});
+    auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
+    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < bombRadius + playerRadius;
+}
+
+
+

@@ -10,7 +10,8 @@
 #include "bullet.hpp"
 #include "../enemies/shooter.hpp"
 #include "../enemies/chaser.hpp"
-#include "../bomb.hpp"
+#include "../enemies/bomber.hpp"
+#include "../bombs/normalBomb.hpp"
 
 
 class PlayerBullet : public Bullet, public Renderable {
@@ -33,6 +34,7 @@ public:
 
     bool collisionCheck(Chaser chaser);
 
-    // bool collisionCheck(Bomber& bomber);
-    bool collisionCheck(Bomb &bomb);
+    bool collisionCheck(Bomber& bomber);
+
+    bool collisionCheck(NormalBomb &bomb);
 };

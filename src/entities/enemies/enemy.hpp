@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "../../common.hpp"
-#include "../bomb.hpp"
+#include "../bombs/normalBomb.hpp"
 #include "../entity.hpp"
 #include "../movable.hpp"
 
