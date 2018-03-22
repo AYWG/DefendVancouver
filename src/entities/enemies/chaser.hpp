@@ -12,7 +12,7 @@
 using namespace std;
 
 #define  ROW 100
-#define  COL 100
+#define  COL 300
 
 //shortcut for int, int pair type
 typedef pair<int, int> Pair;

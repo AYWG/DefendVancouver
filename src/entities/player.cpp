@@ -77,6 +77,7 @@ bool Player::init(vec2 worldSize) {
     m_scale.y = 200.f;
 
     m_num_indices = indices.size();
+
     m_position = {700.f, 500.f};
     m_worldSize = worldSize;
     m_rotation = 0.f;

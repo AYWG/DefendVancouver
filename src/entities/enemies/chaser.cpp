@@ -10,6 +10,7 @@
 #include <set>
 
 
+
 using namespace std;
 
 Texture Chaser::chaserTexture;
@@ -74,6 +75,7 @@ bool Chaser::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
     m_rotation = 0.f;
+  //  m_position = {500,600};
 
 
     return true;
@@ -83,10 +85,12 @@ void Chaser::destroy() {
 
 }
 
-void Chaser::update(World *world, float ms) {
-    float velcity = 1;
-    float x_step = velcity * (ms / 1000);
-    float y_step = velcity * (ms / 1000);
+
+void Chaser::update(World *world, float ms){
+    float velcity = 30;
+    float x_step = velcity * (ms/1000);
+    float  y_step = velcity * (ms/1000);
+
 
     move({x_step, y_step});
 
@@ -226,7 +230,7 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
             if ((p.first > np.first) && (p.second > np.second)) {
                 move({-speed, -speed});
             }
-            if ((p.first > np.first) && (p.second < np.second)) {
+            if ((p.first > np.first) && (p.second == np.second) ) {
                 move({0, -speed});
             }
             ///////////////////////////
@@ -260,8 +264,11 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
 
 void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest) {
     //if src us outta range
-    if (isValid(src.first, src.second) == false) {
-        //printf("source is invalid");
+
+    if (isValid(src.first, src.second) == false){
+        printf("source is invalid");
+        move({0, 10});
+
         return;
     }
 
