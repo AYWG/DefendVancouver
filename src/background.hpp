@@ -8,7 +8,7 @@
 #include "common.hpp"
 #include "entities/entity.hpp"
 
-class background : public Entity, public Renderable{
+class background : public Entity, public Renderable {
 
     static Texture background_texture;
 public:

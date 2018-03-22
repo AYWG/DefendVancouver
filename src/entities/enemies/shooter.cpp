@@ -151,6 +151,6 @@ unsigned int Shooter::getMass() const {
     return 100;
 }
 
-std::vector<std::shared_ptr<ShooterBullet>>& Shooter::getBullets() {
+std::vector<std::shared_ptr<ShooterBullet>> &Shooter::getBullets() {
     return m_bullets;
 }

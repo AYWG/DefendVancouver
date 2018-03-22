@@ -14,12 +14,13 @@
 #include "bullets/playerBullet.hpp"
 #include "enemies/shooter.hpp"
 #include "enemies/bomber.hpp"
+#include "bombs/bomberBomb.hpp"
 
 class Player : public Entity, public Movable, public Renderable {
 
     static int bulletDelayMS;
 
-    FILE* mesh_file;
+    FILE *mesh_file;
 
 public:
     typedef enum {
@@ -30,7 +31,7 @@ public:
     bool init(vec2 worldSize);
 
     // Renders the salmon
-    void draw(const mat3& projection) override;
+    void draw(const mat3 &projection) override;
 
     //move
     void move(vec2 off);
@@ -53,7 +54,9 @@ public:
 
     void shoot();
 
-    std::vector<std::shared_ptr<PlayerBullet>>& getBullets();
+    vec2 getBoundingBox() const;
+
+    std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
 
     vec2 getVelocity() const;
 
@@ -62,8 +65,12 @@ public:
     void hit();
 
     bool collisionCheck(Shooter shooter);
-    bool collisionCheck(Bomber& bomber);
+
+    bool collisionCheck(Bomber &bomber);
+
     bool collisionCheck(ShooterBullet sb);
+
+    bool collisionCheck(BomberBomb &bomb);
 
 private:
     float m_rotation; // in radians
@@ -82,5 +89,6 @@ private:
     std::vector<std::shared_ptr<PlayerBullet>> m_bullets;
 
     float getMovementOrientation(DIRECTION dir);
+
     vec2 getNewVelocity(vec2 oldVelocity, vec2 delta);
 };

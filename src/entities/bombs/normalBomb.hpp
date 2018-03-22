@@ -7,24 +7,24 @@
 
 #pragma once
 
-#include "../common.hpp"
-#include "entity.hpp"
+#include "../../common.hpp"
+#include "../entity.hpp"
 
 
-class Bomb : public Entity, public Renderable{
+class NormalBomb : public Entity, public Renderable {
 
     static Texture bomb_texture;
 public:
     //init bomb
-    bool init(const char *path);
+    bool init();
 
-    int getFrameCount()const;
+    int getFrameCount() const;
 
     void draw(const mat3 &projection) override;
 
     bool update(float ms);
 
-    vec2 getBoundingBox()const;
+    vec2 getBoundingBox() const;
 
     void animate();
 

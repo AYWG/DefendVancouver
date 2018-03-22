@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "../../common.hpp"
-#include "../bomb.hpp"
+#include "../bombs/normalBomb.hpp"
 #include "../entity.hpp"
 #include "../movable.hpp"
 
@@ -16,6 +16,7 @@ class World;
 class Enemy : public Entity, public Movable {
 public:
     Enemy();
+
     virtual ~Enemy() = default;
 
     virtual bool init() = 0;

@@ -15,7 +15,7 @@ Project for CPSC 436D
   * All basic enemies
   * Background
   * Bullet animation graphics
-  * Bomb animation graphics
+  * NormalBomb animation graphics
 * Implemented basic player movement
   * Player can move with W, A, S, D arrow keys
   * Player faces the cursor on the screen
@@ -34,6 +34,6 @@ Project for CPSC 436D
 ## Physics milestone features:
 * Created collision detection for Shooter AI
 * Created collision detection for Chaser AI
-* Created collision detection for Bomb
+* Created collision detection for NormalBomb
 * Added recoil effect
 * Added pushback effect for bomb explosion

@@ -12,10 +12,8 @@ bool Bomber::init() {
 
     //Load texture
 
-    if (!bomber_texture.is_valid())
-    {
-        if (!bomber_texture.load_from_file(textures_path("bomber.png")))
-        {
+    if (!bomber_texture.is_valid()) {
+        if (!bomber_texture.load_from_file(textures_path("bomber.png"))) {
 
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
@@ -65,7 +63,7 @@ bool Bomber::init() {
     // 1.0 would be as big as the original texture
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
-    m_rotation = 0.f;
+
 
 
     return true;
@@ -76,13 +74,15 @@ void Bomber::destroy() {
 }
 
 void Bomber::update(World *world, float ms) {
-
+    const float SPEED = 100.f;
+    float step = SPEED * (ms / 1000);
+    m_position.x += step;
 }
 
 void Bomber::draw(const mat3 &projection) {
     transform_begin();
     transform_translate(m_position);
-    transform_rotate(m_rotation);
+    //transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
 
@@ -126,7 +126,9 @@ void Bomber::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-//vec2 getBoundingBox()const;
+vec2 Bomber::getBoundingBox()const {
+    return {std::fabs(m_scale.x) * bomber_texture.width, std::fabs(m_scale.y) * bomber_texture.height};
+}
 
 unsigned int Bomber::getMass() const {
     return 110;
