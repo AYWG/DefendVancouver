@@ -136,6 +136,11 @@ bool World::update(float elapsed_ms) {
         ++playerBulletIt;
     }
 
+    /**
+     * Shooter Logic
+     */
+
+    // spawning the shooter
     m_next_shooter_spawn -= elapsed_ms;
     if (m_shooters.size() < MAX_SHOOTERS && m_next_shooter_spawn) {
         if (auto newShooter = Shooter::spawn()) {
@@ -166,7 +171,11 @@ bool World::update(float elapsed_ms) {
         }
     }
 
-//////////////////CHASER///////////////////
+    /**
+     * Chaser Logic
+     */
+
+    // spawning the chaser
     m_next_chaser_spawn -= elapsed_ms;
     if (m_chasers.size() < MAX_CHASER && m_next_chaser_spawn) {
 
@@ -324,9 +333,9 @@ bool World::update(float elapsed_ms) {
 
     }
 
-    ////////CHASER DONE//////////
-
-    ////////BOMBER LOGIC///////
+    /**
+     * Bomber Logic
+     */
 
     // Spawing the bomber
     m_next_bomber_spawn -= elapsed_ms;
@@ -378,7 +387,9 @@ bool World::update(float elapsed_ms) {
         ++bomberBomb_it;
     }
 
-    //////////BOMBER DONE/////////
+    /**
+     * Normal Bombs
+     */
 
     // trigger normal bomb animation
     for (auto &bomb : m_normalBombs)
@@ -410,7 +421,9 @@ bool World::update(float elapsed_ms) {
         m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
     }
 
-    //////COLLISION DETECTION/////
+    /**
+     * Collision Detection
+     */
 
     // collision detection between shooter and player bullet
     playerBulletIt = m_player.getBullets().begin();
@@ -524,9 +537,6 @@ bool World::update(float elapsed_ms) {
             ++bomberBomb_it;
         }
     }
-
-
-    ////COLLISION DONE////
 
 
     return true;
