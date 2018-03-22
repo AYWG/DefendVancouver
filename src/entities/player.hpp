@@ -65,6 +65,8 @@ public:
 
     bool collisionCheck(ShooterBullet sb);
 
+    bool collisionCheck(Chaser chaser);
+
     bool collisionCheck(BomberBomb &bomb);
 
     bool collisionCheck(Chaser chaser);
