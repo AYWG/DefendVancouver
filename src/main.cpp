@@ -14,9 +14,9 @@ World world;
 const int screenWidth = 1200;
 const int screenHeight = 800;
 
-const int worldWidth = 5000;
-const int worldHeight = 1000;
-const char *title = "DefendVancouver";
+const int worldWidth = 3000;
+const int worldHeight = 1500;
+const char* title = "DefendVancouver";
 
 // Entry point
 int main(int argc, char *argv[]) {

@@ -153,7 +153,7 @@ bool World::update(float elapsed_ms) {
         Shooter &shooter = m_shooters.back();
 
         // Setting random initial position
-        shooter.setPosition({50 + m_dist(m_rng) * screen.x, -200.f});
+        shooter.setPosition({m_dist(m_rng) * m_size.x, -200.f});
         // Next spawn
         m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
     }
