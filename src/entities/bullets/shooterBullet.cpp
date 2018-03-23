@@ -72,6 +72,7 @@ bool ShooterBullet::init() {
 void ShooterBullet::draw(const mat3 &projection) {
     transform_begin();
     transform_translate(m_position);
+    transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
 
@@ -119,7 +120,7 @@ void ShooterBullet::update(float ms) {
     float x_step = m_velocity.x * (ms / 1000);
     float y_step = m_velocity.y * (ms / 1000);
 
-    setPosition({getPosition().x + x_step, getPosition().y + y_step});
+    m_position = {m_position.x + x_step, m_position.y + y_step};
 }
 
 vec2 ShooterBullet::getBoundingBox() const {
