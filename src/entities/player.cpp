@@ -318,9 +318,9 @@ bool Player::collisionCheck(BomberBomb &bomb) {
 
 bool Player::collisionCheck(Chaser chaser) {
     auto d = magnitude({m_position.x - chaser.getPosition().x, m_position.y - chaser.getPosition().y});
-    auto shooterRadius = std::max(chaser.getBoundingBox().x, chaser.getBoundingBox().y) / 2;
-    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < shooterRadius + bulletRadius;
+    auto chaserRadius = std::max(chaser.getBoundingBox().x, chaser.getBoundingBox().y) / 2;
+    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < chaserRadius + playerRadius;
 }
 
 vec2 Player::getBoundingBox() {
