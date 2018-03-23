@@ -115,14 +115,12 @@ void World::destroy() {
 bool World::update(float elapsed_ms) {
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
-    vec2 screen = {(float) w, (float) h};/*
-    std::cout << "Wave: " << waveNo << std::endl;*/
-    std::cout << "T: " << totalEnemies << std::endl;
+    vec2 screen = {(float) w, (float) h};
     m_player.update(elapsed_ms);
     vec2 playerPos = m_player.getPosition();
 
     // Setting wave spawn conditions
-    if (totalEnemies == 0){
+    if (totalEnemies == 0 ){
         waveNo++;
         if (waveNo % 3 == 1){
             MAX_SHOOTERS++;
@@ -135,13 +133,10 @@ bool World::update(float elapsed_ms) {
         shooters = MAX_SHOOTERS;
         chasers = MAX_CHASER;
         bombs = MAX_BOMBS;
-        std::cout << "W: " << waveNo << std::endl;
-        std::cout << "s: " << shooters << std::endl;
-        std::cout << "c: " << chasers << std::endl;
-        std::cout << "b: " << bombs << std::endl;
         totalEnemies = shooters + chasers + bombs;
-        std::cout << "t: " << totalEnemies << std::endl;
     }
+
+
 
     // update camera
     auto newCameraFocusPointX = std::min(m_size.x - screen.x / 2, std::max(screen.x / 2, playerPos.x));
@@ -558,6 +553,16 @@ bool World::update(float elapsed_ms) {
         }
     }
 
+    // Chaser collision check with player
+    auto senemy_it = m_shooters.begin();
+    while (senemy_it != m_shooters.end()){
+        if (m_player.collisionCheck(*senemy_it)){
+            senemy_it = m_shooters.erase(senemy_it);
+            m_player.hit();
+            break;
+        }
+        ++senemy_it;
+    }
     // collision detection between player and bomber bomb
     bomberBomb_it = m_bomberBombs.begin();
     while (bomberBomb_it != m_bomberBombs.end()) {
@@ -598,7 +603,7 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Wave: " << waveNo << " s: " << shooters << " c: " << chasers << " b: " << bombs << " Total: " << totalEnemies;
+    title_ss << "Lives: " << m_player.getLives() << " Points: " << m_points << " Wave: " << waveNo << " s: " << shooters << " c: " << chasers << " b: " << bombs << " Total: " << totalEnemies ;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer
@@ -752,7 +757,16 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
         int w, h;
         glfwGetWindowSize(m_window, &w, &h);
+
+        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
+        waveNo = 1;
+
+        m_background.init();
+
+        m_camera.setFocusPoint(m_player.getPosition());
         m_player.init(m_size);
+        m_points = 0;
+
     }
 }
 

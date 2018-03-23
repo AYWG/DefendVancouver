@@ -74,7 +74,7 @@ bool Player::init(vec2 worldSize) {
     // Setting initial values
     m_scale.x = 200.f;
     m_scale.y = 200.f;
-
+    m_lives = 5;
     m_num_indices = indices.size();
 
     m_position = {700.f, 500.f};
@@ -270,17 +270,10 @@ vec2 Player::getBoundingBox() const {
 }
 
 bool Player::collisionCheck(Shooter shooter) {
-    float dx = (m_position.x - shooter.getPosition().x);
-    float dy = (m_position.y - shooter.getPosition().y);
-    float d_sq = dx * dx + dy * dy;
-    float other_r = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y);
-    float my_r = std::max(m_scale.x, m_scale.y);
-    float r = std::max(other_r, my_r);
-    r *= 0.5f;
-    if (d_sq < r * r) {
-        return true;
-    }
-    return false;
+    auto d = magnitude({m_position.x - shooter.getPosition().x, m_position.y - shooter.getPosition().y});
+    auto shooterRadius = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y) / 2;
+    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < shooterRadius + playerRadius;
 }
 
 bool Player::collisionCheck(Bomber &bomber) {
@@ -293,9 +286,9 @@ bool Player::collisionCheck(ShooterBullet sb) {
 
 bool Player::collisionCheck(Chaser chaser) {
     auto d = magnitude({m_position.x - chaser.getPosition().x, m_position.y - chaser.getPosition().y});
-    auto shooterRadius = std::max(chaser.getBoundingBox().x, chaser.getBoundingBox().y) / 2;
-    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < shooterRadius + bulletRadius;
+    auto chaserRadius = std::max(chaser.getBoundingBox().x, chaser.getBoundingBox().y) / 2;
+    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < chaserRadius + playerRadius;
 }
 
 vec2 Player::getBoundingBox() {
