@@ -64,6 +64,8 @@ public:
     bool isGraphCreated = false;
 
 private:
+    bool initTextures();
+
     bool spawnShooter();
 
     bool spawnChaser();

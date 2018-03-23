@@ -8,18 +8,18 @@
 
 Texture Bomber::bomber_texture;
 
-bool Bomber::init() {
-
-    //Load texture
-
+bool Bomber::initTexture() {
     if (!bomber_texture.is_valid()) {
         if (!bomber_texture.load_from_file(textures_path("bomber.png"))) {
 
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load bomber texture!");
             return false;
         }
     }
+    return true;
+}
 
+bool Bomber::init() {
     //center of texture
     float width = bomber_texture.width * 0.5f;
     float height = bomber_texture.height * 0.5f;
@@ -132,4 +132,8 @@ vec2 Bomber::getBoundingBox()const {
 
 unsigned int Bomber::getMass() const {
     return 110;
+}
+
+void Bomber::attack(float ms) {
+
 }

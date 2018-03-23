@@ -20,16 +20,17 @@ int Chaser::bulletDelayMS = 1000;
 
 Chaser::Chaser(ChaserAI &ai) : m_ai(ai), m_nextChaserBulletSpawn(0.f), m_rotation(0.f) {}
 
-bool Chaser::init() {
-
-    //Load texture
+bool Chaser::initTexture() {
     if (!chaserTexture.is_valid()) {
         if (!chaserTexture.load_from_file(textures_path("chaser.png"))) {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
         }
     }
+    return true;
+}
 
+bool Chaser::init() {
     //center of texture
     float width = chaserTexture.width * 0.5f;
     float height = chaserTexture.height * 0.5f;

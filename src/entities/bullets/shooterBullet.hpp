@@ -15,6 +15,8 @@ class ShooterBullet : public Bullet, public Renderable {
     static Texture shooterBulletTexture;
 
 public:
+    static bool initTexture();
+
     static std::shared_ptr<ShooterBullet> spawn();
 
     bool init();

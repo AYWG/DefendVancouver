@@ -29,7 +29,7 @@ class Chaser : public Enemy, public Renderable {
     static int bulletDelayMS;
 
 public:
-
+    static bool initTexture();
     explicit Chaser(ChaserAI &ai);
 
     //Neccesary param

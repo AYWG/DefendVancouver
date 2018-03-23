@@ -16,6 +16,7 @@ class Shooter : public Enemy, public Renderable {
     static int bulletDelayMS;
 
 public:
+    static bool initTexture();
 
     explicit Shooter(ShooterAI &ai);
 

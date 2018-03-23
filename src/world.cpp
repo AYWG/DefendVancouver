@@ -99,9 +99,8 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
 
     m_size = worldSize;
     m_camera.setSize(screenSize);
-
+    initTextures();
     m_background.init();
-
     m_camera.setFocusPoint(m_player.getPosition());
     return m_player.init(worldSize);
 
@@ -647,6 +646,19 @@ bool World::inCloseDistance() {
 
 vec2 World::getCityPosition() const {
     return m_background.getPosition();
+}
+
+// Private
+
+bool World::initTextures() {
+    return BomberBomb::initTexture() &&
+           NormalBomb::initTexture() &&
+           Shooter::initTexture() &&
+           Chaser::initTexture() &&
+           Bomber::initTexture() &&
+           PlayerBullet::initTexture() &&
+           ShooterBullet::initTexture() &&
+           background::initTexture();
 }
 
 bool World::spawnShooter() {

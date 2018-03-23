@@ -14,7 +14,10 @@
 class NormalBomb : public Entity, public Renderable {
 
     static Texture bomb_texture;
+
 public:
+    static bool initTexture();
+
     //init bomb
     bool init();
 

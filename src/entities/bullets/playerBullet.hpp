@@ -18,6 +18,8 @@ class PlayerBullet : public Bullet, public Renderable {
     static Texture playerBulletTexture;
 
 public:
+    static bool initTexture();
+
     static std::shared_ptr<PlayerBullet> spawn();
 
     bool init();

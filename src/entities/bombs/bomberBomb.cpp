@@ -8,8 +8,7 @@
 
 Texture BomberBomb::bomb_texture;
 
-bool BomberBomb::init() {
-
+bool BomberBomb::initTexture() {
     //load texture
     if (!bomb_texture.is_valid()) {
         if (!bomb_texture.load_from_file(textures_path("bomber_bomb.png"))) {
@@ -17,7 +16,10 @@ bool BomberBomb::init() {
             return false;
         }
     }
+    return true;
+}
 
+bool BomberBomb::init() {
     // The position corresponds to the center of the bomb
     float wr = bomb_texture.width * 0.5f;
     float hr = bomb_texture.height * 0.5f;

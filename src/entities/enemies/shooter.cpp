@@ -12,16 +12,17 @@ int Shooter::bulletDelayMS = 1000;
 
 Shooter::Shooter(ShooterAI &ai) : m_ai(ai), m_nextBulletSpawn(0.f) {}
 
-bool Shooter::init() {
-
-    //Load texture
+bool Shooter::initTexture() {
     if (!shooterTexture.is_valid()) {
         if (!shooterTexture.load_from_file(textures_path("shooter_new.png"))) {
             fprintf(stderr, "Failed to load shooter texture!");
             return false;
         }
     }
+    return true;
+}
 
+bool Shooter::init() {
     //center of texture
     float width = shooterTexture.width * 0.5f;
     float height = shooterTexture.height * 0.5f;

@@ -7,6 +7,17 @@
 
 Texture ShooterBullet::shooterBulletTexture;
 
+bool ShooterBullet::initTexture() {
+    //Load texture
+    if (!shooterBulletTexture.is_valid()) {
+        if (!shooterBulletTexture.load_from_file(textures_path("shooterBullet.png"))) {
+            fprintf(stderr, "Failed to load shooter bullet texture!");
+            return false;
+        }
+    }
+    return true;
+}
+
 std::shared_ptr<ShooterBullet> ShooterBullet::spawn() {
     auto bullet = std::make_shared<ShooterBullet>();
     if (bullet->init()) {
@@ -17,14 +28,6 @@ std::shared_ptr<ShooterBullet> ShooterBullet::spawn() {
 }
 
 bool ShooterBullet::init() {
-    //Load texture
-    if (!shooterBulletTexture.is_valid()) {
-        if (!shooterBulletTexture.load_from_file(textures_path("shooterBullet.png"))) {
-            fprintf(stderr, "Failed to load shooter bullet texture!");
-            return false;
-        }
-    }
-
     //center of texture
     float width = shooterBulletTexture.width * 0.5f;
     float height = shooterBulletTexture.height * 0.5f;

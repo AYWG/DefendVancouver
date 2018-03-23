@@ -7,6 +7,16 @@
 
 Texture PlayerBullet::playerBulletTexture;
 
+bool PlayerBullet::initTexture() {
+    if (!playerBulletTexture.is_valid()) {
+        if (!playerBulletTexture.load_from_file(textures_path("playerBullet.png"))) {
+            fprintf(stderr, "Failed to load player bullet texture!");
+            return false;
+        }
+    }
+    return true;
+}
+
 std::shared_ptr<PlayerBullet> PlayerBullet::spawn() {
     auto playerBullet = std::make_shared<PlayerBullet>();
     if (playerBullet->init()) {
@@ -17,15 +27,6 @@ std::shared_ptr<PlayerBullet> PlayerBullet::spawn() {
 }
 
 bool PlayerBullet::init() {
-
-    //Load texture
-    if (!playerBulletTexture.is_valid()) {
-        if (!playerBulletTexture.load_from_file(textures_path("playerBullet.png"))) {
-            fprintf(stderr, "Failed to load player bullet texture!");
-            return false;
-        }
-    }
-
     //center of texture
     float width = playerBulletTexture.width * 0.5f;
     float height = playerBulletTexture.height * 0.5f;

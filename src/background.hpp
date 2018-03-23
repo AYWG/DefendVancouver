@@ -12,7 +12,8 @@ class background : public Entity, public Renderable {
 
     static Texture background_texture;
 public:
-    //init ship
+    static bool initTexture();
+
     bool init();
 
     void draw(const mat3 &projection);
