@@ -198,8 +198,8 @@ bool World::update(float elapsed_ms) {
 
     //////////////SPAWNDONE/////////////////
     //ASTAR
-    float width = 5000.f / COL;
-    float height = 1000.f / ROW;
+    float width = 3000.f / COL;
+    float height = 1500.f / ROW;
     int grid[ROW][COL];
 
     if (!isGraphCreated) {
@@ -211,11 +211,11 @@ bool World::update(float elapsed_ms) {
         isGraphCreated = true;
     }
 
-    for (auto &m_bomb : m_bomberBombs){
+/*    for (auto &m_bomb : m_bomberBombs){
         int j = 0;
         int l = 0;
-        for (float k = 50.f/*0.f*/; k <= 5000.f /*1200.f*/; k += width) {
-            for (float i = /*0*/50.f; i <= 1000.f; i += height) {
+        for (float k = 50.f*//*0.f*//*; k <= 5000.f *//*1200.f*//*; k += width) {
+            for (float i = *//*0*//*50.f; i <= 1000.f; i += height) {
                 if (m_bomb.getPosition().y >= 50.f && m_bomb.getPosition().y < height
                     && m_bomb.getPosition().x >= 50.f && m_bomb.getPosition().x < width) {
                     //  Pair src = make_pair(0, 0);
@@ -255,7 +255,7 @@ bool World::update(float elapsed_ms) {
             l++;
             j = 0;
         }
-    }
+    }*/
 
     for (auto &m_chaser : m_chasers) {
         bool srcFound = false;
@@ -264,8 +264,8 @@ bool World::update(float elapsed_ms) {
         int j = 0;
         int l = 0;
         if (!srcFound) {
-            for (float k = 50.f/*0.f*/; k <= 5000.f /*1200.f*/; k += width) {
-                for (float i = /*0*/50.f; i <= 1000.f; i += height) {
+            for (float k = 50.f/*0.f*/; k <= 3000.f /*1200.f*/; k += width) {
+                for (float i = /*0*/50.f; i <= 1500.f; i += height) {
                     if (m_chaser.getPosition().y >= 50.f && m_chaser.getPosition().y < height
                         && m_chaser.getPosition().x >= 50.f && m_chaser.getPosition().x < width) {
                         //  Pair src = make_pair(0, 0);
@@ -298,8 +298,8 @@ bool World::update(float elapsed_ms) {
         int b = 0;
 
         if (!destFound) {
-            for (float k = /*0*/50.f; k <= /*1200*/4950.f; k += width) {
-                for (float i = 50.f; i <= 950.f; i += height) {
+            for (float k = /*0*/50.f; k <= /*1200*/3000.f; k += width) {
+                for (float i = 50.f; i <= 1500.f; i += height) {
                     if (m_player.getPosition().y >= 50.f && m_player.getPosition().y < height
                         && m_player.getPosition().x >= 50.f && m_player.getPosition().x < width) {
                         //Pair dest = make_pair(0, 0);
