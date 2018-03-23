@@ -9,7 +9,7 @@
 #include "../../ai/chaserAI.hpp"
 
 
-using namespace std;
+using std::pair;
 
 #define  ROW 100
 #define  COL 300

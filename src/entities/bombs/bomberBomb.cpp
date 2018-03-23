@@ -8,8 +8,6 @@
 
 Texture BomberBomb::bomb_texture;
 
-using namespace std;
-
 bool BomberBomb::init() {
 
     //load texture

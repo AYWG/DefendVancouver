@@ -198,22 +198,8 @@ bool World::update(float elapsed_ms) {
 
     //////////////SPAWNDONE/////////////////
     //ASTAR
-
-
-
-
-    //width -> -600 to 2060
-    //height -> -150 to 1000
-
-/*    float width = 2660.f / COL;
-    float height = 1150.f / ROW;*/
-/*    float width = 2660.f / COL;
-    float height = 1150.f / ROW;*/
     float width = 5000.f / COL;
     float height = 1000.f / ROW;
-    //std::cout<<width<<endl;
-
-
     int grid[ROW][COL];
 
     if (!isGraphCreated) {
@@ -225,10 +211,7 @@ bool World::update(float elapsed_ms) {
         isGraphCreated = true;
     }
 
-
-
     for (auto &m_bomb : m_bomberBombs){
-
         int j = 0;
         int l = 0;
         for (float k = 50.f/*0.f*/; k <= 5000.f /*1200.f*/; k += width) {
@@ -272,20 +255,11 @@ bool World::update(float elapsed_ms) {
             l++;
             j = 0;
         }
-
-
     }
-
-
 
     for (auto &m_chaser : m_chasers) {
         bool srcFound = false;
         bool destFound = false;
-
-
-
-
-
 
         int j = 0;
         int l = 0;
@@ -354,11 +328,9 @@ bool World::update(float elapsed_ms) {
             }
         }
 
-       // m_chaser.update(this, elapsed_ms);
-
         if (destFound && srcFound) {
-            Pair src = make_pair(j, l);
-            Pair dest = make_pair(a, b);
+            Pair src = std::make_pair(j, l);
+            Pair dest = std::make_pair(a, b);
             m_chaser.aStarSearch(grid, src, dest);
         }
 

@@ -9,9 +9,9 @@
 #include <cfloat>
 #include <set>
 
-
-
-using namespace std;
+using std::stack;
+using std::make_pair;
+using std::set;
 
 Texture Chaser::chaserTexture;
 
@@ -739,12 +739,3 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest) {
 
 
 }
-
-
-
-
-
-
-
-//vec2 getBoundingBox()const;
-

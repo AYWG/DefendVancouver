@@ -8,8 +8,6 @@
 
 Texture background::background_texture;
 
-using namespace std;
-
 bool background::init() {
     //load texture
     if (!background_texture.is_valid()) {
