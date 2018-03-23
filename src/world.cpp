@@ -399,7 +399,7 @@ bool World::update(float elapsed_ms) {
 
     // Spawing the bomber
     m_next_bomber_spawn -= elapsed_ms;
-    if (m_bombers.size() <= MAX_BOMBER && m_next_bomber_spawn) {
+    if (m_bombers.size() <= MAX_BOMBERBOMBS && m_next_bomber_spawn) {
         if (!spawnBomber()) {
             return false;
         }
