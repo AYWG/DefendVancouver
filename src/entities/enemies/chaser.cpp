@@ -10,6 +10,7 @@
 #include <set>
 
 
+
 using namespace std;
 
 Texture Chaser::chaserTexture;
@@ -17,15 +18,13 @@ Texture Chaser::chaserTexture;
 int Chaser::maxNumberOfBullets = 5;
 int Chaser::bulletDelayMS = 1000;
 
-Chaser::Chaser(ChaserAI& ai) : m_ai(ai), m_nextChaserBulletSpawn(0.f), m_rotation(0.f) {}
+Chaser::Chaser(ChaserAI &ai) : m_ai(ai), m_nextChaserBulletSpawn(0.f), m_rotation(0.f) {}
 
 bool Chaser::init() {
 
     //Load texture
-    if (!chaserTexture.is_valid())
-    {
-        if (!chaserTexture.load_from_file(textures_path("chaser.png")))
-        {
+    if (!chaserTexture.is_valid()) {
+        if (!chaserTexture.load_from_file(textures_path("chaser.png"))) {
             fprintf(stderr, "Failed to load turtle texture!");
             return false;
         }
@@ -36,17 +35,17 @@ bool Chaser::init() {
     float height = chaserTexture.height * 0.5f;
 
     TexturedVertex vertices[4];
-    vertices[0].position = { -width, +height, -0.01f };
-    vertices[0].texcoord = { 0.f, 1.f };
-    vertices[1].position = { +width, +height, -0.01f };
-    vertices[1].texcoord = { 1.f, 1.f };
-    vertices[2].position = { +width, -height, -0.01f };
-    vertices[2].texcoord = { 1.f, 0.f };
-    vertices[3].position = { -width, -height, -0.01f };
-    vertices[3].texcoord = { 0.f, 0.f };
+    vertices[0].position = {-width, +height, -0.01f};
+    vertices[0].texcoord = {0.f, 1.f};
+    vertices[1].position = {+width, +height, -0.01f};
+    vertices[1].texcoord = {1.f, 1.f};
+    vertices[2].position = {+width, -height, -0.01f};
+    vertices[2].texcoord = {1.f, 0.f};
+    vertices[3].position = {-width, -height, -0.01f};
+    vertices[3].texcoord = {0.f, 0.f};
 
     // counterclockwise as it's the default opengl front winding direction
-    uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+    uint16_t indices[] = {0, 3, 1, 1, 3, 2};
 
     // Clearing errors
     gl_flush_errors();
@@ -76,26 +75,29 @@ bool Chaser::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
     m_rotation = 0.f;
+  //  m_position = {500,600};
 
 
     return true;
 }
 
-void Chaser::destroy(){
+void Chaser::destroy() {
 
 }
 
+
 void Chaser::update(World *world, float ms){
-    float velcity = 1;
+    float velcity = 30;
     float x_step = velcity * (ms/1000);
     float  y_step = velcity * (ms/1000);
 
-    move({x_step,y_step});
+
+    move({x_step, y_step});
 
 
 }
 
-void Chaser::draw(const mat3& projection){
+void Chaser::draw(const mat3 &projection) {
     transform_begin();
     transform_translate(m_position);
     transform_rotate(m_rotation);
@@ -106,7 +108,8 @@ void Chaser::draw(const mat3& projection){
     glUseProgram(effect.program);
 
     // Enabling alpha channel for textures
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
 
     // Getting uniform locations for glUniform* calls
@@ -124,28 +127,28 @@ void Chaser::draw(const mat3& projection){
     GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
     glEnableVertexAttribArray(in_texcoord_loc);
-    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
-    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
+    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, chaserTexture.id);
 
     // Setting uniform values to the currently bound program
-    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-    float color[] = { 1.f, 1.f, 1.f };
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
+    float color[] = {1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
-    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
 vec2 Chaser::getBoundingBox() const {
-    return { std::fabs(m_scale.x) * chaserTexture.width, std::fabs(m_scale.y) * chaserTexture.height };
+    return {std::fabs(m_scale.x) * chaserTexture.width, std::fabs(m_scale.y) * chaserTexture.height};
 }
 
-vec2 Chaser::move(vec2 off){
+vec2 Chaser::move(vec2 off) {
     m_position.x += off.x;
     m_position.y += off.y;
 
@@ -161,8 +164,7 @@ unsigned int Chaser::getMass() const {
 
 // A Utility Function to check whether given cell (row, col)
 // is a valid cell or not.
-bool Chaser::isValid(int row, int col)
-{
+bool Chaser::isValid(int row, int col) {
     // Returns true if row number and column number
     // is in range
     return (row >= 0) && (row < ROW) &&
@@ -171,8 +173,7 @@ bool Chaser::isValid(int row, int col)
 
 // A Utility Function to check whether the given cell is
 // blocked or not
-bool Chaser::isUnBlocked(int grid[][COL], int row, int col)
-{
+bool Chaser::isUnBlocked(int grid[][COL], int row, int col) {
     // Returns true if the cell is not blocked else false
     if (grid[row][col] == 1)
         return (true);
@@ -182,8 +183,7 @@ bool Chaser::isUnBlocked(int grid[][COL], int row, int col)
 
 //  check whether destination cell has
 // been reached or not
-bool Chaser::isDestination(int row, int col, Pair dest)
-{
+bool Chaser::isDestination(int row, int col, Pair dest) {
     if (row == dest.first && col == dest.second)
         return (true);
     else
@@ -191,17 +191,16 @@ bool Chaser::isDestination(int row, int col, Pair dest)
 }
 
 // A Utility Function to calculate the 'h' heuristics.
-double Chaser::calculateHValue(int row, int col, Pair dest)
-{
+double Chaser::calculateHValue(int row, int col, Pair dest) {
     // Return using the distance formula
-    return ((double)sqrt ((row-dest.first)*(row-dest.first)
-                          + (col-dest.second)*(col-dest.second)));
+    return ((double) sqrt((row - dest.first) * (row - dest.first)
+                          + (col - dest.second) * (col - dest.second)));
 }
 
 // A Utility Function to trace the path from the source
 // to destination
 void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
-   // printf("\nThe Path is ");
+    // printf("\nThe Path is ");
     int row = dest.first;
     int col = dest.second;
 
@@ -225,69 +224,71 @@ void Chaser::tracePath(cell cellDetails[][COL], Pair dest) {
         if (!Path.empty()) {
             pair<int, int> np = Path.top();
             //////////////////////////
-            if ((p.first > np.first) && (p.second < np.second) ) {
+            if ((p.first > np.first) && (p.second < np.second)) {
                 move({speed, -speed});
             }
-            if ((p.first > np.first) && (p.second > np.second) ) {
+            if ((p.first > np.first) && (p.second > np.second)) {
                 move({-speed, -speed});
             }
-            if ((p.first > np.first) && (p.second < np.second) ) {
+            if ((p.first > np.first) && (p.second == np.second) ) {
                 move({0, -speed});
             }
             ///////////////////////////
 
-            if ((p.first < np.first)&&(p.second < np.second)) {
+            if ((p.first < np.first) && (p.second < np.second)) {
                 move({speed, speed});
             }
-            if ((p.first < np.first)&&(p.second > np.second)) {
+            if ((p.first < np.first) && (p.second > np.second)) {
                 move({-speed, speed});
             }
-            if ((p.first < np.first)&&(p.second == np.second)) {
+            if ((p.first < np.first) && (p.second == np.second)) {
                 move({0, speed});
             }
             ////////////////////////////
 
-            if ((p.first == np.first)&&(p.second < np.second)) {
+            if ((p.first == np.first) && (p.second < np.second)) {
                 move({speed, 0});
             }
-            if ((p.first == np.first)&&(p.second > np.second)) {
+            if ((p.first == np.first) && (p.second > np.second)) {
                 move({-speed, 0});
             }
-            if ((p.first == np.first)&&(p.second == np.second)) {
+            if ((p.first == np.first) && (p.second == np.second)) {
                 move({0, 0});
             }
             /////////////////////////////
 
         }
     }
-        return;
+    return;
 }
 
-void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
+void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest) {
     //if src us outta range
+
     if (isValid(src.first, src.second) == false){
-        //printf("source is invalid");
+        printf("source is invalid");
+        move({0, 10});
+
         return;
     }
 
     //if dest is outta range
-    if(isValid(dest.first, dest.second) == false){
+    if (isValid(dest.first, dest.second) == false) {
         //printf("dentination is invalid");
         return;
     }
 
     //if source or destination is blocked
     if (isUnBlocked(grid, src.first, src.second) == false ||
-        isUnBlocked(grid, dest.first, dest.second) == false){
-       // printf ("Source or the destination is blocked\n");
-       //    move({-5, 0});
+        isUnBlocked(grid, dest.first, dest.second) == false) {
+        // printf ("Source or the destination is blocked\n");
+        //    move({-5, 0});
         return;
     }
 
     // If the destination cell is the same as source
-    if (isDestination(src.first, src.second, dest) == true)
-    {
-       // printf ("We are already at the destination\n");
+    if (isDestination(src.first, src.second, dest) == true) {
+        // printf ("We are already at the destination\n");
         return;
     }
 
@@ -301,8 +302,8 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
 
     int i, j;
 
-    for (i = 0; i<ROW; i++){
-        for (j = 0; j<COL; j++){
+    for (i = 0; i < ROW; i++) {
+        for (j = 0; j < COL; j++) {
             cellDetails[i][j].f = FLT_MAX;
             cellDetails[i][j].g = FLT_MAX;
             cellDetails[i][j].h = FLT_MAX;
@@ -331,7 +332,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
 
     // Put the starting cell on the open list and set its
     // 'f' as 0
-    openList.insert(make_pair (0.0, make_pair (i, j)));
+    openList.insert(make_pair(0.0, make_pair(i, j)));
 
     bool foundDest = false;
 
@@ -368,7 +369,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i - 1][j].parent_i = i;
                 cellDetails[i - 1][j].parent_j = j;
-               // printf("The destination cell is found\n");
+                // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -414,7 +415,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i + 1][j].parent_i = i;
                 cellDetails[i + 1][j].parent_j = j;
-               // printf("The destination cell is found\n");
+                // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -460,7 +461,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i][j + 1].parent_i = i;
                 cellDetails[i][j + 1].parent_j = j;
-               //
+                //
                 // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
@@ -507,7 +508,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i][j - 1].parent_i = i;
                 cellDetails[i][j - 1].parent_j = j;
-               // printf("The destination cell is found\n");
+                // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -645,7 +646,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i + 1][j + 1].parent_i = i;
                 cellDetails[i + 1][j + 1].parent_j = j;
-               // printf("The destination cell is found\n");
+                // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -691,7 +692,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
                 // Set the Parent of the destination cell
                 cellDetails[i + 1][j - 1].parent_i = i;
                 cellDetails[i + 1][j - 1].parent_j = j;
-               // printf("The destination cell is found\n");
+                // printf("The destination cell is found\n");
                 tracePath(cellDetails, dest);
                 foundDest = true;
                 return;
@@ -729,14 +730,12 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest){
         }
     }
 
-    if (foundDest == false)
-    {
-       // printf("can't find dest");
+    if (foundDest == false) {
+        // printf("can't find dest");
     }
 
 
     return;
-
 
 
 }

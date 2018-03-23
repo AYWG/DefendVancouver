@@ -3,6 +3,7 @@
 //
 
 #include "shooterBullet.hpp"
+#include <cmath>
 
 Texture ShooterBullet::shooterBulletTexture;
 
@@ -71,6 +72,7 @@ bool ShooterBullet::init() {
 void ShooterBullet::draw(const mat3 &projection) {
     transform_begin();
     transform_translate(m_position);
+    transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
 
@@ -118,7 +120,7 @@ void ShooterBullet::update(float ms) {
     float x_step = m_velocity.x * (ms / 1000);
     float y_step = m_velocity.y * (ms / 1000);
 
-    setPosition({getPosition().x + x_step, getPosition().y + y_step});
+    m_position = {m_position.x + x_step, m_position.y + y_step};
 }
 
 vec2 ShooterBullet::getBoundingBox() const {
@@ -127,4 +129,11 @@ vec2 ShooterBullet::getBoundingBox() const {
 
 unsigned int ShooterBullet::getMass() const {
     return 10;
+}
+
+bool ShooterBullet::collisionCheck(NormalBomb &bomb){
+    auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});
+    auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
+    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < bombRadius + bulletRadius;
 }

@@ -16,14 +16,12 @@ const int screenHeight = 800;
 
 const int worldWidth = 5000;
 const int worldHeight = 1000;
-const char* title = "DefendVancouver";
+const char *title = "DefendVancouver";
 
 // Entry point
-int main(int argc, char* argv[])
-{
+int main(int argc, char *argv[]) {
     // Initializing world (after renderer.init().. sorry)
-    if (!world.init({(float) screenWidth, (float) screenHeight}, {(float) worldWidth, (float) worldHeight}))
-    {
+    if (!world.init({(float) screenWidth, (float) screenHeight}, {(float) worldWidth, (float) worldHeight})) {
         // Time to read the error message
         std::cout << "Press any key to exit" << std::endl;
         std::cin.get();
@@ -33,14 +31,13 @@ int main(int argc, char* argv[])
     auto t = Clock::now();
 
     // variable timestep loop.. can be improved (:
-    while (!world.is_over())
-    {
+    while (!world.is_over()) {
         // Processes system messages, if this wasn't present the window would become unresponsive
         glfwPollEvents();
 
         // Calculating elapsed times in milliseconds from the previous iteration
         auto now = Clock::now();
-        float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
+        float elapsed_sec = (float) (std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
         t = now;
 
         world.update(elapsed_sec);

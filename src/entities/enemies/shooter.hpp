@@ -17,7 +17,7 @@ class Shooter : public Enemy, public Renderable {
 
 public:
 
-    explicit Shooter(ShooterAI& ai);
+    explicit Shooter(ShooterAI &ai);
 
     bool init() override;
 
@@ -33,7 +33,7 @@ public:
 
     unsigned int getMass() const override;
 
-    std::vector<std::shared_ptr<ShooterBullet>>& getBullets();
+    std::vector<std::shared_ptr<ShooterBullet>> &getBullets();
 
 
 private:
