@@ -17,6 +17,8 @@ public:
     bool init();
 
     void draw(const mat3 &projection);
+
+    void destroy() override;
 };
 
 

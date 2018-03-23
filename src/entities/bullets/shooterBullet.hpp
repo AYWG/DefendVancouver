@@ -19,7 +19,11 @@ public:
 
     static std::shared_ptr<ShooterBullet> spawn();
 
+    ~ShooterBullet();
+
     bool init();
+
+    void destroy() override;
 
     void draw(const mat3 &projection) override;
 

@@ -43,7 +43,7 @@ public:
 
     void enableShooting(bool isShooting);
 
-    void destroy();
+    void destroy() override;
 
     unsigned int getMass() const override;
 

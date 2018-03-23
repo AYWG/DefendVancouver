@@ -24,6 +24,8 @@ public:
 
     bool init();
 
+    void destroy() override;
+
     void draw(const mat3 &projection) override;
 
     void update(float ms) override;

@@ -18,10 +18,9 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    const size_t MAX_BOMBS = 4;
-    const size_t MAX_BOMBERBOMBS = 2;
-    const size_t BULLET_DELAY_MS = 200;
-    const size_t MAX_SHOOTERS = 2;
+    const size_t MAX_BOMBS = 1;
+    const size_t MAX_BOMBERBOMBS = 0;
+    const size_t MAX_SHOOTERS = 0;
     const size_t MAX_CHASER = 0;
     const size_t MAX_BOMBER = 1;
     const size_t SHOOTER_DELAY_MS = 2000;
@@ -145,7 +144,7 @@ bool World::update(float elapsed_ms) {
     }
 
     m_next_shooter_spawn -= elapsed_ms;
-    if (m_shooters.size() <= MAX_SHOOTERS && m_next_shooter_spawn) {
+    if (m_shooters.size() < MAX_SHOOTERS && m_next_shooter_spawn) {
         if (!spawnShooter()) {
             return false;
         }
@@ -166,7 +165,7 @@ bool World::update(float elapsed_ms) {
         // remove out of screen shooter bullets - remove once we have proper collisions
         auto shooterBulletIt = shooter.getBullets().begin();
         while (shooterBulletIt != shooter.getBullets().end()) {
-            if ((*shooterBulletIt)->getPosition().y > 1000) {
+            if ((*shooterBulletIt)->getPosition().y > m_size.y) {
                 shooterBulletIt = shooter.getBullets().erase(shooterBulletIt);
                 continue;
             }
@@ -176,7 +175,7 @@ bool World::update(float elapsed_ms) {
 
 //////////////////CHASER///////////////////
     m_next_chaser_spawn -= elapsed_ms;
-    if (m_chasers.size() <= MAX_CHASER && m_next_chaser_spawn) {
+    if (m_chasers.size() < MAX_CHASER && m_next_chaser_spawn) {
 
         ////////////////////TODO////////////////
         if (!spawnChaser()) {
@@ -197,8 +196,8 @@ bool World::update(float elapsed_ms) {
 
     //////////////SPAWNDONE/////////////////
     //ASTAR
-    float width = 5000.f / COL;
-    float height = 1000.f / ROW;
+    float width = m_size.x / COL;
+    float height = m_size.y / ROW;
     int grid[ROW][COL];
 
     if (!isGraphCreated) {
@@ -341,7 +340,7 @@ bool World::update(float elapsed_ms) {
 
     // Spawing the bomber
     m_next_bomber_spawn -= elapsed_ms;
-    if (m_bombers.size() <= MAX_BOMBER && m_next_bomber_spawn) {
+    if (m_bombers.size() < MAX_BOMBER && m_next_bomber_spawn) {
         if (!spawnBomber()) {
             return false;
         }
@@ -360,7 +359,7 @@ bool World::update(float elapsed_ms) {
     for (auto &m_bomber : m_bombers){
         if(bomberOnScreen(m_bomber)){
             m_next_bbomb_spawn -= elapsed_ms;
-            if (m_bomberBombs.size() <= MAX_BOMBERBOMBS && m_next_bbomb_spawn < 0.f) {
+            if (m_bomberBombs.size() < MAX_BOMBERBOMBS && m_next_bbomb_spawn < 0.f) {
                 if (!spawnBomberBomb())
                     return false;
 
@@ -393,12 +392,12 @@ bool World::update(float elapsed_ms) {
 
     // trigger normal bomb animation
     for (auto &bomb : m_normalBombs)
-        bomb.update(elapsed_ms);
+        bomb->update(elapsed_ms);
 
     // removing normal bombs from screen
     auto normalBomb_it = m_normalBombs.begin();
     while (normalBomb_it != m_normalBombs.end()) {
-        int fc = normalBomb_it->getFrameCount();
+        int fc = (*normalBomb_it)->getFrameCount();
         if (fc == 0) {
             normalBomb_it = m_normalBombs.erase(normalBomb_it);
             continue;
@@ -409,15 +408,15 @@ bool World::update(float elapsed_ms) {
 
     // Spawn new normal bombs
     m_next_nbomb_spawn -= elapsed_ms;
-    if (m_normalBombs.size() <= MAX_BOMBS && m_next_nbomb_spawn < 0.f) {
-        if (!spawnNormalBomb())
-            return false;
+    if (m_normalBombs.size() < MAX_BOMBS && m_next_nbomb_spawn < 0.f) {
 
-        NormalBomb &new_bomb = m_normalBombs.back();
+        if (auto newNormalBomb = NormalBomb::spawn()) {
+            m_normalBombs.emplace_back(newNormalBomb);
+        }
 
-        new_bomb.setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
-        //new_bomb.setPosition(getPlayerPosition());
+        auto newNormalBombPtr = m_normalBombs.back();
 
+        newNormalBombPtr->setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
         m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
     }
 
@@ -450,9 +449,9 @@ bool World::update(float elapsed_ms) {
     while (playerBulletIt != m_player.getBullets().end()) {
         bool isColliding = false;
         for (auto &bomb : m_normalBombs) {
-            if ((*playerBulletIt)->collisionCheck(bomb)) {
-                playerBounce(bomb);
-                bomb.animate();
+            if ((*playerBulletIt)->collisionCheck(*bomb)) {
+                playerBounce(*bomb);
+                bomb->animate();
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 isColliding = true;
                 m_points = m_points + 5;
@@ -470,9 +469,9 @@ bool World::update(float elapsed_ms) {
         while (shooterBulletIt != shooter.getBullets().end()) {
             bool isColliding = false;
             for (auto &bomb : m_normalBombs) {
-                if ((*shooterBulletIt)->collisionCheck(bomb)){
-                    playerBounce(bomb);
-                    bomb.animate();
+                if ((*shooterBulletIt)->collisionCheck(*bomb)){
+                    playerBounce(*bomb);
+                    bomb->animate();
                     shooterBulletIt = shooter.getBullets().erase(shooterBulletIt);
                     isColliding = true;
                     break;
@@ -612,7 +611,7 @@ void World::draw() {
 
 
     for (auto &nBomb : m_normalBombs) {
-        nBomb.draw(projection_2D);
+        nBomb->draw(projection_2D);
     }
 
     for (auto &bBomb : m_bomberBombs) {
@@ -635,7 +634,7 @@ vec2 World::getPlayerPosition() const {
 std::vector<vec2> World::getBombPositions() const {
     auto positions = std::vector<vec2>();
     for (auto &bomb : m_normalBombs) {
-        positions.emplace_back(bomb.getPosition());
+        positions.emplace_back(bomb->getPosition());
     }
     return positions;
 }
@@ -688,16 +687,6 @@ bool World::spawnBomber() {
         m_bombers.emplace_back(bomber);
         return true;
     }
-    return false;
-}
-
-bool World::spawnNormalBomb() {
-    NormalBomb nBomb;
-    if (nBomb.init()) {
-        m_normalBombs.emplace_back(nBomb);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn bomb");
     return false;
 }
 

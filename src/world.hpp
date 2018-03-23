@@ -72,8 +72,6 @@ private:
 
     bool spawnBomber();
 
-    bool spawnNormalBomb();
-
     bool spawnBomberBomb();
 
     void playerBounce(NormalBomb bomb);
@@ -101,7 +99,7 @@ private:
     std::vector<Chaser> m_chasers;
     std::vector<Shooter> m_shooters;
     std::vector<Bomber> m_bombers;
-    std::vector<NormalBomb> m_normalBombs;
+    std::vector<std::shared_ptr<NormalBomb>> m_normalBombs;
     std::vector<BomberBomb> m_bomberBombs;
 
     float m_next_shooter_spawn;

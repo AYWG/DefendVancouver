@@ -7,6 +7,10 @@
 
 Texture ShooterBullet::shooterBulletTexture;
 
+ShooterBullet::~ShooterBullet() {
+    destroy();
+}
+
 bool ShooterBullet::initTexture() {
     //Load texture
     if (!shooterBulletTexture.is_valid()) {
@@ -70,6 +74,16 @@ bool ShooterBullet::init() {
     m_scale.x = 0.2f;
     m_scale.y = 0.4f;
     return true;
+}
+
+void ShooterBullet::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteBuffers(1, &mesh.vao);
+
+    glDeleteShader(effect.vertex);
+    glDeleteShader(effect.fragment);
+    glDeleteShader(effect.program);
 }
 
 void ShooterBullet::draw(const mat3 &projection) {

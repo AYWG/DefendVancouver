@@ -18,6 +18,8 @@ public:
     //init bomb
     bool init();
 
+    void destroy() override;
+
     int getFrameCount() const;
 
     void draw(const mat3 &projection) override;

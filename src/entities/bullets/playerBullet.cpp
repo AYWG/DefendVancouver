@@ -72,6 +72,16 @@ bool PlayerBullet::init() {
     return true;
 }
 
+void PlayerBullet::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteBuffers(1, &mesh.vao);
+
+    glDeleteShader(effect.vertex);
+    glDeleteShader(effect.fragment);
+    glDeleteShader(effect.program);
+}
+
 void PlayerBullet::update(float ms) {
     float x_step = m_velocity.x * (ms / 1000);
     float y_step = m_velocity.y * (ms / 1000);
