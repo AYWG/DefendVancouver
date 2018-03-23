@@ -121,14 +121,12 @@ void World::destroy() {
 bool World::update(float elapsed_ms) {
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
-    vec2 screen = {(float) w, (float) h};/*
-    std::cout << "Wave: " << waveNo << std::endl;*/
-    std::cout << "T: " << totalEnemies << std::endl;
+    vec2 screen = {(float) w, (float) h};
     m_player.update(elapsed_ms);
     vec2 playerPos = m_player.getPosition();
 
     // Setting wave spawn conditions
-    if (totalEnemies == 0){
+    if (totalEnemies == 0 ){
         waveNo++;
         if (waveNo % 3 == 1){
             MAX_SHOOTERS++;
@@ -141,13 +139,10 @@ bool World::update(float elapsed_ms) {
         shooters = MAX_SHOOTERS;
         chasers = MAX_CHASER;
         bombs = MAX_BOMBS;
-        std::cout << "W: " << waveNo << std::endl;
-        std::cout << "s: " << shooters << std::endl;
-        std::cout << "c: " << chasers << std::endl;
-        std::cout << "b: " << bombs << std::endl;
         totalEnemies = shooters + chasers + bombs;
-        std::cout << "t: " << totalEnemies << std::endl;
     }
+
+
 
     // update camera
     auto newCameraFocusPointX = std::min(m_size.x - screen.x / 2, std::max(screen.x / 2, playerPos.x));
@@ -331,7 +326,6 @@ bool World::update(float elapsed_ms) {
         int fc = bomb_it->getFrameCount();
         if (fc == 0) {
             bomb_it = m_bombs.erase(bomb_it);
-            totalEnemies--;
             continue;
         }
 
@@ -343,7 +337,7 @@ bool World::update(float elapsed_ms) {
     if (/*m_bombs.size() <= MAX_BOMBS &&*/ m_next_bomb_spawn < 0.f && bombs != 0) {
         if (!spawn_bomb())
             return false;
-
+        int v3 = rand() % 30 + 1985;
         Bomb &new_bomb = m_bombs.back();
 
         new_bomb.setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
@@ -438,6 +432,19 @@ bool World::update(float elapsed_ms) {
         ++cenemy_it;
     }
 
+    // Chaser collision check with player
+    auto senemy_it = m_shooters.begin();
+    while (senemy_it != m_shooters.end()){
+        if (m_player.collisionCheck(*senemy_it)){
+            senemy_it = m_shooters.erase(senemy_it);
+            m_player.hit();
+            break;
+        }
+        ++senemy_it;
+    }
+
+
+
 
     return true;
 }
@@ -461,7 +468,7 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Wave: " << waveNo << " s: " << shooters << " c: " << chasers << " b: " << bombs << " Total: " << totalEnemies;
+    title_ss << "Lives: " << m_player.getLives() << " Points: " << m_points << " Wave: " << waveNo << " s: " << shooters << " c: " << chasers << " b: " << bombs << " Total: " << totalEnemies ;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer
@@ -615,7 +622,14 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         int w, h;
         glfwGetWindowSize(m_window, &w, &h);
 
+        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
+        waveNo = 1;
+
+        m_background.init();
+
+        m_camera.setFocusPoint(m_player.getPosition());
         m_player.init(m_size);
+        m_points = 0;
 
     }
 }
