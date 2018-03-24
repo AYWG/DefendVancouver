@@ -22,6 +22,8 @@ public:
 
     static std::shared_ptr<PlayerBullet> spawn();
 
+    ~PlayerBullet() override;
+
     bool init();
 
     void destroy() override;
@@ -34,11 +36,11 @@ public:
 
     unsigned int getMass() const override;
 
-    bool collisionCheck(Shooter shooter);
+    bool collisionCheck(Shooter &shooter);
 
-    bool collisionCheck(Chaser chaser);
+    bool collisionCheck(Chaser &chaser);
 
-    bool collisionCheck(Bomber& bomber);
+    bool collisionCheck(Bomber &bomber);
 
     bool collisionCheck(NormalBomb &bomb);
 };

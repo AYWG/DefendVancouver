@@ -15,11 +15,7 @@ class World;
 
 class Enemy : public Entity, public Movable {
 public:
-    virtual ~Enemy() = default;
-
     virtual bool init() = 0;
-
-    virtual void destroy() = 0;
 
     virtual void update(World *world, float ms) = 0;
 

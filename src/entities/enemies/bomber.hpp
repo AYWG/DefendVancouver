@@ -13,6 +13,10 @@ class Bomber : public Enemy, public Renderable {
 public:
     static bool initTexture();
 
+    static std::shared_ptr<Bomber> spawn();
+
+    ~Bomber() override;
+
     bool init() override;
 
     void destroy() override;

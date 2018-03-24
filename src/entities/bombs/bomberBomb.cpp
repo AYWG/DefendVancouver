@@ -8,6 +8,10 @@
 
 Texture BomberBomb::bomb_texture;
 
+BomberBomb::~BomberBomb() {
+    destroy();
+}
+
 bool BomberBomb::initTexture() {
     //load texture
     if (!bomb_texture.is_valid()) {
@@ -18,6 +22,16 @@ bool BomberBomb::initTexture() {
     }
     return true;
 }
+
+std::shared_ptr<BomberBomb> BomberBomb::spawn() {
+    auto bomb = std::make_shared<BomberBomb>();
+    if (bomb->init()) {
+        return bomb;
+    }
+    fprintf(stderr, "Failed to spawn normal bomb");
+    return nullptr;
+}
+
 
 bool BomberBomb::init() {
     // The position corresponds to the center of the bomb
@@ -69,11 +83,9 @@ bool BomberBomb::init() {
 void BomberBomb::destroy() {
     glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &mesh.ibo);
-    glDeleteBuffers(1, &mesh.vao);
+    glDeleteVertexArrays(1, &mesh.vao);
 
-    glDeleteShader(effect.vertex);
-    glDeleteShader(effect.fragment);
-    glDeleteShader(effect.program);
+    effect.release();
 }
 
 void BomberBomb::draw(const mat3 &projection) {

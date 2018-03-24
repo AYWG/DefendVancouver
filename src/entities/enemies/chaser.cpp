@@ -15,19 +15,30 @@ using std::set;
 
 Texture Chaser::chaserTexture;
 
-int Chaser::maxNumberOfBullets = 5;
-int Chaser::bulletDelayMS = 1000;
+Chaser::Chaser(ChaserAI &ai) : m_ai(ai) {}
 
-Chaser::Chaser(ChaserAI &ai) : m_ai(ai), m_nextChaserBulletSpawn(0.f), m_rotation(0.f) {}
+Chaser::~Chaser() {
+    destroy();
+}
 
 bool Chaser::initTexture() {
     if (!chaserTexture.is_valid()) {
         if (!chaserTexture.load_from_file(textures_path("chaser.png"))) {
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load chaser texture!");
             return false;
         }
     }
     return true;
+}
+
+std::shared_ptr<Chaser> Chaser::spawn() {
+    ChaserAI ai;
+    auto chaser = std::make_shared<Chaser>(ai);
+    if (chaser->init()) {
+        return chaser;
+    }
+    fprintf(stderr, "Failed to spawn chaser!");
+    return nullptr;
 }
 
 bool Chaser::init() {
@@ -83,7 +94,11 @@ bool Chaser::init() {
 }
 
 void Chaser::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteVertexArrays(1, &mesh.vao);
 
+    effect.release();
 }
 
 
@@ -92,10 +107,7 @@ void Chaser::update(World *world, float ms){
     float x_step = velcity * (ms/1000);
     float  y_step = velcity * (ms/1000);
 
-
     move({x_step, y_step});
-
-
 }
 
 void Chaser::draw(const mat3 &projection) {

@@ -22,15 +22,16 @@ typedef pair<double, pair<int, int> > pPair;
 
 
 class Chaser : public Enemy, public Renderable {
-
-
     static Texture chaserTexture;
-    static int maxNumberOfBullets;
-    static int bulletDelayMS;
 
 public:
     static bool initTexture();
+
+    static std::shared_ptr<Chaser> spawn();
+
     explicit Chaser(ChaserAI &ai);
+
+    ~Chaser() override;
 
     //Neccesary param
     struct cell {
@@ -40,9 +41,7 @@ public:
         double f, g, h;
     };
 
-
     bool init() override;
-
 
     void destroy() override;
 
@@ -72,11 +71,6 @@ public:
 
 private:
     ChaserAI m_ai;
-    float m_nextChaserBulletSpawn;
-    float m_rotation;
-    vec2 curr_pos;
-    vec2 curr_scale;
-    float curr_rotation;
 
     //    vec2 getBoundingBox()const;
 

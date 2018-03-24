@@ -8,6 +8,10 @@
 
 Texture Bomber::bomber_texture;
 
+Bomber::~Bomber() {
+    destroy();
+}
+
 bool Bomber::initTexture() {
     if (!bomber_texture.is_valid()) {
         if (!bomber_texture.load_from_file(textures_path("bomber.png"))) {
@@ -17,6 +21,15 @@ bool Bomber::initTexture() {
         }
     }
     return true;
+}
+
+std::shared_ptr<Bomber> Bomber::spawn() {
+    auto bomber = std::make_shared<Bomber>();
+    if (bomber->init()) {
+        return bomber;
+    }
+    fprintf(stderr, "Failed to spawn bomber!");
+    return nullptr;
 }
 
 bool Bomber::init() {
@@ -64,13 +77,15 @@ bool Bomber::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
 
-
-
     return true;
 }
 
 void Bomber::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteVertexArrays(1, &mesh.vao);
 
+    effect.release();
 }
 
 void Bomber::update(World *world, float ms) {

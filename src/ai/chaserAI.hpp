@@ -19,7 +19,6 @@ public:
 
 private:
     BehaviourTreeNode *m_root;
-    float m_rotation;
 
     void init();
 };

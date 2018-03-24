@@ -7,6 +7,10 @@
 
 Texture PlayerBullet::playerBulletTexture;
 
+PlayerBullet::~PlayerBullet() {
+    destroy();
+}
+
 bool PlayerBullet::initTexture() {
     if (!playerBulletTexture.is_valid()) {
         if (!playerBulletTexture.load_from_file(textures_path("playerBullet.png"))) {
@@ -75,11 +79,9 @@ bool PlayerBullet::init() {
 void PlayerBullet::destroy() {
     glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &mesh.ibo);
-    glDeleteBuffers(1, &mesh.vao);
+    glDeleteVertexArrays(1, &mesh.vao);
 
-    glDeleteShader(effect.vertex);
-    glDeleteShader(effect.fragment);
-    glDeleteShader(effect.program);
+    effect.release();
 }
 
 void PlayerBullet::update(float ms) {
@@ -145,21 +147,21 @@ unsigned int PlayerBullet::getMass() const {
     return 10;
 }
 
-bool PlayerBullet::collisionCheck(Shooter shooter) {
+bool PlayerBullet::collisionCheck(Shooter &shooter) {
     auto d = magnitude({m_position.x - shooter.getPosition().x, m_position.y - shooter.getPosition().y});
     auto shooterRadius = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y) / 2;
     auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
     return d < shooterRadius + bulletRadius;
 }
 
-bool PlayerBullet::collisionCheck(Chaser chaser) {
+bool PlayerBullet::collisionCheck(Chaser &chaser) {
     auto d = magnitude({m_position.x - chaser.getPosition().x, m_position.y - chaser.getPosition().y});
     auto chaserRadius = std::max(chaser.getBoundingBox().x, chaser.getBoundingBox().y) / 2;
     auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
     return d < chaserRadius + bulletRadius;
 }
 
-bool PlayerBullet::collisionCheck(Bomber& bomber) {
+bool PlayerBullet::collisionCheck(Bomber &bomber) {
     auto d = magnitude({m_position.x - bomber.getPosition().x, m_position.y - bomber.getPosition().y});
     auto bomberRadius = std::max(bomber.getBoundingBox().x, bomber.getBoundingBox().y) / 2;
     auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;

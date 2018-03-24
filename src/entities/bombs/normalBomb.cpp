@@ -81,11 +81,9 @@ bool NormalBomb::init() {
 void NormalBomb::destroy() {
     glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &mesh.ibo);
-    glDeleteBuffers(1, &mesh.vao);
+    glDeleteVertexArrays(1, &mesh.vao);
 
-    glDeleteShader(effect.vertex);
-    glDeleteShader(effect.fragment);
-    glDeleteShader(effect.program);
+    effect.release();
 }
 
 void NormalBomb::draw(const mat3 &projection) {
@@ -136,93 +134,93 @@ void NormalBomb::draw(const mat3 &projection) {
 }
 
 bool NormalBomb::update(float ms) {
-//    if (isHit && frameCount != 0) {
-//        frameCount--;
-//
-//        switch (frameCount) {
-//            case 9:
-//                vertices[0].texcoord = {0.f, 0.33f};
-//                vertices[1].texcoord = {0.33f, 0.33f};
-//                vertices[2].texcoord = {0.33f, 0.f};
-//                vertices[3].texcoord = {0.f, 0.f};
-//            case 8:
-//                vertices[0].texcoord = {0.33f, 0.33f};
-//                vertices[1].texcoord = {0.66f, 0.33f};
-//                vertices[2].texcoord = {0.66f, 0.f};
-//                vertices[3].texcoord = {0.33f, 0.f};
-//                break;
-//            case 7:
-//                vertices[0].texcoord = {0.66f, 0.33f};
-//                vertices[1].texcoord = {1.f, 0.33f};
-//                vertices[2].texcoord = {1.f, 0.f};
-//                vertices[3].texcoord = {0.66f, 0.f};
-//                break;
-//            case 6:
-//                vertices[0].texcoord = {0.f, 0.66f};
-//                vertices[1].texcoord = {0.33f, 0.66f};
-//                vertices[2].texcoord = {0.33f, 0.33f};
-//                vertices[3].texcoord = {0.f, 0.33f};
-//                break;
-//            case 5:
-//                vertices[0].texcoord = {0.33f, 0.66f};
-//                vertices[1].texcoord = {0.66f, 0.66f};
-//                vertices[2].texcoord = {0.66f, 0.33f};
-//                vertices[3].texcoord = {0.33f, 0.33f};
-//                break;
-//            case 4:
-//                vertices[0].texcoord = {0.66f, 0.66f};
-//                vertices[1].texcoord = {1.f, 0.66f};
-//                vertices[2].texcoord = {1.f, 0.33f};
-//                vertices[3].texcoord = {0.66f, 0.33f};
-//                break;
-//            case 3:
-//                vertices[0].texcoord = {0.f, 1.f};
-//                vertices[1].texcoord = {0.33f, 1.f};
-//                vertices[2].texcoord = {0.33f, 0.66f};
-//                vertices[3].texcoord = {0.f, 0.66f};
-//                break;
-//            case 2:
-//                vertices[0].texcoord = {0.33f, 1.f};
-//                vertices[1].texcoord = {0.66f, 1.f};
-//                vertices[2].texcoord = {0.66f, 0.66f};
-//                vertices[3].texcoord = {0.33f, 0.66f};
-//                break;
-//            case 1:
-//                vertices[0].texcoord = {0.66f, 1.f};
-//                vertices[1].texcoord = {1.f, 1.f};
-//                vertices[2].texcoord = {1.f, 0.66f};
-//                vertices[3].texcoord = {0.66f, 0.66f};
-//                break;
-//            default:
-//                vertices[0].texcoord = {0.f, 0.f};
-//                vertices[1].texcoord = {0.f, 0.f};
-//                vertices[2].texcoord = {0.f, 0.f};
-//                vertices[3].texcoord = {0.f, 0.f};
-//                break;
-//        }
-//        uint16_t indices[] = {0, 3, 1, 1, 3, 2};
-//        // Clearing errors
-//        gl_flush_errors();
-//
-//        // Vertex Buffer creation
-//        glGenBuffers(1, &mesh.vbo);
-//        glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-//        glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
-//
-//        // Index Buffer creation
-//        glGenBuffers(1, &mesh.ibo);
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-//        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
-//
-//        // Vertex Array (Container for Vertex + Index buffer)
-//        glGenVertexArrays(1, &mesh.vao);
-//        if (gl_has_errors())
-//            return false;
-//
-//        // Loading shaders
-//        if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-//            return false;
-//    }
+    if (isHit && frameCount != 0) {
+        frameCount--;
+
+        switch (frameCount) {
+            case 9:
+                vertices[0].texcoord = {0.f, 0.33f};
+                vertices[1].texcoord = {0.33f, 0.33f};
+                vertices[2].texcoord = {0.33f, 0.f};
+                vertices[3].texcoord = {0.f, 0.f};
+            case 8:
+                vertices[0].texcoord = {0.33f, 0.33f};
+                vertices[1].texcoord = {0.66f, 0.33f};
+                vertices[2].texcoord = {0.66f, 0.f};
+                vertices[3].texcoord = {0.33f, 0.f};
+                break;
+            case 7:
+                vertices[0].texcoord = {0.66f, 0.33f};
+                vertices[1].texcoord = {1.f, 0.33f};
+                vertices[2].texcoord = {1.f, 0.f};
+                vertices[3].texcoord = {0.66f, 0.f};
+                break;
+            case 6:
+                vertices[0].texcoord = {0.f, 0.66f};
+                vertices[1].texcoord = {0.33f, 0.66f};
+                vertices[2].texcoord = {0.33f, 0.33f};
+                vertices[3].texcoord = {0.f, 0.33f};
+                break;
+            case 5:
+                vertices[0].texcoord = {0.33f, 0.66f};
+                vertices[1].texcoord = {0.66f, 0.66f};
+                vertices[2].texcoord = {0.66f, 0.33f};
+                vertices[3].texcoord = {0.33f, 0.33f};
+                break;
+            case 4:
+                vertices[0].texcoord = {0.66f, 0.66f};
+                vertices[1].texcoord = {1.f, 0.66f};
+                vertices[2].texcoord = {1.f, 0.33f};
+                vertices[3].texcoord = {0.66f, 0.33f};
+                break;
+            case 3:
+                vertices[0].texcoord = {0.f, 1.f};
+                vertices[1].texcoord = {0.33f, 1.f};
+                vertices[2].texcoord = {0.33f, 0.66f};
+                vertices[3].texcoord = {0.f, 0.66f};
+                break;
+            case 2:
+                vertices[0].texcoord = {0.33f, 1.f};
+                vertices[1].texcoord = {0.66f, 1.f};
+                vertices[2].texcoord = {0.66f, 0.66f};
+                vertices[3].texcoord = {0.33f, 0.66f};
+                break;
+            case 1:
+                vertices[0].texcoord = {0.66f, 1.f};
+                vertices[1].texcoord = {1.f, 1.f};
+                vertices[2].texcoord = {1.f, 0.66f};
+                vertices[3].texcoord = {0.66f, 0.66f};
+                break;
+            default:
+                vertices[0].texcoord = {0.f, 0.f};
+                vertices[1].texcoord = {0.f, 0.f};
+                vertices[2].texcoord = {0.f, 0.f};
+                vertices[3].texcoord = {0.f, 0.f};
+                break;
+        }
+        uint16_t indices[] = {0, 3, 1, 1, 3, 2};
+        // Clearing errors
+        gl_flush_errors();
+
+        // Vertex Buffer creation
+        glGenBuffers(1, &mesh.vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
+
+        // Index Buffer creation
+        glGenBuffers(1, &mesh.ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
+
+        // Vertex Array (Container for Vertex + Index buffer)
+        glGenVertexArrays(1, &mesh.vao);
+        if (gl_has_errors())
+            return false;
+
+        // Loading shaders
+        if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+            return false;
+    }
     return true;
 }
 

@@ -19,7 +19,7 @@ public:
 
     static std::shared_ptr<ShooterBullet> spawn();
 
-    ~ShooterBullet();
+    ~ShooterBullet() override;
 
     bool init();
 

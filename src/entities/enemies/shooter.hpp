@@ -18,7 +18,11 @@ class Shooter : public Enemy, public Renderable {
 public:
     static bool initTexture();
 
+    static std::shared_ptr<Shooter> spawn();
+
     explicit Shooter(ShooterAI &ai);
+
+    ~Shooter() override;
 
     bool init() override;
 
