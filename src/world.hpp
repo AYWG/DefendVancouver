@@ -47,36 +47,19 @@ public:
 
     std::vector<vec2> getBombPositions() const;
 
-    bool inCloseDistance();
-
     vec2 getCityPosition() const;
 
     vec2 playerCenter;
-    vec2 mousePos;
-    vec2 aimDir;
-    vec2 baimDir;
-    vec2 aimDirNorm;
-    bool is_shot = false;
-    bool is_shoted = false;
-    vec2 mouseAimDir;
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;
 
 private:
-    bool spawnShooter();
-
-    bool spawnChaser();
-
-    bool spawnBomber();
-
-    bool spawnNormalBomb();
-
-    bool spawnBomberBomb();
+    bool initTextures();
 
     void playerBounce(NormalBomb bomb);
 
-    bool bomberOnScreen(Bomber bomber);
+    bool bomberOnScreen(Bomber &bomber);
 
     // !!! INPUT CALLBACK FUNCTIONS
     void onKey(GLFWwindow *, int key, int, int action, int mod);
@@ -95,12 +78,11 @@ private:
     background m_background;
     // Game entities
     Player m_player;
-    std::vector<PlayerBullet> m_bullets;
-    std::vector<Chaser> m_chasers;
-    std::vector<Shooter> m_shooters;
-    std::vector<Bomber> m_bombers;
-    std::vector<NormalBomb> m_normalBombs;
-    std::vector<BomberBomb> m_bomberBombs;
+    std::vector<std::shared_ptr<Chaser>> m_chasers;
+    std::vector<std::shared_ptr<Shooter>> m_shooters;
+    std::vector<std::shared_ptr<Bomber>> m_bombers;
+    std::vector<std::shared_ptr<NormalBomb>> m_normalBombs;
+    std::vector<std::shared_ptr<BomberBomb>> m_bomberBombs;
 
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;

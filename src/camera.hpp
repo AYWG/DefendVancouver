@@ -11,8 +11,6 @@ public:
 
     void setSize(vec2 size);
 
-    vec2 getFocusPoint() const;
-
     void setFocusPoint(vec2 focusPoint);
 
     float getLeftBoundary() const;

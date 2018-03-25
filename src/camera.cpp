@@ -8,10 +8,6 @@ void Camera::setSize(vec2 size) {
     m_size = size;
 }
 
-vec2 Camera::getFocusPoint() const {
-    return m_focusPoint;
-}
-
 void Camera::setFocusPoint(vec2 focusPoint) {
     m_focusPoint = focusPoint;
 }

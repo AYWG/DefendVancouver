@@ -8,18 +8,31 @@
 
 Texture Bomber::bomber_texture;
 
-bool Bomber::init() {
+Bomber::~Bomber() {
+    destroy();
+}
 
-    //Load texture
-
+bool Bomber::initTexture() {
     if (!bomber_texture.is_valid()) {
         if (!bomber_texture.load_from_file(textures_path("bomber.png"))) {
 
-            fprintf(stderr, "Failed to load turtle texture!");
+            fprintf(stderr, "Failed to load bomber texture!");
             return false;
         }
     }
+    return true;
+}
 
+std::shared_ptr<Bomber> Bomber::spawn() {
+    auto bomber = std::make_shared<Bomber>();
+    if (bomber->init()) {
+        return bomber;
+    }
+    fprintf(stderr, "Failed to spawn bomber!");
+    return nullptr;
+}
+
+bool Bomber::init() {
     //center of texture
     float width = bomber_texture.width * 0.5f;
     float height = bomber_texture.height * 0.5f;
@@ -64,13 +77,15 @@ bool Bomber::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
 
-
-
     return true;
 }
 
 void Bomber::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteVertexArrays(1, &mesh.vao);
 
+    effect.release();
 }
 
 void Bomber::update(World *world, float ms) {
@@ -132,4 +147,8 @@ vec2 Bomber::getBoundingBox()const {
 
 unsigned int Bomber::getMass() const {
     return 110;
+}
+
+void Bomber::attack(float ms) {
+
 }

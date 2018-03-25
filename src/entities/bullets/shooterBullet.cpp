@@ -7,6 +7,21 @@
 
 Texture ShooterBullet::shooterBulletTexture;
 
+ShooterBullet::~ShooterBullet() {
+    destroy();
+}
+
+bool ShooterBullet::initTexture() {
+    //Load texture
+    if (!shooterBulletTexture.is_valid()) {
+        if (!shooterBulletTexture.load_from_file(textures_path("shooterBullet.png"))) {
+            fprintf(stderr, "Failed to load shooter bullet texture!");
+            return false;
+        }
+    }
+    return true;
+}
+
 std::shared_ptr<ShooterBullet> ShooterBullet::spawn() {
     auto bullet = std::make_shared<ShooterBullet>();
     if (bullet->init()) {
@@ -17,14 +32,6 @@ std::shared_ptr<ShooterBullet> ShooterBullet::spawn() {
 }
 
 bool ShooterBullet::init() {
-    //Load texture
-    if (!shooterBulletTexture.is_valid()) {
-        if (!shooterBulletTexture.load_from_file(textures_path("shooterBullet.png"))) {
-            fprintf(stderr, "Failed to load shooter bullet texture!");
-            return false;
-        }
-    }
-
     //center of texture
     float width = shooterBulletTexture.width * 0.5f;
     float height = shooterBulletTexture.height * 0.5f;
@@ -67,6 +74,14 @@ bool ShooterBullet::init() {
     m_scale.x = 0.2f;
     m_scale.y = 0.4f;
     return true;
+}
+
+void ShooterBullet::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteVertexArrays(1, &mesh.vao);
+
+    effect.release();
 }
 
 void ShooterBullet::draw(const mat3 &projection) {

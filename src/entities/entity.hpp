@@ -22,6 +22,8 @@ public:
 
     void setRotation(float radians);
 
+    virtual void destroy() = 0;
+
 protected:
     vec2 m_position;
     vec2 m_scale;

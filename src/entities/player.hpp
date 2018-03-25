@@ -43,7 +43,7 @@ public:
 
     void enableShooting(bool isShooting);
 
-    void destroy();
+    void destroy() override;
 
     unsigned int getMass() const override;
 
@@ -52,8 +52,6 @@ public:
     vec2 getBoundingBox() const;
 
     std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
-
-    vec2 getVelocity() const;
 
     int getLives();
 

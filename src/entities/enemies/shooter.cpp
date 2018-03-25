@@ -12,16 +12,31 @@ int Shooter::bulletDelayMS = 1000;
 
 Shooter::Shooter(ShooterAI &ai) : m_ai(ai), m_nextBulletSpawn(0.f) {}
 
-bool Shooter::init() {
+Shooter::~Shooter() {
+    destroy();
+}
 
-    //Load texture
+std::shared_ptr<Shooter> Shooter::spawn() {
+    ShooterAI ai;
+    auto shooter = std::make_shared<Shooter>(ai);
+    if (shooter->init()) {
+        return shooter;
+    }
+    fprintf(stderr, "Failed to spawn shooter bullet");
+    return nullptr;
+}
+
+bool Shooter::initTexture() {
     if (!shooterTexture.is_valid()) {
         if (!shooterTexture.load_from_file(textures_path("shooter_new.png"))) {
             fprintf(stderr, "Failed to load shooter texture!");
             return false;
         }
     }
+    return true;
+}
 
+bool Shooter::init() {
     //center of texture
     float width = shooterTexture.width * 0.5f;
     float height = shooterTexture.height * 0.5f;
@@ -68,7 +83,11 @@ bool Shooter::init() {
 }
 
 void Shooter::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteVertexArrays(1, &mesh.vao);
 
+    effect.release();
 }
 
 void Shooter::update(World *world, float ms) {

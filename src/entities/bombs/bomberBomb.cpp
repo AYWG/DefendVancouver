@@ -8,8 +8,11 @@
 
 Texture BomberBomb::bomb_texture;
 
-bool BomberBomb::init() {
+BomberBomb::~BomberBomb() {
+    destroy();
+}
 
+bool BomberBomb::initTexture() {
     //load texture
     if (!bomb_texture.is_valid()) {
         if (!bomb_texture.load_from_file(textures_path("bomber_bomb.png"))) {
@@ -17,7 +20,20 @@ bool BomberBomb::init() {
             return false;
         }
     }
+    return true;
+}
 
+std::shared_ptr<BomberBomb> BomberBomb::spawn() {
+    auto bomb = std::make_shared<BomberBomb>();
+    if (bomb->init()) {
+        return bomb;
+    }
+    fprintf(stderr, "Failed to spawn normal bomb");
+    return nullptr;
+}
+
+
+bool BomberBomb::init() {
     // The position corresponds to the center of the bomb
     float wr = bomb_texture.width * 0.5f;
     float hr = bomb_texture.height * 0.5f;
@@ -62,6 +78,14 @@ bool BomberBomb::init() {
 
     return true;
 
+}
+
+void BomberBomb::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteVertexArrays(1, &mesh.vao);
+
+    effect.release();
 }
 
 void BomberBomb::draw(const mat3 &projection) {

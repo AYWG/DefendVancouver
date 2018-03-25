@@ -6,6 +6,7 @@
 #define DEFENDVANCOUVER_BOMBERBOMB_HPP
 #pragma once
 
+#include <memory>
 #include "../../common.hpp"
 #include "../entity.hpp"
 
@@ -14,8 +15,15 @@ class BomberBomb : public Entity, public Renderable {
 
     static Texture bomb_texture;
 public:
-    //init bomb
+    static bool initTexture();
+
+    static std::shared_ptr<BomberBomb> spawn();
+
+    ~BomberBomb() override;
+
     bool init();
+
+    void destroy() override;
 
     int getFrameCount() const;
 

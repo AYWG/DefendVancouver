@@ -18,9 +18,15 @@ class PlayerBullet : public Bullet, public Renderable {
     static Texture playerBulletTexture;
 
 public:
+    static bool initTexture();
+
     static std::shared_ptr<PlayerBullet> spawn();
 
+    ~PlayerBullet() override;
+
     bool init();
+
+    void destroy() override;
 
     void draw(const mat3 &projection) override;
 
@@ -30,11 +36,11 @@ public:
 
     unsigned int getMass() const override;
 
-    bool collisionCheck(Shooter shooter);
+    bool collisionCheck(Shooter &shooter);
 
-    bool collisionCheck(Chaser chaser);
+    bool collisionCheck(Chaser &chaser);
 
-    bool collisionCheck(Bomber& bomber);
+    bool collisionCheck(Bomber &bomber);
 
     bool collisionCheck(NormalBomb &bomb);
 };

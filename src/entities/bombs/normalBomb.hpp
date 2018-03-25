@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <memory>
 #include "../../common.hpp"
 #include "../entity.hpp"
 
@@ -14,9 +15,17 @@
 class NormalBomb : public Entity, public Renderable {
 
     static Texture bomb_texture;
+
 public:
-    //init bomb
+    static bool initTexture();
+
+    static std::shared_ptr<NormalBomb> spawn();
+
+    ~NormalBomb() override;
+
     bool init();
+
+    void destroy() override;
 
     int getFrameCount() const;
 

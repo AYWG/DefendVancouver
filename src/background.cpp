@@ -8,7 +8,7 @@
 
 Texture background::background_texture;
 
-bool background::init() {
+bool background::initTexture() {
     //load texture
     if (!background_texture.is_valid()) {
         if (!background_texture.load_from_file(textures_path("skyline.png"))) {
@@ -16,7 +16,10 @@ bool background::init() {
             return false;
         }
     }
+    return true;
+}
 
+bool background::init() {
     // The position corresponds to the center of the texture
     float wr = background_texture.width * 0.5f;
     float hr = background_texture.height * 0.5f;
@@ -59,6 +62,10 @@ bool background::init() {
     m_position.y = 1259;
 
     return true;
+}
+
+void background::destroy() {
+
 }
 
 void background::draw(const mat3 &projection) {
