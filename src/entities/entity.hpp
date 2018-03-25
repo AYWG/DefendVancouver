@@ -25,7 +25,7 @@ public:
 
     virtual void destroy() = 0;
 
-    virtual Region getBoundingBox() = 0;
+    virtual Region getBoundingBox() const = 0;
 
 protected:
     vec2 m_position;

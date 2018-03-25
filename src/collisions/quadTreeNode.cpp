@@ -19,6 +19,13 @@ void QuadTreeNode::clear() {
 
 void QuadTreeNode::insert(const Entity &entity) {
 
+    // Check if there any children
+    if (m_children[0]) {
+
+    }
+    else {
+
+    }
 }
 
 std::vector<Entity> QuadTreeNode::getNearbyEntities(const Entity &entity) const {
@@ -41,4 +48,28 @@ void QuadTreeNode::split() {
 
     // insert entities into correct child nodes
 
+}
+
+bool QuadTreeNode::isEntityInNode(const Entity &entity) {
+    // Following cases where it is "in":
+    // 1. Completely inside
+    // 2. Within left and right bounds, but only partially in top/bottom bounds
+    // 3. Within top and bottom bounds, but only partially in left/right bounds
+    Region entityBoundingBox = entity.getBoundingBox();
+    bool isWithinLeftBounds = entityBoundingBox.origin.x >= m_region.origin.x;
+    bool isWithinRightBounds = entityBoundingBox.origin.x + entityBoundingBox.size.x <= m_region.origin.x + m_region.size.x;
+    bool isWithinTopBounds = entityBoundingBox.origin.y >= m_region.origin.y;
+    bool isWithinBottomBounds = entityBoundingBox.origin.y + entityBoundingBox.size.y <= m_region.origin.y + m_region.size.y;
+
+    if (isWithinLeftBounds && isWithinRightBounds) {
+        if (isWithinTopBounds || isWithinBottomBounds) {
+            return true;
+        }
+    }
+    else if (isWithinTopBounds && isWithinBottomBounds) {
+        if (isWithinLeftBounds || isWithinRightBounds) {
+            return true;
+        }
+    }
+    return false;
 }

@@ -70,6 +70,12 @@ private:
      */
     int getIndex(const Entity &entity);
 
+    /**
+     * Checks if the given entity is in this node's region (partially or fully)
+     * @param entity
+     * @return
+     */
+    bool isEntityInNode(const Entity &entity);
 
 };
 
