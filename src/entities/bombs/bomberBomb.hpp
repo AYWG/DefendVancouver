@@ -35,6 +35,8 @@ public:
 
     vec2 getBoundingBox() const;
 
+    Region getBoundingBox() override;
+
 
 private:
     TexturedVertex vertices[4];

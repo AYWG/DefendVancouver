@@ -6,6 +6,7 @@
 
 
 #include "../common.hpp"
+#include "../region.hpp"
 
 class Entity {
 
@@ -23,6 +24,8 @@ public:
     void setRotation(float radians);
 
     virtual void destroy() = 0;
+
+    virtual Region getBoundingBox() = 0;
 
 protected:
     vec2 m_position;

@@ -27,6 +27,8 @@ public:
 
     vec2 getBoundingBox() const override;
 
+    Region getBoundingBox() override;
+
     unsigned int getMass() const override;
 
     void attack(float ms) override;

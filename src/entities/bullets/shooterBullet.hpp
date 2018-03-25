@@ -31,6 +31,8 @@ public:
 
     vec2 getBoundingBox() const override;
 
+    Region getBoundingBox() override;
+
     unsigned int getMass() const override;
 
     bool collisionCheck(NormalBomb &bomb);

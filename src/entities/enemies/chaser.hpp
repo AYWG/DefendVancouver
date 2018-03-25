@@ -51,6 +51,8 @@ public:
 
     vec2 getBoundingBox() const override;
 
+    Region getBoundingBox() override;
+
     bool isValid(int row, int col);
 
     bool isUnBlocked(int grid[][COL], int row, int col);

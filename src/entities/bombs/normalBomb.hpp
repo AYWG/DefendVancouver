@@ -37,6 +37,8 @@ public:
 
     void animate();
 
+    Region getBoundingBox() override;
+
 
 private:
     TexturedVertex vertices[4];

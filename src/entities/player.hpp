@@ -51,6 +51,8 @@ public:
 
     vec2 getBoundingBox() const;
 
+    Region getBoundingBox() override;
+
     std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
 
     int getLives();
