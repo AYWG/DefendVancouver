@@ -60,6 +60,7 @@ bool background::init() {
     m_scale.y = 1.0f;
     m_position.x = 1500;
     m_position.y = 1259;
+    m_health = 1000;
 
     return true;
 }
@@ -114,3 +115,16 @@ void background::draw(const mat3 &projection) {
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
+
+int background::getHealth() {
+    return m_health;
+}
+
+void background::addHealth() {
+    m_health++;
+}
+
+void background::decreaseHealth() {
+    m_health--;
+}
+

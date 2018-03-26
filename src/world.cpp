@@ -13,10 +13,10 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    const size_t MAX_BOMBS = 0;
-    const size_t MAX_BOMBERBOMBS = 0;
+    const size_t MAX_BOMBS = 5;
+    const size_t MAX_BOMBERBOMBS = 1;
     const size_t MAX_SHOOTERS = 15;
-    const size_t MAX_CHASER = 3;
+    const size_t MAX_CHASER = 1;
     const size_t MAX_BOMBER = 1;
     const size_t MAX_POWERUP = 1;
     const size_t SHOOTER_DELAY_MS = 2000;
@@ -191,7 +191,7 @@ bool World::update(float elapsed_ms) {
 
         // Setting random initial position
         newChaserPtr->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
-        m_next_chaser_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+        m_next_chaser_spawn = (SHOOTER_DELAY_MS/2) + m_dist(m_rng) * (SHOOTER_DELAY_MS/2);
     }
 
     for (auto &m_chaser : m_chasers)
@@ -611,6 +611,7 @@ bool World::update(float elapsed_ms) {
         bool isColliding = false;
         if(m_player.collisionCheck(**oneup_it)){
             isColliding = true;
+            oneup_it = m_oneups.erase(oneup_it);
             m_player.addLives();
             break;
         }
@@ -625,7 +626,8 @@ bool World::update(float elapsed_ms) {
         bool isColliding = false;
         if(m_player.collisionCheck(**shield_it)){
             isColliding = true;
-            // TODO: increase world health
+            shield_it = m_shields.erase(shield_it);
+            m_background.addHealth();
             break;
         }
         if(!isColliding){

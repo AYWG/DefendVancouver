@@ -72,8 +72,8 @@ bool Shield::init() {
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
-    //m_scale.x = 0.2f;
-    //m_scale.y = 0.4f;
+    m_scale.x = 0.3f;
+    m_scale.y = 0.3f;
 
     return true;
 }
