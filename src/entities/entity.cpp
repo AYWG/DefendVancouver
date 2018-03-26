@@ -21,3 +21,13 @@ float Entity::getRotation() const {
 void Entity::setRotation(float radians) {
     m_rotation = radians;
 }
+
+bool Entity::isCollidingWith(Entity &other) const {
+    auto dx = m_position.x - other.getPosition().x;
+    auto dy = m_position.y - other.getPosition().y;
+    auto d_sq = dx * dx + dy * dy;
+    auto myDiameter = std::max(getBoundingBox().size.x, getBoundingBox().size.y);
+    auto otherDiameter = std::max(other.getBoundingBox().size.x, other.getBoundingBox().size.y);
+    auto combinedRadii = (myDiameter + otherDiameter) / 2;
+    return d_sq < combinedRadii * combinedRadii;
+}

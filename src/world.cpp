@@ -592,7 +592,6 @@ void World::draw() {
         }
     }
 
-
     for (auto &bullet : m_player.getBullets()) {
         bullet->draw(projection_2D);
     }

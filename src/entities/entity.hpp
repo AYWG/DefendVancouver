@@ -27,6 +27,8 @@ public:
 
     virtual Region getBoundingBox() const = 0;
 
+    virtual bool isCollidingWith(Entity &other) const;
+
 protected:
     vec2 m_position;
     vec2 m_scale;

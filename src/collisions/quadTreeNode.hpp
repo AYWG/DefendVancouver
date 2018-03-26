@@ -29,7 +29,7 @@ public:
     /**
      * Retrieves all entities that the given entity could potentially collide with.
      */
-    std::vector<Entity> getNearbyEntities(const Entity &entity) const;
+    std::vector<std::shared_ptr<Entity>> getNearbyEntities(const Entity &entity) const;
 
 private:
     /**
@@ -65,17 +65,14 @@ private:
      */
     void split();
 
-    /**
-     *
-     */
-    int getIndex(const Entity &entity);
+    void getNearbyEntitiesHelper(std::vector<std::shared_ptr<Entity>> &nearbyEntities, const Entity &entity) const;
 
     /**
      * Checks if the given entity is in this node's region (partially or fully)
      * @param entity
      * @return
      */
-    bool isEntityInNode(const Entity &entity);
+    bool isEntityInNode(const Entity &entity) const;
 
 };
 
