@@ -5,6 +5,8 @@
 #ifndef DEFENDVANCOUVER_ONEUP_HPP
 #define DEFENDVANCOUVER_ONEUP_HPP
 
+#pragma once
+
 #include <memory>
 #include "../entity.hpp"
 #include "../../common.hpp"

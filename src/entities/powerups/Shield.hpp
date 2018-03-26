@@ -5,6 +5,8 @@
 #ifndef DEFENDVANCOUVER_SHIELD_HPP
 #define DEFENDVANCOUVER_SHIELD_HPP
 
+#pragma once
+
 #include <memory>
 #include "../entity.hpp"
 #include "../../common.hpp"
