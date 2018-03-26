@@ -12,6 +12,8 @@
 #include "entities/bombs/bomberBomb.hpp"
 #include "entities/bullets/playerBullet.hpp"
 #include "explosion.hpp"
+#include "entities/powerups/OneUp.hpp"
+#include "entities/powerups/Shield.hpp"
 
 // stlib
 #include <vector>
@@ -83,12 +85,16 @@ private:
     std::vector<std::shared_ptr<Bomber>> m_bombers;
     std::vector<std::shared_ptr<NormalBomb>> m_normalBombs;
     std::vector<std::shared_ptr<BomberBomb>> m_bomberBombs;
+    std::vector<std::shared_ptr<OneUp>> m_oneups;
+    std::vector<std::shared_ptr<Shield>> m_shields;
 
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;
     float m_next_bomber_spawn;
     float m_next_nbomb_spawn;
     float m_next_bbomb_spawn;
+    float m_next_oneup_spawn;
+    float m_next_shield_spawn;
 
     // C++ rng
     std::default_random_engine m_rng;

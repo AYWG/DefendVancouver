@@ -15,6 +15,8 @@
 #include "enemies/shooter.hpp"
 #include "enemies/bomber.hpp"
 #include "bombs/bomberBomb.hpp"
+#include "powerups/OneUp.hpp"
+#include "powerups/Shield.hpp"
 
 class Player : public Entity, public Movable, public Renderable {
 
@@ -55,6 +57,8 @@ public:
 
     int getLives();
 
+    void addLives();
+
     void hit();
 
     bool collisionCheck(Shooter shooter);
@@ -64,6 +68,10 @@ public:
     bool collisionCheck(ShooterBullet sb);
 
     bool collisionCheck(BomberBomb &bomb);
+
+    bool collisionCheck(OneUp &oneup);
+
+    bool collisionCheck(Shield &shield);
 
 private:
     vec2 m_velocity;
