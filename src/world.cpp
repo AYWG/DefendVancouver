@@ -97,7 +97,6 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_camera.setSize(screenSize);
     initTextures();
     m_background.init();
-    m_camera.setFocusPoint(m_player->getPosition());
     m_player = std::make_shared<Player>();
     return m_player->init(worldSize);
 

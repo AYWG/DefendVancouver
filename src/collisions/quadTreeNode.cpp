@@ -13,8 +13,10 @@ void QuadTreeNode::clear() {
     m_entities.clear();
 
     for (auto &childNode: m_children) {
-        childNode->clear();
-        childNode.reset();
+        if (childNode) {
+            childNode->clear();
+            childNode.reset();
+        }
     }
 }
 
