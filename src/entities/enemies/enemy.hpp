@@ -19,7 +19,7 @@ public:
 
     virtual void update(World *world, float ms) = 0;
 
-    virtual vec2 getBoundingBox() const = 0;
+//    virtual vec2 getBoundingBox() const = 0;
 
     float getAngleToTarget() const;
 

@@ -49,9 +49,9 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    vec2 getBoundingBox() const override;
+//    vec2 getBoundingBox() const override;
 
-    Region getBoundingBox() override;
+    Region getBoundingBox() const override;
 
     bool isValid(int row, int col);
 

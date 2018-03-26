@@ -19,6 +19,8 @@ public:
     void draw(const mat3 &projection);
 
     void destroy() override;
+
+    Region getBoundingBox() const override;
 };
 
 

@@ -138,17 +138,24 @@ void ShooterBullet::update(float ms) {
     m_position = {m_position.x + x_step, m_position.y + y_step};
 }
 
-vec2 ShooterBullet::getBoundingBox() const {
+//vec2 ShooterBullet::getBoundingBox() const {
+//
+//}
 
+Region ShooterBullet::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * shooterBulletTexture.width, std::fabs(m_scale.y) * shooterBulletTexture.height};
+    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
 }
 
 unsigned int ShooterBullet::getMass() const {
     return 10;
 }
 
-bool ShooterBullet::collisionCheck(NormalBomb &bomb){
-    auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});
-    auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
-    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < bombRadius + bulletRadius;
-}
+//bool ShooterBullet::collisionCheck(NormalBomb &bomb){
+//    auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});
+//    auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
+//    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+//    return d < bombRadius + bulletRadius;
+//}

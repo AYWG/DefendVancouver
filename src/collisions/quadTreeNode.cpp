@@ -18,8 +18,8 @@ void QuadTreeNode::clear() {
     }
 }
 
-void QuadTreeNode::insert(const Entity &entity) {
-    if (isEntityInNode(entity)) {
+void QuadTreeNode::insert(const std::shared_ptr<Entity> &entity) {
+    if (isEntityInNode(*entity)) {
         // Check if there are any children
         if (m_children[0]) {
             for (auto &childNode: m_children) {
@@ -27,7 +27,7 @@ void QuadTreeNode::insert(const Entity &entity) {
             }
         } else {
             // reached leaf node, so add it to this node
-            m_entities.emplace_back(std::make_shared(&entity));
+            m_entities.emplace_back(entity);
 
             // check if we need to split
             if (m_entities.size() > MAX_ENTITIES) {
@@ -63,7 +63,7 @@ void QuadTreeNode::split() {
 
     for (auto &entity: m_entities) {
         for (auto &childNode: m_children) {
-            childNode->insert(*entity);
+            childNode->insert(entity);
         }
         entity.reset();
     }

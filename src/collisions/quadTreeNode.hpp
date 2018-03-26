@@ -24,7 +24,7 @@ public:
      * Adds the given entity to this node. If MAX_ENTITIES is exceeded, then the node will gain four child nodes and the node's entities
      * will be distributed amongst its children
      */
-    void insert(const Entity &entity);
+    void insert(const std::shared_ptr<Entity> &entity);
 
     /**
      * Retrieves all entities that the given entity could potentially collide with.

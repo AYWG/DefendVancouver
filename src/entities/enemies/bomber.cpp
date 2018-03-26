@@ -141,9 +141,17 @@ void Bomber::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Bomber::getBoundingBox()const {
-    return {std::fabs(m_scale.x) * bomber_texture.width, std::fabs(m_scale.y) * bomber_texture.height};
+//vec2 Bomber::getBoundingBox()const {
+//    return {std::fabs(m_scale.x) * bomber_texture.width, std::fabs(m_scale.y) * bomber_texture.height};
+//}
+
+Region Bomber::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * bomber_texture.width, std::fabs(m_scale.y) * bomber_texture.height};
+    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
 }
+
 
 unsigned int Bomber::getMass() const {
     return 110;

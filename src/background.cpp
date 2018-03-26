@@ -3,8 +3,8 @@
 //
 #include <vector>
 #include <iostream>
+#include <cmath>
 #include "background.hpp"
-#include "common.hpp"
 
 Texture background::background_texture;
 
@@ -113,4 +113,12 @@ void background::draw(const mat3 &projection) {
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
+
+
+Region background::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * background_texture.width, std::fabs(m_scale.y) * background_texture.height};
+    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
 }

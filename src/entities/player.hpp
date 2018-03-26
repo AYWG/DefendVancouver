@@ -7,6 +7,7 @@
 #define NUM_DIRECTIONS 4
 
 #include <vector>
+#include <list>
 #include <random>
 #include "../common.hpp"
 #include "entity.hpp"
@@ -49,11 +50,11 @@ public:
 
     void shoot();
 
-    vec2 getBoundingBox() const;
+//    vec2 getBoundingBox() const;
 
-    Region getBoundingBox() override;
+    Region getBoundingBox() const override;
 
-    std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
+    std::list<std::shared_ptr<PlayerBullet>> &getBullets();
 
     int getLives();
 
@@ -80,7 +81,7 @@ private:
 
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist{-1.f, 1.f};
-    std::vector<std::shared_ptr<PlayerBullet>> m_bullets;
+    std::list<std::shared_ptr<PlayerBullet>> m_bullets;
 
     float getMovementOrientation(DIRECTION dir);
 

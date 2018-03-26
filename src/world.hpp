@@ -12,9 +12,11 @@
 #include "entities/bombs/bomberBomb.hpp"
 #include "entities/bullets/playerBullet.hpp"
 #include "explosion.hpp"
+#include "collisions/quadTreeNode.hpp"
 
 // stlib
 #include <vector>
+#include <list>
 #include <random>
 
 
@@ -57,7 +59,7 @@ public:
 private:
     bool initTextures();
 
-    void playerBounce(NormalBomb bomb);
+    void playerBounce(const NormalBomb &bomb);
 
     bool bomberOnScreen(Bomber &bomber);
 
@@ -77,12 +79,12 @@ private:
 
     background m_background;
     // Game entities
-    Player m_player;
-    std::vector<std::shared_ptr<Chaser>> m_chasers;
-    std::vector<std::shared_ptr<Shooter>> m_shooters;
-    std::vector<std::shared_ptr<Bomber>> m_bombers;
-    std::vector<std::shared_ptr<NormalBomb>> m_normalBombs;
-    std::vector<std::shared_ptr<BomberBomb>> m_bomberBombs;
+    std::shared_ptr<Player> m_player;
+    std::list<std::shared_ptr<Chaser>> m_chasers;
+    std::list<std::shared_ptr<Shooter>> m_shooters;
+    std::list<std::shared_ptr<Bomber>> m_bombers;
+    std::list<std::shared_ptr<NormalBomb>> m_normalBombs;
+    std::list<std::shared_ptr<BomberBomb>> m_bomberBombs;
 
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;
@@ -99,4 +101,6 @@ private:
     vec2 m_size;
 
     Camera m_camera;
+
+    QuadTreeNode m_quad;
 };

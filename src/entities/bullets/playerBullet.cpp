@@ -139,14 +139,23 @@ void PlayerBullet::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 PlayerBullet::getBoundingBox() const {
-    return {std::fabs(m_scale.x) * playerBulletTexture.width, std::fabs(m_scale.y) * playerBulletTexture.height};
+//vec2 PlayerBullet::getBoundingBox() const {
+//    return {std::fabs(m_scale.x) * playerBulletTexture.width, std::fabs(m_scale.y) * playerBulletTexture.height};
+//}
+
+Region PlayerBullet::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * playerBulletTexture.width, std::fabs(m_scale.y) * playerBulletTexture.height};
+    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
 }
+
 
 unsigned int PlayerBullet::getMass() const {
     return 10;
 }
 
+/*
 bool PlayerBullet::collisionCheck(Shooter &shooter) {
     auto d = magnitude({m_position.x - shooter.getPosition().x, m_position.y - shooter.getPosition().y});
     auto shooterRadius = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y) / 2;
@@ -175,3 +184,4 @@ bool PlayerBullet::collisionCheck(NormalBomb &bomb) {
     return d < bombRadius + bulletRadius;
 }
 
+*/

@@ -15,7 +15,7 @@ public:
 
     virtual void update(float ms) = 0;
 
-    virtual vec2 getBoundingBox() const = 0;
+//    virtual vec2 getBoundingBox() const = 0;
 
     void setVelocity(vec2 velocity);
 
