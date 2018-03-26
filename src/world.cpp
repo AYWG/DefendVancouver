@@ -477,7 +477,7 @@ bool World::update(float elapsed_ms) {
     // spawn shield
     m_next_shield_spawn -= elapsed_ms;
     if(m_shields.size() < MAX_POWERUP && m_next_shield_spawn < 0.f){
-        if (auto newShield = OneUp::spawn()) {
+        if (auto newShield = Shield::spawn()) {
             m_shields.emplace_back(newShield);
         }
 
