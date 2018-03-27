@@ -13,7 +13,7 @@
 class QuadTreeNode {
 public:
 
-    QuadTreeNode(const Region &region);
+    QuadTreeNode(const int &level, const Region &region);
 
     /**
      * Clear the tree
@@ -29,7 +29,7 @@ public:
     /**
      * Retrieves all entities that the given entity could potentially collide with.
      */
-    std::vector<std::shared_ptr<Entity>> getNearbyEntities(const Entity &entity) const;
+    std::vector<std::shared_ptr<Entity>> getNearbyEntities(const std::shared_ptr<Entity> &entity) const;
 
 private:
     /**
@@ -37,6 +37,11 @@ private:
      * as children to the leaf node
      */
     static const int MAX_ENTITIES;
+
+    /**
+     * The deepest level leaf node (root is 0)
+     */
+    static const int MAX_LEVELS;
 
     /**
      * A node can either be childless or have four children.
@@ -54,6 +59,11 @@ private:
     std::vector<std::shared_ptr<Entity>> m_entities;
 
     /**
+     * The node's level
+     */
+    int m_level;
+
+    /**
      * The area of the world that this node corresponds to
      */
     Region m_region;
@@ -65,14 +75,15 @@ private:
      */
     void split();
 
-    void getNearbyEntitiesHelper(std::vector<std::shared_ptr<Entity>> &nearbyEntities, const Entity &entity) const;
+    void getNearbyEntitiesHelper(std::vector<std::shared_ptr<Entity>> &nearbyEntities,
+                                 const std::shared_ptr<Entity> &entity) const;
 
     /**
      * Checks if the given entity is in this node's region (partially or fully)
      * @param entity
      * @return
      */
-    bool isEntityInNode(const Entity &entity) const;
+    bool isEntityInNode(const std::shared_ptr<Entity> &entity) const;
 
 };
 

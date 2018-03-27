@@ -36,7 +36,7 @@ World::World() :
         m_next_bomber_spawn(0.f),
         m_next_nbomb_spawn(0.f),
         m_next_bbomb_spawn(0.f),
-        m_quad({}) {
+        m_quad(0, {}) {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
 }
@@ -93,7 +93,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
     m_size = worldSize;
-    m_quad = QuadTreeNode({{0.f, 0.f}, worldSize});
+    m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     m_camera.setSize(screenSize);
     initTextures();
     m_background.init();
@@ -454,26 +454,27 @@ bool World::update(float elapsed_ms) {
     // once everything is inserted, go through each entity and get vector of nearby entities
     // that could possibly collide with that entity
     for (auto &entity: allEntities) {
-        auto nearbyEntities = m_quad.getNearbyEntities(*entity);
+        auto nearbyEntities = m_quad.getNearbyEntities(entity);
         for (auto &nearbyEntity: nearbyEntities) {
             // run collision detection between entities
             if (typeid(*entity) == typeid(PlayerBullet)) {
                 if (entity->isCollidingWith(*nearbyEntity)) {
                     // Handle collision based on nearbyEntity's type
-                    if (typeid(nearbyEntity) == typeid(Shooter)) {
+                    if (typeid(*nearbyEntity) == typeid(Shooter)) {
                         m_points += 5;
                         m_shooters.remove(std::dynamic_pointer_cast<Shooter>(nearbyEntity));
                         m_player->getBullets().remove(std::dynamic_pointer_cast<PlayerBullet>(entity));
-                    } else if (typeid(nearbyEntity) == typeid(NormalBomb)) {
+                    } else if (typeid(*nearbyEntity) == typeid(NormalBomb)) {
                         //playerBounce( *(std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)));
-                    } else if (typeid(nearbyEntity) == typeid(Chaser)) {
+                    } else if (typeid(*nearbyEntity) == typeid(Chaser)) {
                         m_points += 10;
-                        m_chasers.remove(std::dynamic_pointer_cast<Chaser> (nearbyEntity));
+                        m_chasers.remove(std::dynamic_pointer_cast<Chaser>(nearbyEntity));
                         m_player->getBullets().remove(std::dynamic_pointer_cast<PlayerBullet>(entity));
-                    } else if (typeid(nearbyEntity) == typeid(Bomber)) {
+                    } else if (typeid(*nearbyEntity) == typeid(Bomber)) {
                         m_points += 10;
-                        m_bombers.remove(std::dynamic_pointer_cast<Bomber> (nearbyEntity));
+                        m_bombers.remove(std::dynamic_pointer_cast<Bomber>(nearbyEntity));
                         m_player->getBullets().remove(std::dynamic_pointer_cast<PlayerBullet>(entity));
+//                    }
                     }
                 }
             } else if (typeid(*entity) == typeid(NormalBomb)) {
@@ -485,26 +486,6 @@ bool World::update(float elapsed_ms) {
         }
     }
 
-
-    // collision detection between shooter and player bullet
-//    playerBulletIt = m_player->getBullets().begin();
-//    while (playerBulletIt != m_player->getBullets().end()) {
-//        bool isColliding = false;
-//        auto benemy_it = m_shooters.begin();
-//        while (benemy_it != m_shooters.end()) {
-//            if ((*playerBulletIt)->collisionCheck(**benemy_it)) {
-//                benemy_it = m_shooters.erase(benemy_it);
-//                playerBulletIt = m_player->getBullets().erase(playerBulletIt);
-//                isColliding = true;
-//                m_points = m_points + 5;
-//                break;
-//            }
-//            ++benemy_it;
-//        }
-//        if (!isColliding) {
-//            ++playerBulletIt;
-//        }
-//    }
 //
 //    // collision detection between normal bomb and player bullet
 //    playerBulletIt = m_player->getBullets().begin();
@@ -525,65 +506,8 @@ bool World::update(float elapsed_ms) {
 //        }
 //    }
 //
-//    // collision detection between normal bomb and shooter bullet
-//    for (auto &shooter : m_shooters) {
-//        auto shooterBulletIt = shooter->getBullets().begin();
-//        while (shooterBulletIt != shooter->getBullets().end()) {
-//            bool isColliding = false;
-//            for (auto &bomb : m_normalBombs) {
-//                if ((*shooterBulletIt)->collisionCheck(*bomb)) {
-//                    playerBounce(*bomb);
-//                    bomb->animate();
-//                    shooterBulletIt = shooter->getBullets().erase(shooterBulletIt);
-//                    isColliding = true;
-//                    break;
-//                }
-//            }
-//            if (!isColliding) {
-//                ++shooterBulletIt;
-//            }
-//        }
-//    }
 //
-//    // collision detection between player bullet and chaser
-//    playerBulletIt = m_player->getBullets().begin();
-//    while (playerBulletIt != m_player->getBullets().end()) {
-//        bool chaserCol = false;
-//        auto chaserIt = m_chasers.begin();
-//        while (chaserIt != m_chasers.end()) {
-//            if ((*playerBulletIt)->collisionCheck(**chaserIt)) {
-//                chaserIt = m_chasers.erase(chaserIt);
-//                playerBulletIt = m_player->getBullets().erase(playerBulletIt);
-//                chaserCol = true;
-//                m_points = m_points + 10;
-//                break;
-//            }
-//            ++chaserIt;
-//        }
-//        if (!chaserCol) {
-//            ++playerBulletIt;
-//        }
-//    }
 //
-//    // collision detection between player bullet and bomber
-//    playerBulletIt = m_player->getBullets().begin();
-//    while (playerBulletIt != m_player->getBullets().end()) {
-//        bool bomberColliding = false;
-//        auto bomber_it = m_bombers.begin();
-//        while (bomber_it != m_bombers.end()) {
-//            if ((*playerBulletIt)->collisionCheck(**bomber_it)) {
-//                bomber_it = m_bombers.erase(bomber_it);
-//                playerBulletIt = m_player->getBullets().erase(playerBulletIt);
-//                bomberColliding = true;
-//                m_points = m_points + 10;
-//                break;
-//            }
-//            ++bomber_it;
-//        }
-//        if (!bomberColliding) {
-//            ++playerBulletIt;
-//        }
-//    }
 //
 //    // collision detection between player and bomber bomb
 //    bomberBomb_it = m_bomberBombs.begin();
