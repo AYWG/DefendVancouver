@@ -103,7 +103,6 @@ private:
 
     // World size
     vec2 m_size;
-
     Camera m_camera;
 
     QuadTreeNode m_quad;
