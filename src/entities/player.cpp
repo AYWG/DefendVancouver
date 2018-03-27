@@ -9,7 +9,6 @@
 int Player::bulletDelayMS = 200;
 
 bool Player::init(vec2 worldSize) {
-    std::vector<Vertex> vertices;
     std::vector<uint16_t> indices;
 
     // Reads the salmon mesh from a file, which contains a list of vertices and indices
@@ -77,7 +76,7 @@ bool Player::init(vec2 worldSize) {
     m_scale.y = 200.f;
 
     m_num_indices = indices.size();
-
+    m_lives = 5;
     m_position = {700.f, 500.f};
     m_worldSize = worldSize;
     m_rotation = 0.f;
@@ -270,9 +269,6 @@ void Player::hit() {
     m_lives--;
 }
 
-vec2 Player::getBoundingBox() const {
-}
-
 bool Player::collisionCheck(Shooter shooter) {
     float dx = (m_position.x - shooter.getPosition().x);
     float dy = (m_position.y - shooter.getPosition().y);
@@ -300,6 +296,28 @@ bool Player::collisionCheck(BomberBomb &bomb) {
     auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
     auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
     return d < bombRadius + playerRadius;
+}
+
+bool Player::collisionCheck(Chaser chaser) {
+    auto d = magnitude({m_position.x - chaser.getPosition().x, m_position.y - chaser.getPosition().y});
+    auto chaserRadius = std::max(chaser.getBoundingBox().x, chaser.getBoundingBox().y) / 2;
+    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < chaserRadius + playerRadius;
+}
+
+vec2 Player::getBoundingBox() {
+    Vertex min;
+    Vertex max;
+    for (auto &vertex : vertices){
+        if (vertex.position.x > max.position.x && vertex.position.y > max.position.y){
+            max = vertex;
+        }
+        if (vertex.position.x < min.position.x && vertex.position.y < min.position.y){
+            min = vertex;
+        }
+    }
+
+    return {std::fabs(m_scale.x) * (max.position.x - min.position.x), std::fabs(m_scale.x) * (max.position.x - min.position.x)};
 }
 
 

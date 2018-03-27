@@ -23,10 +23,9 @@ namespace {
     int shooters = MAX_SHOOTERS;
     int chasers = MAX_CHASER;
     int bombers = MAX_BOMBER;
-    const size_t SHOOTER_DELAY_MS = 10000;
+    const size_t SHOOTER_DELAY_MS = 5000;
     const size_t BOMB_DELAY_MS = 2000;
     const size_t CHASER_DELAY_MS = 10000;
-
 
 
     namespace {
@@ -98,7 +97,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
-    totalEnemies = shooters + chasers + bombers;
+    totalEnemies = shooters + chasers;
     waveNo = 1;
     m_size = worldSize;
     m_camera.setSize(screenSize);
@@ -121,20 +120,24 @@ bool World::update(float elapsed_ms) {
     vec2 screen = {(float) w, (float) h};
 
     // Setting wave spawn conditions
-    if (totalEnemies == 0 ){
+    if (totalEnemies == 0) {
         waveNo++;
-        if (waveNo % 3 == 1){
+        if (waveNo % 3 == 1) {
             MAX_SHOOTERS++;
         }
 
         if (waveNo % 2 == 1) {
             MAX_CHASER++;
             MAX_BOMBER++;
+            MAX_BOMBERBOMBS++;
+            MAX_BOMBS++;
         }
         shooters = MAX_SHOOTERS;
         chasers = MAX_CHASER;
-        bombs = MAX_BOMBER;
-        totalEnemies = shooters + chasers + bombers;
+        bombers = MAX_BOMBER;
+        bBombs = MAX_BOMBERBOMBS;
+        bombs = MAX_BOMBS;
+        totalEnemies = shooters + chasers;
     }
 
     m_player.update(elapsed_ms);
@@ -375,8 +378,8 @@ bool World::update(float elapsed_ms) {
         m_bomber->update(this, elapsed_ms);
 
     // spawn Bomber bombs
-    for (auto &m_bomber : m_bombers){
-        if(bomberOnScreen(*m_bomber)){
+    for (auto &m_bomber : m_bombers) {
+        if (bomberOnScreen(*m_bomber)) {
             m_next_bbomb_spawn -= elapsed_ms;
             if (/*m_bomberBombs.size() < MAX_BOMBERBOMBS &&*/ m_next_bbomb_spawn < 0.f && bBombs != 0) {
                 if (auto newBomb = BomberBomb::spawn()) {
@@ -387,12 +390,13 @@ bool World::update(float elapsed_ms) {
                 newBombPtr->setPosition(getPlayerPosition());
 
                 m_next_bbomb_spawn = (BOMB_DELAY_MS * 2) + m_dist(m_rng) * (BOMB_DELAY_MS * 2);
+                bBombs--;
             }
         }
     }
 
     // trigger bomber bomb animation
-    for(auto &bomb : m_bomberBombs)
+    for (auto &bomb : m_bomberBombs)
         bomb->update(elapsed_ms);
 
     // remove bomber bombs from screen
@@ -437,6 +441,7 @@ bool World::update(float elapsed_ms) {
 
         newNormalBombPtr->setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
         m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
+        bombs--;
     }
 
     //////COLLISION DETECTION/////
@@ -487,7 +492,7 @@ bool World::update(float elapsed_ms) {
         while (shooterBulletIt != shooter->getBullets().end()) {
             bool isColliding = false;
             for (auto &bomb : m_normalBombs) {
-                if ((*shooterBulletIt)->collisionCheck(*bomb)){
+                if ((*shooterBulletIt)->collisionCheck(*bomb)) {
                     playerBounce(*bomb);
                     bomb->animate();
                     shooterBulletIt = shooter->getBullets().erase(shooterBulletIt);
@@ -533,7 +538,6 @@ bool World::update(float elapsed_ms) {
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 bomberColliding = true;
                 m_points = m_points + 10;
-                totalEnemies--;
                 break;
             }
             ++bomber_it;
@@ -547,23 +551,19 @@ bool World::update(float elapsed_ms) {
     bomberBomb_it = m_bomberBombs.begin();
     while (bomberBomb_it != m_bomberBombs.end()) {
         bool isColliding = false;
-        if(((*bomberBomb_it)->isBlasting()) && m_player.collisionCheck(**bomberBomb_it)){
+        if (((*bomberBomb_it)->isBlasting()) && m_player.collisionCheck(**bomberBomb_it)) {
             isColliding = true;
             m_player.hit();
             break;
         }
-        if(!isColliding){
+        if (!isColliding) {
             ++bomberBomb_it;
         }
     }
 
-    // Collision detection between Chaser and player
-    auto chaserIt = m_chasers.begin();
-    while(chaserIt != m_chasers.end()){
-        if (m_player.collisionCheck(chaserIt)){
 
-        }
-    }
+
+
 
 
     ////COLLISION DONE////
@@ -591,7 +591,8 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Lives: " << m_player.getLives() << " s: " << shooters << " c: " << chasers << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
+    title_ss << "Points: " << m_points << " Lives: " << m_player.getLives() << " s: " << shooters << " c: " << chasers
+             << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer
@@ -702,9 +703,9 @@ void World::playerBounce(NormalBomb bomb) {
 
 bool World::bomberOnScreen(Bomber &bomber) {
     return ((bomber.getPosition().y < m_camera.getBottomBoundary()) ||
-        (bomber.getPosition().y > m_camera.getTopBoundary()) ||
-        (bomber.getPosition().x < m_camera.getRightBoundary()) ||
-        (bomber.getPosition().x > m_camera.getLeftBoundary()));
+            (bomber.getPosition().y > m_camera.getTopBoundary()) ||
+            (bomber.getPosition().x < m_camera.getRightBoundary()) ||
+            (bomber.getPosition().x > m_camera.getLeftBoundary()));
 }
 
 // On key callback
