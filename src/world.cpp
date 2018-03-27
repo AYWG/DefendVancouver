@@ -698,7 +698,7 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Lives: " << m_player.getLives() << " s: " << shooters << " c: " << chasers
+    title_ss << "Points: " << m_points << " Lives: " << m_player.getLives() << " City: " << m_background.getHealth() << " s: " << shooters << " c: " << chasers
              << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
