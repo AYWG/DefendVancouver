@@ -59,8 +59,6 @@ public:
 
     void addLives();
 
-    vec2 getBoundingBox();
-
     void hit();
 
     bool collisionCheck(Shooter shooter);
@@ -71,11 +69,7 @@ public:
 
     bool collisionCheck(ShooterBullet sb);
 
-    bool collisionCheck(Chaser chaser);
-
     bool collisionCheck(BomberBomb &bomb);
-
-    bool collisionCheck(Chaser chaser);
 
     bool collisionCheck(OneUp &oneup);
 

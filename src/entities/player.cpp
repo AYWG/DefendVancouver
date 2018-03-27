@@ -327,5 +327,3 @@ bool Player::collisionCheck(Shield &shield) {
     return d < shieldRadius + playerRadius;
 }
 
-    return {std::fabs(m_scale.x) * (max.position.x - min.position.x), std::fabs(m_scale.x) * (max.position.x - min.position.x)};
-}
