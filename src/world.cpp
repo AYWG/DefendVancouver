@@ -13,13 +13,15 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    const size_t MAX_BOMBS = 0;
-    const size_t MAX_BOMBERBOMBS = 0;
+    const size_t MAX_BOMBS = 5;
+    const size_t MAX_BOMBERBOMBS = 1;
     const size_t MAX_SHOOTERS = 15;
-    const size_t MAX_CHASER = 3;
+    const size_t MAX_CHASER = 1;
     const size_t MAX_BOMBER = 1;
+    const size_t MAX_POWERUP = 1;
     const size_t SHOOTER_DELAY_MS = 2000;
     const size_t BOMB_DELAY_MS = 2000;
+    const size_t POWERUP_DELAY_MS = 2000;
 
 
     namespace {
@@ -35,7 +37,9 @@ World::World() :
         m_next_chaser_spawn(0.f),
         m_next_bomber_spawn(0.f),
         m_next_nbomb_spawn(0.f),
-        m_next_bbomb_spawn(0.f) {
+        m_next_bbomb_spawn(0.f),
+        m_next_oneup_spawn(0.f),
+        m_next_shield_spawn(0.f) {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
 }
@@ -136,6 +140,11 @@ bool World::update(float elapsed_ms) {
         ++playerBulletIt;
     }
 
+    /**
+     * Shooter Logic
+     */
+
+    // spawning the shooter
     m_next_shooter_spawn -= elapsed_ms;
     if (m_shooters.size() < MAX_SHOOTERS && m_next_shooter_spawn) {
         if (auto newShooter = Shooter::spawn()) {
@@ -166,7 +175,11 @@ bool World::update(float elapsed_ms) {
         }
     }
 
-//////////////////CHASER///////////////////
+    /**
+     * Chaser Logic
+     */
+
+    // spawning the chaser
     m_next_chaser_spawn -= elapsed_ms;
     if (m_chasers.size() < MAX_CHASER && m_next_chaser_spawn) {
 
@@ -178,14 +191,15 @@ bool World::update(float elapsed_ms) {
 
         // Setting random initial position
         newChaserPtr->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
-        m_next_chaser_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+        m_next_chaser_spawn = (SHOOTER_DELAY_MS/2) + m_dist(m_rng) * (SHOOTER_DELAY_MS/2);
     }
 
     for (auto &m_chaser : m_chasers)
         m_chaser->update(this, elapsed_ms);
 
-    //////////////SPAWNDONE/////////////////
-    //ASTAR
+    /**
+     * A* Algorithm
+     */
     float width = m_size.x / COL;
     float height = m_size.y / ROW;
     int grid[ROW][COL];
@@ -324,9 +338,9 @@ bool World::update(float elapsed_ms) {
 
     }
 
-    ////////CHASER DONE//////////
-
-    ////////BOMBER LOGIC///////
+    /**
+     * Bomber Logic
+     */
 
     // Spawing the bomber
     m_next_bomber_spawn -= elapsed_ms;
@@ -378,7 +392,9 @@ bool World::update(float elapsed_ms) {
         ++bomberBomb_it;
     }
 
-    //////////BOMBER DONE/////////
+    /**
+     * Normal Bombs
+     */
 
     // trigger normal bomb animation
     for (auto &bomb : m_normalBombs)
@@ -410,7 +426,71 @@ bool World::update(float elapsed_ms) {
         m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
     }
 
-    //////COLLISION DETECTION/////
+
+    /**
+     * Powerups
+     */
+
+    // updating oneup
+    for (auto &oneup : m_oneups)
+        oneup->update(elapsed_ms);
+
+    // removing out of screen oneups
+    auto oneup_it = m_oneups.begin();
+    while (oneup_it != m_oneups.end()) {
+        vec2 pos = (*oneup_it)->getPosition();
+        if (pos.y > m_size.y) {
+            oneup_it = m_oneups.erase(oneup_it);
+            continue;
+        }
+        ++oneup_it;
+    }
+
+    // spawn oneups
+    m_next_oneup_spawn -= elapsed_ms;
+    if(m_oneups.size() < MAX_POWERUP && m_next_oneup_spawn < 0.f){
+        if (auto newOneUp = OneUp::spawn()) {
+            m_oneups.emplace_back(newOneUp);
+        }
+
+        auto newOneUpPtr = m_oneups.back();
+
+        newOneUpPtr->setPosition({m_dist(m_rng) * m_size.x, -200.f});
+        m_next_oneup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+    }
+
+    // updating shield
+    for (auto &shield : m_shields)
+        shield->update(elapsed_ms);
+
+    // removing out of screen shields
+    auto shield_it = m_shields.begin();
+    while (shield_it != m_shields.end()) {
+        vec2 pos = (*shield_it)->getPosition();
+        if (pos.y > m_size.y) {
+            shield_it = m_shields.erase(shield_it);
+            continue;
+        }
+        ++shield_it;
+    }
+
+    // spawn shield
+    m_next_shield_spawn -= elapsed_ms;
+    if(m_shields.size() < MAX_POWERUP && m_next_shield_spawn < 0.f){
+        if (auto newShield = Shield::spawn()) {
+            m_shields.emplace_back(newShield);
+        }
+
+        auto newShieldPtr = m_shields.back();
+
+        newShieldPtr->setPosition({m_dist(m_rng) * m_size.x, -200.f});
+        m_next_shield_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+    }
+
+
+    /**
+     * Collision Detection
+     */
 
     // collision detection between shooter and player bullet
     playerBulletIt = m_player.getBullets().begin();
@@ -525,8 +605,36 @@ bool World::update(float elapsed_ms) {
         }
     }
 
+    // collision detection between player and oneup
+    oneup_it = m_oneups.begin();
+    while (oneup_it != m_oneups.end()) {
+        bool isColliding = false;
+        if(m_player.collisionCheck(**oneup_it)){
+            isColliding = true;
+            oneup_it = m_oneups.erase(oneup_it);
+            m_player.addLives();
+            break;
+        }
+        if(!isColliding){
+            ++oneup_it;
+        }
+    }
 
-    ////COLLISION DONE////
+    // collision detection between player and shield
+    shield_it = m_shields.begin();
+    while (shield_it != m_shields.end()) {
+        bool isColliding = false;
+        if(m_player.collisionCheck(**shield_it)){
+            isColliding = true;
+            shield_it = m_shields.erase(shield_it);
+            m_background.addHealth();
+            break;
+        }
+        if(!isColliding){
+            ++shield_it;
+        }
+    }
+
 
 
     return true;
@@ -606,6 +714,14 @@ void World::draw() {
         bBomb->draw(projection_2D);
     }
 
+    for (auto &oneUp : m_oneups) {
+        oneUp->draw(projection_2D);
+    }
+
+    for (auto &shield : m_shields) {
+        shield->draw(projection_2D);
+    }
+
     // Presenting
     glfwSwapBuffers(m_window);
 }
@@ -636,6 +752,8 @@ vec2 World::getCityPosition() const {
 bool World::initTextures() {
     return BomberBomb::initTexture() &&
            NormalBomb::initTexture() &&
+           OneUp::initTexture() &&
+           Shield::initTexture() &&
            Shooter::initTexture() &&
            Chaser::initTexture() &&
            Bomber::initTexture() &&
