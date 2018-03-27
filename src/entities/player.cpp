@@ -271,7 +271,6 @@ void Player::hit() {
 }
 
 vec2 Player::getBoundingBox() const {
-    return vec2();
 }
 
 bool Player::collisionCheck(Shooter shooter) {

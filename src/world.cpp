@@ -173,6 +173,7 @@ bool World::update(float elapsed_ms) {
         newShooterPtr->setPosition({m_dist(m_rng) * m_size.x, -200.f});
         // Next spawn
         m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+        shooters--;
     }
 
     for (auto &shooter : m_shooters) {
@@ -205,6 +206,7 @@ bool World::update(float elapsed_ms) {
         // Setting random initial position
         newChaserPtr->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
         m_next_chaser_spawn = (CHASER_DELAY_MS / 2) + m_dist(m_rng) * (CHASER_DELAY_MS / 2);
+        chasers--;
     }
 
     for (auto &m_chaser : m_chasers)
@@ -365,6 +367,7 @@ bool World::update(float elapsed_ms) {
         newBomberPtr->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
         // Next spawn
         m_next_bomber_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+        bombers--;
     }
 
     // move bomber in horizontal direction
@@ -447,7 +450,6 @@ bool World::update(float elapsed_ms) {
             if ((*playerBulletIt)->collisionCheck(**benemy_it)) {
                 benemy_it = m_shooters.erase(benemy_it);
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
-                shooters--;
                 isColliding = true;
                 m_points = m_points + 5;
                 totalEnemies--;
@@ -510,7 +512,6 @@ bool World::update(float elapsed_ms) {
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 chaserCol = true;
                 m_points = m_points + 10;
-                chasers--;
                 totalEnemies--;
                 break;
             }
@@ -532,7 +533,6 @@ bool World::update(float elapsed_ms) {
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 bomberColliding = true;
                 m_points = m_points + 10;
-                bombers--;
                 totalEnemies--;
                 break;
             }
@@ -554,6 +554,14 @@ bool World::update(float elapsed_ms) {
         }
         if(!isColliding){
             ++bomberBomb_it;
+        }
+    }
+
+    // Collision detection between Chaser and player
+    auto chaserIt = m_chasers.begin();
+    while(chaserIt != m_chasers.end()){
+        if (m_player.collisionCheck(chaserIt)){
+
         }
     }
 
