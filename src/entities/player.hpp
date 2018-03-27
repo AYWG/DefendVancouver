@@ -16,6 +16,8 @@
 #include "enemies/shooter.hpp"
 #include "enemies/bomber.hpp"
 #include "bombs/bomberBomb.hpp"
+#include "powerups/OneUp.hpp"
+#include "powerups/Shield.hpp"
 
 class Player : public Entity, public Movable, public Renderable {
 
@@ -50,29 +52,22 @@ public:
 
     void shoot();
 
-//    vec2 getBoundingBox() const;
-
     Region getBoundingBox() const override;
 
     std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
 
     int getLives();
 
+    void addLives();
+
     void hit();
-
-    bool collisionCheck(Shooter shooter);
-
-    bool collisionCheck(Bomber &bomber);
-
-    bool collisionCheck(ShooterBullet sb);
-
-    bool collisionCheck(BomberBomb &bomb);
 
 private:
     vec2 m_velocity;
     bool m_isFlying[NUM_DIRECTIONS];
     float m_maxSpeed;
     size_t m_num_indices;
+    std::vector<Vertex> vertices;
     int m_lives;
     bool m_isShootingEnabled;
     float m_nextBulletSpawn;

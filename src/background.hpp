@@ -21,6 +21,16 @@ public:
     void destroy() override;
 
     Region getBoundingBox() const override;
+
+    int getHealth();
+
+    void addHealth();
+
+    void decreaseHealth();
+
+private:
+    int m_health;
+
 };
 
 

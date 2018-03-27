@@ -1,40 +1,55 @@
 //
-// Created by Anun Ganbat on 2018-02-09.
+// Created by Shrey Swades Nayak on 2018-03-26.
 //
-#include <vector>
+
 #include <iostream>
 #include <cmath>
-#include "background.hpp"
+#include "Shield.hpp"
 
-Texture background::background_texture;
+Texture Shield::shieldTexture;
 
-bool background::initTexture() {
+Shield::~Shield() {
+    destroy();
+}
+
+bool Shield::initTexture() {
     //load texture
-    if (!background_texture.is_valid()) {
-        if (!background_texture.load_from_file(textures_path("skyline.png"))) {
-            fprintf(stderr, "Failed to load background texture!");
+    if (!shieldTexture.is_valid()) {
+        if (!shieldTexture.load_from_file(textures_path("shield.png"))) {
+            fprintf(stderr, "Failed to load texture!");
             return false;
         }
     }
     return true;
 }
 
-bool background::init() {
-    // The position corresponds to the center of the texture
-    float wr = background_texture.width * 0.5f;
-    float hr = background_texture.height * 0.5f;
+std::shared_ptr<Shield> Shield::spawn() {
+    auto shield = std::make_shared<Shield>();
+    if (shield->init()) {
+        return shield;
+    }
+    fprintf(stderr, "Failed to spawn shield");
+    return nullptr;
+}
+
+bool Shield::init() {
+    //center of texture
+    float width = shieldTexture.width * 0.5f;
+    float height = shieldTexture.height * 0.5f;
 
     TexturedVertex vertices[4];
-    vertices[0].position = {-wr, +hr, -0.01f};
+    vertices[0].position = {-width, +height, -0.01f};
     vertices[0].texcoord = {0.f, 1.f};
-    vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {1.f, 1.f,};
-    vertices[2].position = {+wr, -hr, -0.01f};
+    vertices[1].position = {+width, +height, -0.01f};
+    vertices[1].texcoord = {1.f, 1.f};
+    vertices[2].position = {+width, -height, -0.01f};
     vertices[2].texcoord = {1.f, 0.f};
-    vertices[3].position = {-wr, -hr, -0.01f};
+    vertices[3].position = {-width, -height, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
+    // counterclockwise as it's the default opengl front winding direction
     uint16_t indices[] = {0, 3, 1, 1, 3, 2};
+
     // Clearing errors
     gl_flush_errors();
 
@@ -56,20 +71,22 @@ bool background::init() {
     // Loading shaders
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
-    m_scale.x = 1.0f;
-    m_scale.y = 1.0f;
-    m_position.x = 1500;
-    m_position.y = 1259;
-    m_health = 1000;
+
+    m_scale.x = 0.3f;
+    m_scale.y = 0.3f;
 
     return true;
 }
 
-void background::destroy() {
+void Shield::destroy() {
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteVertexArrays(1, &mesh.vao);
 
+    effect.release();
 }
 
-void background::draw(const mat3 &projection) {
+void Shield::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -104,7 +121,7 @@ void background::draw(const mat3 &projection) {
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, background_texture.id);
+    glBindTexture(GL_TEXTURE_2D, shieldTexture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
@@ -116,23 +133,16 @@ void background::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-int background::getHealth() {
-    return m_health;
+bool Shield::update(float ms) {
+    const float SPEED = 100.f;
+    float step = SPEED * (ms / 1000);
+    m_position.y += step;
 }
 
-void background::addHealth() {
-    m_health++;
-}
-
-void background::decreaseHealth() {
-    m_health--;
-}
-
-
-
-Region background::getBoundingBox() const {
-    vec2 boxSize = {std::fabs(m_scale.x) * background_texture.width, std::fabs(m_scale.y) * background_texture.height};
-    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+Region Shield::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * shieldTexture.width,
+                    std::fabs(m_scale.y) * shieldTexture.height};
+    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
 }
