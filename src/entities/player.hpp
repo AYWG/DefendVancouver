@@ -54,7 +54,7 @@ public:
 
     Region getBoundingBox() const override;
 
-    std::list<std::shared_ptr<PlayerBullet>> &getBullets();
+    std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
 
     int getLives();
 
@@ -81,7 +81,7 @@ private:
 
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist{-1.f, 1.f};
-    std::list<std::shared_ptr<PlayerBullet>> m_bullets;
+    std::vector<std::shared_ptr<PlayerBullet>> m_bullets;
 
     float getMovementOrientation(DIRECTION dir);
 

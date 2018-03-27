@@ -244,7 +244,7 @@ void Player::shoot() {
     }
 }
 
-std::list<std::shared_ptr<PlayerBullet>> &Player::getBullets() {
+std::vector<std::shared_ptr<PlayerBullet>> &Player::getBullets() {
     return m_bullets;
 }
 
@@ -270,46 +270,12 @@ void Player::hit() {
     m_lives--;
 }
 
-//vec2 Player::getBoundingBox() const {
-//    return vec2();
-//}
-
 Region Player::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x), std::fabs(m_scale.y)};
     vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
 }
-
-//
-//bool Player::collisionCheck(Shooter shooter) {
-//    float dx = (m_position.x - shooter.getPosition().x);
-//    float dy = (m_position.y - shooter.getPosition().y);
-//    float d_sq = dx * dx + dy * dy;
-//    float other_r = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y);
-//    float my_r = std::max(m_scale.x, m_scale.y);
-//    float r = std::max(other_r, my_r);
-//    r *= 0.5f;
-//    if (d_sq < r * r) {
-//        return true;
-//    }
-//    return false;
-//}
-//
-//bool Player::collisionCheck(Bomber &bomber) {
-//    return false;
-//}
-//
-//bool Player::collisionCheck(ShooterBullet sb) {
-//    return false;
-//}
-//
-//bool Player::collisionCheck(BomberBomb &bomb) {
-//    auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});
-//    auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
-//    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-//    return d < bombRadius + playerRadius;
-//}
 
 
 

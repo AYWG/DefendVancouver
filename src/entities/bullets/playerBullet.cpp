@@ -139,49 +139,14 @@ void PlayerBullet::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-//vec2 PlayerBullet::getBoundingBox() const {
-//    return {std::fabs(m_scale.x) * playerBulletTexture.width, std::fabs(m_scale.y) * playerBulletTexture.height};
-//}
-
 Region PlayerBullet::getBoundingBox() const {
-    vec2 boxSize = {std::fabs(m_scale.x) * playerBulletTexture.width, std::fabs(m_scale.y) * playerBulletTexture.height};
-    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+    vec2 boxSize = {std::fabs(m_scale.x) * playerBulletTexture.width,
+                    std::fabs(m_scale.y) * playerBulletTexture.height};
+    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
 }
 
-
 unsigned int PlayerBullet::getMass() const {
     return 10;
 }
-
-/*
-bool PlayerBullet::collisionCheck(Shooter &shooter) {
-    auto d = magnitude({m_position.x - shooter.getPosition().x, m_position.y - shooter.getPosition().y});
-    auto shooterRadius = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y) / 2;
-    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < shooterRadius + bulletRadius;
-}
-
-bool PlayerBullet::collisionCheck(Chaser &chaser) {
-    auto d = magnitude({m_position.x - chaser.getPosition().x, m_position.y - chaser.getPosition().y});
-    auto chaserRadius = std::max(chaser.getBoundingBox().x, chaser.getBoundingBox().y) / 2;
-    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < chaserRadius + bulletRadius;
-}
-
-bool PlayerBullet::collisionCheck(Bomber &bomber) {
-    auto d = magnitude({m_position.x - bomber.getPosition().x, m_position.y - bomber.getPosition().y});
-    auto bomberRadius = std::max(bomber.getBoundingBox().x, bomber.getBoundingBox().y) / 2;
-    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < bomberRadius + bulletRadius;
-}
-
-bool PlayerBullet::collisionCheck(NormalBomb &bomb) {
-    auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});
-    auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
-    auto bulletRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < bombRadius + bulletRadius;
-}
-
-*/
