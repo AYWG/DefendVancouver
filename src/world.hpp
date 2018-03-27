@@ -95,6 +95,8 @@ private:
     std::uniform_real_distribution<float> m_dist; // default 0..1
     static Texture world_texture;
 
+    int totalEnemies;
+
     vec2 m_size;
 
     Camera m_camera;

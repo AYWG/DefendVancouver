@@ -13,16 +13,18 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    const size_t MAX_BOMBERBOMBS = 2;
-    const size_t BULLET_DELAY_MS = 200;
     size_t MAX_BOMBS = 0;
+    size_t MAX_BOMBERBOMBS = 0;
     size_t MAX_SHOOTERS = 3;
     size_t MAX_CHASER = 0;
+    size_t MAX_BOMBER = 0;
+    int bombs = MAX_BOMBS;
+    int bBombs = MAX_BOMBERBOMBS;
     int shooters = MAX_SHOOTERS;
     int chasers = MAX_CHASER;
-    int bombs = MAX_BOMBS;
-    const size_t SHOOTER_DELAY_MS = 5000;
-    const size_t BOMB_DELAY_MS = 10000;
+    int bombers = MAX_BOMBER;
+    const size_t SHOOTER_DELAY_MS = 2000;
+    const size_t BOMB_DELAY_MS = 2000;
     const size_t CHASER_DELAY_MS = 10000;
 
 
@@ -101,6 +103,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_size = worldSize;
     m_camera.setSize(screenSize);
     initTextures();
+    totalEnemies = shooters + chasers;
     m_background.init();
     m_camera.setFocusPoint(m_player.getPosition());
     return m_player.init(worldSize);
@@ -119,6 +122,7 @@ bool World::update(float elapsed_ms) {
     vec2 screen = {(float) w, (float) h};
     m_player.update(elapsed_ms);
     vec2 playerPos = m_player.getPosition();
+    
 
     // Setting wave spawn conditions
     if (totalEnemies == 0 ){
