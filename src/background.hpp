@@ -19,6 +19,16 @@ public:
     void draw(const mat3 &projection);
 
     void destroy() override;
+
+    int getHealth();
+
+    void addHealth();
+
+    void decreaseHealth();
+
+private:
+    int m_health;
+
 };
 
 

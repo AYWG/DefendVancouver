@@ -28,7 +28,7 @@ std::shared_ptr<BomberBomb> BomberBomb::spawn() {
     if (bomb->init()) {
         return bomb;
     }
-    fprintf(stderr, "Failed to spawn normal bomb");
+    fprintf(stderr, "Failed to spawn bomber bomb");
     return nullptr;
 }
 

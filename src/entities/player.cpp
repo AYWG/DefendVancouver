@@ -260,6 +260,10 @@ int Player::getLives() {
     return m_lives;
 }
 
+void Player::addLives() {
+    m_lives++;
+}
+
 void Player::hit() {
     m_lives--;
 }
@@ -310,6 +314,20 @@ bool Player::collisionCheck(BomberBomb &bomb) {
     auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
     auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
     return d < bombRadius + playerRadius;
+}
+
+bool Player::collisionCheck(OneUp &oneup) {
+    auto d = magnitude({m_position.x - oneup.getPosition().x, m_position.y - oneup.getPosition().y});
+    auto oneupRadius = std::max(oneup.getBoundingBox().x, oneup.getBoundingBox().y) / 2;
+    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < oneupRadius + playerRadius;
+}
+
+bool Player::collisionCheck(Shield &shield) {
+    auto d = magnitude({m_position.x - shield.getPosition().x, m_position.y - shield.getPosition().y});
+    auto shieldRadius = std::max(shield.getBoundingBox().x, shield.getBoundingBox().y) / 2;
+    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
+    return d < shieldRadius + playerRadius;
 }
 
 
