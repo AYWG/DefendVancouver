@@ -104,7 +104,8 @@ private:
     int totalEnemies;
 
     vec2 m_size;
-
+    int totalEnemies;
+    int waveNo;
     Camera m_camera;
 
     int waveNo;

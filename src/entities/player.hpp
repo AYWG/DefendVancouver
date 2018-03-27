@@ -51,7 +51,7 @@ public:
 
     void shoot();
 
-    vec2 getBoundingBox() const;
+    vec2 getBoundingBox();
 
     std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
 
@@ -64,6 +64,8 @@ public:
     void hit();
 
     bool collisionCheck(Shooter shooter);
+
+    bool collisionCheck(Chaser chaser);
 
     bool collisionCheck(Bomber &bomber);
 
