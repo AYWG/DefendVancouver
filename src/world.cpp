@@ -13,13 +13,20 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    const size_t MAX_BOMBS = 0;
-    const size_t MAX_BOMBERBOMBS = 0;
-    const size_t MAX_SHOOTERS = 15;
-    const size_t MAX_CHASER = 3;
-    const size_t MAX_BOMBER = 1;
-    const size_t SHOOTER_DELAY_MS = 2000;
+    size_t MAX_BOMBS = 0;
+    size_t MAX_BOMBERBOMBS = 0;
+    size_t MAX_SHOOTERS = 3;
+    size_t MAX_CHASER = 0;
+    size_t MAX_BOMBER = 0;
+    int bombs = MAX_BOMBS;
+    int bBombs = MAX_BOMBERBOMBS;
+    int shooters = MAX_SHOOTERS;
+    int chasers = MAX_CHASER;
+    int bombers = MAX_BOMBER;
+    const size_t SHOOTER_DELAY_MS = 10000;
     const size_t BOMB_DELAY_MS = 2000;
+    const size_t CHASER_DELAY_MS = 10000;
+
 
 
     namespace {
@@ -91,6 +98,8 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
+    totalEnemies = shooters + chasers + bombers;
+    waveNo = 1;
     m_size = worldSize;
     m_camera.setSize(screenSize);
     initTextures();
@@ -110,6 +119,23 @@ bool World::update(float elapsed_ms) {
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
+
+    // Setting wave spawn conditions
+    if (totalEnemies == 0 ){
+        waveNo++;
+        if (waveNo % 3 == 1){
+            MAX_SHOOTERS++;
+        }
+
+        if (waveNo % 2 == 1) {
+            MAX_CHASER++;
+            MAX_BOMBER++;
+        }
+        shooters = MAX_SHOOTERS;
+        chasers = MAX_CHASER;
+        bombs = MAX_BOMBER;
+        totalEnemies = shooters + chasers + bombers;
+    }
 
     m_player.update(elapsed_ms);
     vec2 playerPos = m_player.getPosition();
@@ -137,7 +163,7 @@ bool World::update(float elapsed_ms) {
     }
 
     m_next_shooter_spawn -= elapsed_ms;
-    if (m_shooters.size() < MAX_SHOOTERS && m_next_shooter_spawn) {
+    if (/*m_shooters.size() < MAX_SHOOTERS &&*/ m_next_shooter_spawn < 0.f && shooters != 0) {
         if (auto newShooter = Shooter::spawn()) {
             m_shooters.emplace_back(newShooter);
         }
@@ -168,7 +194,7 @@ bool World::update(float elapsed_ms) {
 
 //////////////////CHASER///////////////////
     m_next_chaser_spawn -= elapsed_ms;
-    if (m_chasers.size() < MAX_CHASER && m_next_chaser_spawn) {
+    if (/*m_chasers.size() < MAX_CHASER &&*/ m_next_chaser_spawn < 0.f && chasers != 0) {
 
         ////////////////////TODO////////////////
         if (auto newChaser = Chaser::spawn()) {
@@ -178,7 +204,7 @@ bool World::update(float elapsed_ms) {
 
         // Setting random initial position
         newChaserPtr->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
-        m_next_chaser_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+        m_next_chaser_spawn = (CHASER_DELAY_MS / 2) + m_dist(m_rng) * (CHASER_DELAY_MS / 2);
     }
 
     for (auto &m_chaser : m_chasers)
@@ -330,7 +356,7 @@ bool World::update(float elapsed_ms) {
 
     // Spawing the bomber
     m_next_bomber_spawn -= elapsed_ms;
-    if (m_bombers.size() < MAX_BOMBER && m_next_bomber_spawn) {
+    if (/*m_bombers.size() < MAX_BOMBER &&*/ m_next_bomber_spawn < 0.f && bombers != 0) {
         if (auto newBomber = Bomber::spawn()) {
             m_bombers.emplace_back(newBomber);
         }
@@ -349,7 +375,7 @@ bool World::update(float elapsed_ms) {
     for (auto &m_bomber : m_bombers){
         if(bomberOnScreen(*m_bomber)){
             m_next_bbomb_spawn -= elapsed_ms;
-            if (m_bomberBombs.size() < MAX_BOMBERBOMBS && m_next_bbomb_spawn < 0.f) {
+            if (/*m_bomberBombs.size() < MAX_BOMBERBOMBS &&*/ m_next_bbomb_spawn < 0.f && bBombs != 0) {
                 if (auto newBomb = BomberBomb::spawn()) {
                     m_bomberBombs.emplace_back(newBomb);
                 }
@@ -398,7 +424,7 @@ bool World::update(float elapsed_ms) {
 
     // Spawn new normal bombs
     m_next_nbomb_spawn -= elapsed_ms;
-    if (m_normalBombs.size() < MAX_BOMBS && m_next_nbomb_spawn < 0.f) {
+    if (/*m_normalBombs.size() < MAX_BOMBS &&*/ m_next_nbomb_spawn < 0.f && bombs != 0) {
 
         if (auto newNormalBomb = NormalBomb::spawn()) {
             m_normalBombs.emplace_back(newNormalBomb);
@@ -421,8 +447,10 @@ bool World::update(float elapsed_ms) {
             if ((*playerBulletIt)->collisionCheck(**benemy_it)) {
                 benemy_it = m_shooters.erase(benemy_it);
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
+                shooters--;
                 isColliding = true;
                 m_points = m_points + 5;
+                totalEnemies--;
                 break;
             }
             ++benemy_it;
@@ -482,6 +510,8 @@ bool World::update(float elapsed_ms) {
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 chaserCol = true;
                 m_points = m_points + 10;
+                chasers--;
+                totalEnemies--;
                 break;
             }
             ++chaserIt;
@@ -502,6 +532,8 @@ bool World::update(float elapsed_ms) {
                 playerBulletIt = m_player.getBullets().erase(playerBulletIt);
                 bomberColliding = true;
                 m_points = m_points + 10;
+                bombers--;
+                totalEnemies--;
                 break;
             }
             ++bomber_it;
@@ -551,7 +583,7 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points;
+    title_ss << "Points: " << m_points << " Lives: " << m_player.getLives() << " s: " << shooters << " c: " << chasers << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer

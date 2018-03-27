@@ -96,6 +96,7 @@ private:
     static Texture world_texture;
 
     vec2 m_size;
-
+    int totalEnemies;
+    int waveNo;
     Camera m_camera;
 };
