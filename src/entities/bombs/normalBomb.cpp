@@ -225,11 +225,17 @@ bool NormalBomb::update(float ms) {
 }
 
 // Returns the local bounding coordinates scaled by the current size of the bomb
-vec2 NormalBomb::getBoundingBox() const {
-    // fabs is to avoid negative scale due to the facing direction
-    return {std::fabs(m_scale.x) * (bomb_texture.width / 3), std::fabs(m_scale.y) * (bomb_texture.height / 3)};
-}
+//vec2 NormalBomb::getBoundingBox() const {
+//     fabs is to avoid negative scale due to the facing direction
+//    return {std::fabs(m_scale.x) * (bomb_texture.width / 3), std::fabs(m_scale.y) * (bomb_texture.height / 3)};
+//}
 
+Region NormalBomb::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * bomb_texture.width, std::fabs(m_scale.y) * bomb_texture.height};
+    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
+}
 
 void NormalBomb::animate() {
     isHit = true;

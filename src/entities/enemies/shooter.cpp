@@ -142,14 +142,17 @@ void Shooter::draw(const mat3 &projection) {
 }
 
 // Returns the local bounding coordinates scaled by the current size of the turtle
-vec2 Shooter::getBoundingBox() const {
-    // fabs is to avoid negative scale due to the facing direction
-    return {std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height};
+//vec2 Shooter::getBoundingBox() const {
+//    // fabs is to avoid negative scale due to the facing direction
+//    return {std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height};
+//}
+
+Region Shooter::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height};
+    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
 }
-
-
-
-//vec2 get_bounding_box()const;
 
 void Shooter::attack(float ms) {
     m_nextBulletSpawn -= ms;

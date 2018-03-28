@@ -139,7 +139,10 @@ bool Shield::update(float ms) {
     m_position.y += step;
 }
 
-vec2 Shield::getBoundingBox() const {
-    // fabs is to avoid negative scale due to the facing direction
-    return {std::fabs(m_scale.x) * (shieldTexture.width), std::fabs(m_scale.y) * (shieldTexture.height)};
+Region Shield::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * shieldTexture.width,
+                    std::fabs(m_scale.y) * shieldTexture.height};
+    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
 }

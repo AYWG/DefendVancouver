@@ -139,7 +139,7 @@ void Player::update(float ms) {
 void Player::draw(const mat3 &projection) {
     transform_begin();
 
-    transform_translate({m_position.x, m_position.y});
+    transform_translate(m_position);
     transform_rotate(m_rotation);
     transform_scale(m_scale);
 
@@ -269,29 +269,7 @@ void Player::hit() {
     m_lives--;
 }
 
-bool Player::collisionCheck(Shooter shooter) {
-    auto d = magnitude({m_position.x - shooter.getPosition().x, m_position.y - shooter.getPosition().y});
-    auto shooterRadius = std::max(shooter.getBoundingBox().x, shooter.getBoundingBox().y) / 2;
-    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < shooterRadius + playerRadius;
-}
-
-bool Player::collisionCheck(Bomber &bomber) {
-    return false;
-}
-
-bool Player::collisionCheck(ShooterBullet sb) {
-    return false;
-}
-
-bool Player::collisionCheck(Chaser chaser) {
-    auto d = magnitude({m_position.x - chaser.getPosition().x, m_position.y - chaser.getPosition().y});
-    auto chaserRadius = std::max(chaser.getBoundingBox().x, chaser.getBoundingBox().y) / 2;
-    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < chaserRadius + playerRadius;
-}
-
-vec2 Player::getBoundingBox() {
+Region Player::getBoundingBox() const {
     Vertex min;
     Vertex max;
     for (auto &vertex : vertices){
@@ -303,27 +281,8 @@ vec2 Player::getBoundingBox() {
         }
     }
 
-    return {std::fabs(m_scale.x) * (max.position.x - min.position.x), std::fabs(m_scale.x) * (max.position.x - min.position.x)};
-}
+    vec2 boxSize = {std::fabs(m_scale.x) * (max.position.x - min.position.x), std::fabs(m_scale.y) * (max.position.y - min.position.y)};
+    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
-bool Player::collisionCheck(BomberBomb &bomb) {
-    auto d = magnitude({m_position.x - bomb.getPosition().x, m_position.y - bomb.getPosition().y});
-    auto bombRadius = std::max(bomb.getBoundingBox().x, bomb.getBoundingBox().y) / 2;
-    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < bombRadius + playerRadius;
+    return {boxOrigin, boxSize};
 }
-
-bool Player::collisionCheck(OneUp &oneup) {
-    auto d = magnitude({m_position.x - oneup.getPosition().x, m_position.y - oneup.getPosition().y});
-    auto oneupRadius = std::max(oneup.getBoundingBox().x, oneup.getBoundingBox().y) / 2;
-    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < oneupRadius + playerRadius;
-}
-
-bool Player::collisionCheck(Shield &shield) {
-    auto d = magnitude({m_position.x - shield.getPosition().x, m_position.y - shield.getPosition().y});
-    auto shieldRadius = std::max(shield.getBoundingBox().x, shield.getBoundingBox().y) / 2;
-    auto playerRadius = std::max(getBoundingBox().x, getBoundingBox().y) / 2;
-    return d < shieldRadius + playerRadius;
-}
-

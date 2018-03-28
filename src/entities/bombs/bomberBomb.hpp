@@ -33,7 +33,9 @@ public:
 
     bool isBlasting();
 
-    vec2 getBoundingBox() const;
+//    vec2 getBoundingBox() const;
+
+    Region getBoundingBox() const override;
 
 
 private:

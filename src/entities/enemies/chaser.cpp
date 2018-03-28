@@ -157,9 +157,17 @@ void Chaser::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Chaser::getBoundingBox() const {
-    return {std::fabs(m_scale.x) * chaserTexture.width, std::fabs(m_scale.y) * chaserTexture.height};
+//vec2 Chaser::getBoundingBox() const {
+//    return {std::fabs(m_scale.x) * chaserTexture.width, std::fabs(m_scale.y) * chaserTexture.height};
+//}
+
+Region Chaser::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * chaserTexture.width, std::fabs(m_scale.y) * chaserTexture.height};
+    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
 }
+
 
 vec2 Chaser::move(vec2 off) {
     m_position.x += off.x;

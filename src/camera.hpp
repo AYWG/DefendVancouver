@@ -5,13 +5,11 @@
 #pragma once
 
 #include "common.hpp"
+#include "entities/entity.hpp"
 
 class Camera {
 public:
-
-    void setSize(vec2 size);
-
-    void setFocusPoint(vec2 focusPoint);
+    Camera(vec2 screenSize, vec2 worldSize);
 
     float getLeftBoundary() const;
 
@@ -21,11 +19,16 @@ public:
 
     float getBottomBoundary() const;
 
+    void update(float ms, const vec2 &targetPos);
+
+    bool isEntityInView(const Entity &entity);
 
 private:
     // The dimensions of the camera - should be the same as the window
     // x : width, y : height
-    vec2 m_size;
+    vec2 m_screenSize;
+
+    vec2 m_worldSize;
 
     // World coordinate that corresponds to the center of the camera
     vec2 m_focusPoint;

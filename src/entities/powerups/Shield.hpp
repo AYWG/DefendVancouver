@@ -2,9 +2,6 @@
 // Created by Shrey Swades Nayak on 2018-03-26.
 //
 
-#ifndef DEFENDVANCOUVER_SHIELD_HPP
-#define DEFENDVANCOUVER_SHIELD_HPP
-
 #pragma once
 
 #include <memory>
@@ -31,12 +28,9 @@ public:
 
     bool update(float ms);
 
-    vec2 getBoundingBox() const;
+    Region getBoundingBox() const override;
 
 private:
 
     TexturedVertex vertices[4];
 };
-
-
-#endif //DEFENDVANCOUVER_SHIELD_HPP

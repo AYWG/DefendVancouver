@@ -6,6 +6,7 @@
 
 
 #include "../common.hpp"
+#include "../region.hpp"
 
 class Entity {
 
@@ -24,10 +25,19 @@ public:
 
     virtual void destroy() = 0;
 
+    virtual Region getBoundingBox() const = 0;
+
+    virtual bool isCollidingWith(Entity &other) const;
+
+    void die();
+
+    bool isDead() const;
+
 protected:
     vec2 m_position;
     vec2 m_scale;
     float m_rotation;
+    bool m_isDead;
 
 };
 

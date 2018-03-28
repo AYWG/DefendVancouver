@@ -7,6 +7,7 @@
 #define NUM_DIRECTIONS 4
 
 #include <vector>
+#include <list>
 #include <random>
 #include "../common.hpp"
 #include "entity.hpp"
@@ -51,7 +52,7 @@ public:
 
     void shoot();
 
-    vec2 getBoundingBox();
+    Region getBoundingBox() const override;
 
     std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
 
@@ -60,20 +61,6 @@ public:
     void addLives();
 
     void hit();
-
-    bool collisionCheck(Shooter shooter);
-
-    bool collisionCheck(Chaser chaser);
-
-    bool collisionCheck(Bomber &bomber);
-
-    bool collisionCheck(ShooterBullet sb);
-
-    bool collisionCheck(BomberBomb &bomb);
-
-    bool collisionCheck(OneUp &oneup);
-
-    bool collisionCheck(Shield &shield);
 
 private:
     vec2 m_velocity;

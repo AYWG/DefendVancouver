@@ -12,11 +12,13 @@
 #include "entities/bombs/bomberBomb.hpp"
 #include "entities/bullets/playerBullet.hpp"
 #include "explosion.hpp"
+#include "collisions/quadTreeNode.hpp"
 #include "entities/powerups/OneUp.hpp"
 #include "entities/powerups/Shield.hpp"
 
 // stlib
 #include <vector>
+#include <list>
 #include <random>
 
 
@@ -37,8 +39,6 @@ public:
     // Steps the game ahead by ms milliseconds
     bool update(float ms);
 
-    bool elapsedUpdate(float ms);
-
     // Renders our scene
     void draw();
 
@@ -51,7 +51,6 @@ public:
 
     vec2 getCityPosition() const;
 
-    vec2 playerCenter;
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;
@@ -59,7 +58,7 @@ public:
 private:
     bool initTextures();
 
-    void playerBounce(NormalBomb bomb);
+    void playerBounce(const NormalBomb &bomb);
 
     bool bomberOnScreen(Bomber &bomber);
 
@@ -77,9 +76,10 @@ private:
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
 
-    background m_background;
+//    background m_background;
     // Game entities
-    Player m_player;
+    std::shared_ptr<background> m_background;
+    std::shared_ptr<Player> m_player;
     std::vector<std::shared_ptr<Chaser>> m_chasers;
     std::vector<std::shared_ptr<Shooter>> m_shooters;
     std::vector<std::shared_ptr<Bomber>> m_bombers;
@@ -101,9 +101,13 @@ private:
     std::uniform_real_distribution<float> m_dist; // default 0..1
     static Texture world_texture;
 
+    // World size
     vec2 m_size;
     Camera m_camera;
 
-    int waveNo;
+    QuadTreeNode m_quad;
+    
     int totalEnemies;
+    int waveNo;
+    
 };
