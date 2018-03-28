@@ -5,6 +5,7 @@
 #pragma once
 
 #include "common.hpp"
+#include "entities/entity.hpp"
 
 class Camera {
 public:
@@ -19,6 +20,8 @@ public:
     float getBottomBoundary() const;
 
     void update(float ms, const vec2 &targetPos);
+
+    bool isEntityInView(const Entity &entity);
 
 private:
     // The dimensions of the camera - should be the same as the window

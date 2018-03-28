@@ -128,8 +128,6 @@ void background::decreaseHealth() {
     m_health--;
 }
 
-
-
 Region background::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * background_texture.width, std::fabs(m_scale.y) * background_texture.height};
     vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};

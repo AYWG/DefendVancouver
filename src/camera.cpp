@@ -27,3 +27,16 @@ void Camera::update(float ms, const vec2 &targetPos) {
     auto newCameraFocusPointY = std::min(m_worldSize.y - m_screenSize.y / 2, std::max(m_screenSize.y / 2, targetPos.y));
     m_focusPoint = {newCameraFocusPointX, newCameraFocusPointY};
 }
+
+bool Camera::isEntityInView(const Entity &entity) {
+    auto entityRegion = entity.getBoundingBox();
+    bool isWithinLeftBoundary = entityRegion.origin.x + entityRegion.size.x >= getLeftBoundary();
+    bool isWithinRightBoundary = entityRegion.origin.x <= getRightBoundary();
+    bool isWithinTopBoundary = entityRegion.origin.y + entityRegion.size.y >= getTopBoundary();
+    bool isWithinBottomBoundary = entityRegion.origin.y <= getBottomBoundary();
+
+    return isWithinLeftBoundary ||
+           isWithinRightBoundary ||
+           isWithinTopBoundary ||
+           isWithinBottomBoundary;
+}

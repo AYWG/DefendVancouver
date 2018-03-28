@@ -51,7 +51,6 @@ public:
 
     vec2 getCityPosition() const;
 
-    vec2 playerCenter;
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;

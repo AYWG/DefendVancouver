@@ -149,9 +149,6 @@ bool World::update(float elapsed_ms) {
         totalEnemies = shooters + chasers;
     }
 
-    m_player.update(elapsed_ms);
-    vec2 playerPos = m_player.getPosition();
-
     //////COLLISION DETECTION/////
     m_quad.clear();
 
@@ -180,13 +177,11 @@ bool World::update(float elapsed_ms) {
             allEntities.emplace_back(bullet);
         }
     }
-
     for (auto &chaser: m_chasers) {
         chaser->update(this, elapsed_ms);
         m_quad.insert(chaser);
         allEntities.emplace_back(chaser);
     }
-
     for (auto &bomber: m_bombers) {
         bomber->update(this, elapsed_ms);
         m_quad.insert(bomber);
@@ -203,6 +198,18 @@ bool World::update(float elapsed_ms) {
         allEntities.emplace_back(bomberBomb);
     }
 
+    for (auto &oneup : m_oneups) {
+        oneup->update(elapsed_ms);
+        m_quad.insert(oneup);
+        allEntities.emplace_back(oneup);
+    }
+
+    for (auto &shield : m_shields) {
+        shield->update(elapsed_ms);
+        m_quad.insert(shield);
+        allEntities.emplace_back(shield);
+    }
+
     // once everything is inserted, go through each entity and get vector of nearby entities
     // that could possibly collide with that entity
     for (auto &entity: allEntities) {
@@ -215,45 +222,54 @@ bool World::update(float elapsed_ms) {
                     if (typeid(*nearbyEntity) == typeid(Shooter)) {
                         totalEnemies--;
                         m_points += 5;
-                        m_shooters.erase(std::remove(m_shooters.begin(), m_shooters.end(),
-                                                     std::dynamic_pointer_cast<Shooter>(nearbyEntity)),
-                                         m_shooters.end());
-                        m_player->getBullets().erase(
-                                std::remove(m_player->getBullets().begin(), m_player->getBullets().end(),
-                                            std::dynamic_pointer_cast<PlayerBullet>(entity)),
-                                m_player->getBullets().end());
+                        nearbyEntity->die();
+                        entity->die();
                     } else if (typeid(*nearbyEntity) == typeid(NormalBomb)) {
                         totalEnemies--;
                         playerBounce(*(std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)));
                         std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)->animate();
-                        m_player->getBullets().erase(
-                                std::remove(m_player->getBullets().begin(), m_player->getBullets().end(),
-                                            std::dynamic_pointer_cast<PlayerBullet>(entity)),
-                                m_player->getBullets().end());
+                        entity->die();
                     } else if (typeid(*nearbyEntity) == typeid(Chaser)) {
                         totalEnemies--;
                         m_points += 10;
-                        m_chasers.erase(std::remove(m_chasers.begin(), m_chasers.end(),
-                                                    std::dynamic_pointer_cast<Chaser>(nearbyEntity)), m_chasers.end());
-                        m_player->getBullets().erase(
-                                std::remove(m_player->getBullets().begin(), m_player->getBullets().end(),
-                                            std::dynamic_pointer_cast<PlayerBullet>(entity)),
-                                m_player->getBullets().end());
+                        nearbyEntity->die();
+                        entity->die();
                     } else if (typeid(*nearbyEntity) == typeid(Bomber)) {
                         m_points += 10;
-                        m_bombers.erase(std::remove(m_bombers.begin(), m_bombers.end(),
-                                                    std::dynamic_pointer_cast<Bomber>(nearbyEntity)), m_bombers.end());
-                        m_player->getBullets().erase(
-                                std::remove(m_player->getBullets().begin(), m_player->getBullets().end(),
-                                            std::dynamic_pointer_cast<PlayerBullet>(entity)),
-                                m_player->getBullets().end());
+                        nearbyEntity->die();
+                        entity->die();
                     }
                 }
-            } else if (typeid(*entity) == typeid(Player)) {
+            }
+            else if (typeid(*entity) == typeid(Player)) {
                 if (entity->isCollidingWith(*nearbyEntity)) {
                     if (typeid(*nearbyEntity) == typeid(BomberBomb) &&
                         std::dynamic_pointer_cast<BomberBomb>(nearbyEntity)->isBlasting()) {
                         m_player->hit();
+                    }
+                    else if (typeid(*nearbyEntity) == typeid(OneUp)) {
+                        m_player->addLives();
+                        nearbyEntity->die();
+                    }
+                    else if (typeid(*nearbyEntity) == typeid(Shield)) {
+                        m_background.addHealth();
+                        nearbyEntity->die();
+                    }
+                    else if (typeid(*nearbyEntity) == typeid(Shooter)) {
+                        m_player->hit();
+                    }
+                    else if (typeid(*nearbyEntity) == typeid(Chaser)) {
+                        m_player->hit();
+                    }
+                    else if (typeid(*nearbyEntity) == typeid(Bomber)) {
+                        m_player->hit();
+                    }
+                }
+            }
+            else if (typeid(*entity) == typeid(ShooterBullet)) {
+                if (entity->isCollidingWith(*nearbyEntity)) {
+                    if (typeid(*nearbyEntity) == typeid(background)) {
+                        entity->die();
                     }
                 }
             }
@@ -402,17 +418,40 @@ bool World::update(float elapsed_ms) {
 
     //// CLEANUP ////
 
-    // remove out of screen player bullets
     auto playerBulletIt = m_player->getBullets().begin();
     while (playerBulletIt != m_player->getBullets().end()) {
-        if ((*playerBulletIt)->getPosition().y > m_camera.getBottomBoundary() ||
-            (*playerBulletIt)->getPosition().y < m_camera.getTopBoundary() ||
-            (*playerBulletIt)->getPosition().x > m_camera.getRightBoundary() ||
-            (*playerBulletIt)->getPosition().x < m_camera.getLeftBoundary()) {
+        if (!m_camera.isEntityInView(**playerBulletIt) || (*playerBulletIt)->isDead()) {
             playerBulletIt = m_player->getBullets().erase(playerBulletIt);
             continue;
         }
         ++playerBulletIt;
+    }
+
+    auto shooterIt = m_shooters.begin();
+    while (shooterIt != m_shooters.end()) {
+        if ((*shooterIt)->isDead()) {
+            shooterIt = m_shooters.erase(shooterIt);
+            continue;
+        }
+        ++shooterIt;
+    }
+
+    auto chaserIt = m_chasers.begin();
+    while (chaserIt != m_chasers.end()) {
+        if ((*chaserIt)->isDead()) {
+            chaserIt = m_chasers.erase(chaserIt);
+            continue;
+        }
+        ++chaserIt;
+    }
+
+    auto bomberIt = m_bombers.begin();
+    while (bomberIt != m_bombers.end()) {
+        if ((*bomberIt)->isDead()) {
+            bomberIt = m_bombers.erase(bomberIt);
+            continue;
+        }
+        ++bomberIt;
     }
 
     // removing normal bombs from screen
@@ -434,8 +473,29 @@ bool World::update(float elapsed_ms) {
             bomberBomb_it = m_bomberBombs.erase(bomberBomb_it);
             continue;
         }
-
         ++bomberBomb_it;
+    }
+
+    // removing out of screen oneups
+    auto oneup_it = m_oneups.begin();
+    while (oneup_it != m_oneups.end()) {
+        vec2 pos = (*oneup_it)->getPosition();
+        if (pos.y > m_size.y || (*oneup_it)->isDead()) {
+            oneup_it = m_oneups.erase(oneup_it);
+            continue;
+        }
+        ++oneup_it;
+    }
+
+    // removing out of screen shields
+    auto shield_it = m_shields.begin();
+    while (shield_it != m_shields.end()) {
+        vec2 pos = (*shield_it)->getPosition();
+        if (pos.y > m_size.y || (*shield_it)->isDead()) {
+            shield_it = m_shields.erase(shield_it);
+            continue;
+        }
+        ++shield_it;
     }
 
 
@@ -465,7 +525,7 @@ bool World::update(float elapsed_ms) {
 
         // Setting random initial position
         newChaserPtr->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
-        m_next_chaser_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+        m_next_chaser_spawn = (CHASER_DELAY_MS / 2) + m_dist(m_rng) * (CHASER_DELAY_MS / 2);
         
         chasers--;
     }
@@ -512,26 +572,6 @@ bool World::update(float elapsed_ms) {
         m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
         bombs--;
     }
-    
-    
-    /**
-     * Powerups
-     */
-
-    // updating oneup
-    for (auto &oneup : m_oneups)
-        oneup->update(elapsed_ms);
-
-    // removing out of screen oneups
-    auto oneup_it = m_oneups.begin();
-    while (oneup_it != m_oneups.end()) {
-        vec2 pos = (*oneup_it)->getPosition();
-        if (pos.y > m_size.y) {
-            oneup_it = m_oneups.erase(oneup_it);
-            continue;
-        }
-        ++oneup_it;
-    }
 
     // spawn oneups
     m_next_oneup_spawn -= elapsed_ms;
@@ -544,21 +584,6 @@ bool World::update(float elapsed_ms) {
 
         newOneUpPtr->setPosition({m_dist(m_rng) * m_size.x, -200.f});
         m_next_oneup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
-    }
-
-    // updating shield
-    for (auto &shield : m_shields)
-        shield->update(elapsed_ms);
-
-    // removing out of screen shields
-    auto shield_it = m_shields.begin();
-    while (shield_it != m_shields.end()) {
-        vec2 pos = (*shield_it)->getPosition();
-        if (pos.y > m_size.y) {
-            shield_it = m_shields.erase(shield_it);
-            continue;
-        }
-        ++shield_it;
     }
 
     // spawn shield
@@ -574,7 +599,6 @@ bool World::update(float elapsed_ms) {
         m_next_shield_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
     }
 
-
     return true;
 }
 
@@ -588,10 +612,9 @@ void World::draw() {
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
 
-
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Lives: " << m_player.getLives() << " City: " << m_background.getHealth() << " s: " << shooters << " c: " << chasers
+    title_ss << "Points: " << m_points << " Lives: " << m_player->getLives() << " City: " << m_background.getHealth() << " s: " << shooters << " c: " << chasers
              << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
@@ -711,10 +734,7 @@ void World::playerBounce(const NormalBomb &bomb) {
 }
 
 bool World::bomberOnScreen(Bomber &bomber) {
-    return ((bomber.getPosition().y < m_camera.getBottomBoundary()) ||
-            (bomber.getPosition().y > m_camera.getTopBoundary()) ||
-            (bomber.getPosition().x < m_camera.getRightBoundary()) ||
-            (bomber.getPosition().x > m_camera.getLeftBoundary()));
+    return m_camera.isEntityInView(bomber);
 }
 
 // On key callback
@@ -768,10 +788,12 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
 
 void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {
-    playerCenter = {m_player->getPosition().x - m_camera.getLeftBoundary(),
-                    m_player->getPosition().y - m_camera.getTopBoundary()};
-    auto playerMouseXDist = float(xpos - playerCenter.x);
-    auto playerMouseYDist = float(ypos - playerCenter.y);
+    vec2 playerScreenPos = {
+            m_player->getPosition().x - m_camera.getLeftBoundary(),
+            m_player->getPosition().y - m_camera.getTopBoundary()
+    };
+    auto playerMouseXDist = float(xpos - playerScreenPos.x);
+    auto playerMouseYDist = float(ypos - playerScreenPos.y);
     float newOrientation = -1.f * atan((playerMouseXDist / playerMouseYDist));
     if (playerMouseYDist < 0.f) newOrientation += 3.1415f;
     m_player->setRotation(newOrientation);

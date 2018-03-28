@@ -4,7 +4,7 @@
 
 #include "entity.hpp"
 
-Entity::Entity() : m_position({0.f, 0.f}), m_rotation(0.f), m_scale({1.f, 1.f}) {}
+Entity::Entity() : m_position({0.f, 0.f}), m_rotation(0.f), m_scale({1.f, 1.f}), m_isDead(false) {}
 
 vec2 Entity::getPosition() const {
     return m_position;
@@ -30,4 +30,12 @@ bool Entity::isCollidingWith(Entity &other) const {
     auto otherDiameter = std::max(other.getBoundingBox().size.x, other.getBoundingBox().size.y);
     auto combinedRadii = (myDiameter + otherDiameter) / 2;
     return d_sq < combinedRadii * combinedRadii;
+}
+
+void Entity::die() {
+    m_isDead = true;
+}
+
+bool Entity::isDead() const {
+    return m_isDead;
 }

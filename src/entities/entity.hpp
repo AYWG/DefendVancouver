@@ -29,10 +29,15 @@ public:
 
     virtual bool isCollidingWith(Entity &other) const;
 
+    void die();
+
+    bool isDead() const;
+
 protected:
     vec2 m_position;
     vec2 m_scale;
     float m_rotation;
+    bool m_isDead;
 
 };
 

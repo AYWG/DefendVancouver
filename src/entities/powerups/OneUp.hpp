@@ -2,9 +2,6 @@
 // Created by Shrey Swades Nayak on 2018-03-26.
 //
 
-#ifndef DEFENDVANCOUVER_ONEUP_HPP
-#define DEFENDVANCOUVER_ONEUP_HPP
-
 #pragma once
 
 #include <memory>
@@ -40,5 +37,3 @@ private:
 
 };
 
-
-#endif //DEFENDVANCOUVER_ONEUP_HPP

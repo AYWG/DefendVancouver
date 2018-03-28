@@ -270,14 +270,6 @@ void Player::hit() {
 }
 
 Region Player::getBoundingBox() const {
-    vec2 boxSize = {std::fabs(m_scale.x), std::fabs(m_scale.y)};
-    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
-
-    return {boxOrigin, boxSize};
-}
-
-/*
-vec2 Player::getBoundingBox() {
     Vertex min;
     Vertex max;
     for (auto &vertex : vertices){
@@ -289,6 +281,8 @@ vec2 Player::getBoundingBox() {
         }
     }
 
-    return {std::fabs(m_scale.x) * (max.position.x - min.position.x), std::fabs(m_scale.x) * (max.position.x - min.position.x)};
+    vec2 boxSize = {std::fabs(m_scale.x) * (max.position.x - min.position.x), std::fabs(m_scale.y) * (max.position.y - min.position.y)};
+    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
 }
-*/
