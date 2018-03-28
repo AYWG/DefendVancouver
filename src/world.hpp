@@ -76,8 +76,9 @@ private:
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
 
-    background m_background;
+//    background m_background;
     // Game entities
+    std::shared_ptr<background> m_background;
     std::shared_ptr<Player> m_player;
     std::vector<std::shared_ptr<Chaser>> m_chasers;
     std::vector<std::shared_ptr<Shooter>> m_shooters;

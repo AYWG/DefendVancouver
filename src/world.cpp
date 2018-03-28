@@ -16,7 +16,7 @@ namespace {
 
     size_t MAX_BOMBS = 0;
     size_t MAX_BOMBERBOMBS = 0;
-    size_t MAX_SHOOTERS = 3;
+    size_t MAX_SHOOTERS = 1;
     size_t MAX_CHASER = 0;
     size_t MAX_BOMBER = 0;
     size_t MAX_POWERUP = 1;
@@ -104,14 +104,14 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
-    totalEnemies = shooters + chasers;
     waveNo = 1;
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initTextures();
     totalEnemies = shooters + chasers;
-    m_background.init();
+    m_background = std::make_shared<background>();
+    m_background->init();
     m_player = std::make_shared<Player>();
     return m_player->init(worldSize);
 
@@ -154,6 +154,8 @@ bool World::update(float elapsed_ms) {
 
     // insert all entities into the quadtree
     std::vector<std::shared_ptr<Entity>> allEntities;
+    m_quad.insert(m_background);
+    allEntities.emplace_back(m_background);
 
     m_player->update(elapsed_ms);
     m_camera.update(elapsed_ms, m_player->getPosition());
@@ -241,6 +243,22 @@ bool World::update(float elapsed_ms) {
                     }
                 }
             }
+            else if (typeid(*entity) == typeid(ShooterBullet)) {
+                if (entity->isCollidingWith(*nearbyEntity)) {
+                    if (typeid(*nearbyEntity) == typeid(Player)) {
+                        entity->die();
+                        m_player->hit();
+                    }
+                    else {
+                        printf("nearby entity pos: %f %f\n", (*nearbyEntity).getPosition().x, (*nearbyEntity).getPosition().y);
+                        printf("player pos: %f %f\n", m_player->getPosition().x, m_player->getPosition().y);
+                    }
+
+//                    if (typeid(*nearbyEntity) == typeid(background)) {
+//                        entity->die();
+//                    }
+                }
+            }
             else if (typeid(*entity) == typeid(Player)) {
                 if (entity->isCollidingWith(*nearbyEntity)) {
                     if (typeid(*nearbyEntity) == typeid(BomberBomb) &&
@@ -252,7 +270,7 @@ bool World::update(float elapsed_ms) {
                         nearbyEntity->die();
                     }
                     else if (typeid(*nearbyEntity) == typeid(Shield)) {
-                        m_background.addHealth();
+                        m_background->addHealth();
                         nearbyEntity->die();
                     }
                     else if (typeid(*nearbyEntity) == typeid(Shooter)) {
@@ -263,13 +281,6 @@ bool World::update(float elapsed_ms) {
                     }
                     else if (typeid(*nearbyEntity) == typeid(Bomber)) {
                         m_player->hit();
-                    }
-                }
-            }
-            else if (typeid(*entity) == typeid(ShooterBullet)) {
-                if (entity->isCollidingWith(*nearbyEntity)) {
-                    if (typeid(*nearbyEntity) == typeid(background)) {
-                        entity->die();
                     }
                 }
             }
@@ -418,9 +429,10 @@ bool World::update(float elapsed_ms) {
 
     //// CLEANUP ////
 
+    //TODO: Refactor this
     auto playerBulletIt = m_player->getBullets().begin();
     while (playerBulletIt != m_player->getBullets().end()) {
-        if (!m_camera.isEntityInView(**playerBulletIt) || (*playerBulletIt)->isDead()) {
+        if (!(m_camera.isEntityInView(**playerBulletIt)) || (*playerBulletIt)->isDead()) {
             playerBulletIt = m_player->getBullets().erase(playerBulletIt);
             continue;
         }
@@ -429,6 +441,14 @@ bool World::update(float elapsed_ms) {
 
     auto shooterIt = m_shooters.begin();
     while (shooterIt != m_shooters.end()) {
+        auto shooterBulletIt = (*shooterIt)->getBullets().begin();
+        while (shooterBulletIt != (*shooterIt)->getBullets().end()) {
+            if ((*shooterBulletIt)->getPosition().y > m_size.y) {
+                shooterBulletIt = (*shooterIt)->getBullets().erase(shooterBulletIt);
+                continue;
+            }
+            ++shooterBulletIt;
+        }
         if ((*shooterIt)->isDead()) {
             shooterIt = m_shooters.erase(shooterIt);
             continue;
@@ -614,7 +634,7 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Lives: " << m_player->getLives() << " City: " << m_background.getHealth() << " s: " << shooters << " c: " << chasers
+    title_ss << "Points: " << m_points << " Lives: " << m_player->getLives() << " City: " << m_background->getHealth() << " s: " << shooters << " c: " << chasers
              << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
@@ -642,7 +662,7 @@ void World::draw() {
                        {tx,  ty,  1.f}};
 
     // Drawing entities
-    m_background.draw(projection_2D);
+    m_background->draw(projection_2D);
 
     m_player->draw(projection_2D);
 
@@ -699,7 +719,7 @@ std::vector<vec2> World::getBombPositions() const {
 }
 
 vec2 World::getCityPosition() const {
-    return m_background.getPosition();
+    return m_background->getPosition();
 }
 
 // Private
@@ -778,7 +798,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
         waveNo = 1;
 
-        m_background.init();
+        m_background->init();
 
         m_player->init(m_size);
         m_points = 0;

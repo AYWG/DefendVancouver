@@ -96,8 +96,5 @@ bool QuadTreeNode::isEntityInNode(const std::shared_ptr<Entity> &entity) const {
     bool isWithinTopBounds = entityBoundingBox.origin.y + entityBoundingBox.size.y >= m_region.origin.y;
     bool isWithinBottomBounds = entityBoundingBox.origin.y <= m_region.origin.y + m_region.size.y;
 
-    return (isWithinTopBounds && isWithinLeftBounds) ||
-           (isWithinTopBounds && isWithinRightBounds) ||
-           (isWithinBottomBounds && isWithinLeftBounds) ||
-           (isWithinBottomBounds && isWithinRightBounds);
+    return isWithinLeftBounds && isWithinRightBounds && isWithinTopBounds && isWithinBottomBounds;
 }

@@ -35,8 +35,5 @@ bool Camera::isEntityInView(const Entity &entity) {
     bool isWithinTopBoundary = entityRegion.origin.y + entityRegion.size.y >= getTopBoundary();
     bool isWithinBottomBoundary = entityRegion.origin.y <= getBottomBoundary();
 
-    return isWithinLeftBoundary ||
-           isWithinRightBoundary ||
-           isWithinTopBoundary ||
-           isWithinBottomBoundary;
+    return isWithinLeftBoundary && isWithinRightBoundary && isWithinTopBoundary && isWithinBottomBoundary;
 }
