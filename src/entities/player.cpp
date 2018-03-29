@@ -286,3 +286,7 @@ Region Player::getBoundingBox() const {
 
     return {boxOrigin, boxSize};
 }
+
+std::string Player::getName() const {
+    return "Player";
+}

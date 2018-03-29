@@ -62,6 +62,8 @@ public:
 
     void hit();
 
+    std::string getName() const override;
+
 private:
     vec2 m_velocity;
     bool m_isFlying[NUM_DIRECTIONS];

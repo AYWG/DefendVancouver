@@ -28,6 +28,8 @@ public:
 
     void decreaseHealth();
 
+    std::string getName() const override;
+
 private:
     int m_health;
 

@@ -33,6 +33,8 @@ public:
 
     bool isDead() const;
 
+    virtual std::string getName() const = 0;
+
 protected:
     vec2 m_position;
     vec2 m_scale;

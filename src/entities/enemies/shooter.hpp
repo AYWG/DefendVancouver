@@ -32,8 +32,6 @@ public:
 
     void draw(const mat3 &projection) override;
 
-//    vec2 getBoundingBox() const override;
-
     Region getBoundingBox() const override;
 
     void attack(float ms) override;
@@ -41,6 +39,8 @@ public:
     unsigned int getMass() const override;
 
     std::vector<std::shared_ptr<ShooterBullet>> &getBullets();
+
+    std::string getName() const override;
 
 
 private:

@@ -244,3 +244,7 @@ void NormalBomb::animate() {
 int NormalBomb::getFrameCount() const {
     return frameCount;
 }
+
+std::string NormalBomb::getName() const {
+    return "NormalBomb";
+}

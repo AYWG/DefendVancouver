@@ -141,12 +141,6 @@ void Shooter::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// Returns the local bounding coordinates scaled by the current size of the turtle
-//vec2 Shooter::getBoundingBox() const {
-//    // fabs is to avoid negative scale due to the facing direction
-//    return {std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height};
-//}
-
 Region Shooter::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height};
     vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
@@ -177,4 +171,8 @@ unsigned int Shooter::getMass() const {
 
 std::vector<std::shared_ptr<ShooterBullet>> &Shooter::getBullets() {
     return m_bullets;
+}
+
+std::string Shooter::getName() const {
+    return "Shooter";
 }

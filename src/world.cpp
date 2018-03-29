@@ -438,7 +438,7 @@ bool World::update(float elapsed_ms) {
     while (shooterIt != m_shooters.end()) {
         auto shooterBulletIt = (*shooterIt)->getBullets().begin();
         while (shooterBulletIt != (*shooterIt)->getBullets().end()) {
-            if ((*shooterBulletIt)->getPosition().y > m_size.y) {
+            if ((*shooterBulletIt)->getPosition().y > m_size.y || (*shooterBulletIt)->isDead()) {
                 shooterBulletIt = (*shooterIt)->getBullets().erase(shooterBulletIt);
                 continue;
             }

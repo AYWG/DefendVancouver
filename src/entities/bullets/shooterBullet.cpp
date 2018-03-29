@@ -149,3 +149,7 @@ Region ShooterBullet::getBoundingBox() const {
 unsigned int ShooterBullet::getMass() const {
     return 10;
 }
+
+std::string ShooterBullet::getName() const {
+    return "ShooterBullet";
+}
