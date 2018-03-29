@@ -33,8 +33,8 @@ void QuadTreeNode::insert(const std::shared_ptr<Entity> &entity) {
             }
         } else {
             if (typeid(*entity) == typeid(Player) || typeid(*entity) == typeid(ShooterBullet)) {
-
-                std::cout << "inserting " << entity->getName() << " into leaf node with region origin " << m_region.origin.x << " and " << m_region.origin.y << std::endl;
+                entity->getName();
+                //std::cout << "inserting " << entity->getName() << " into leaf node with region origin " << m_region.origin.x << " and " << m_region.origin.y << std::endl;
             }
 
             // reached leaf node, so add it to this node
