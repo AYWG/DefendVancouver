@@ -249,11 +249,6 @@ bool World::update(float elapsed_ms) {
                         entity->die();
                         m_player->hit();
                     }
-                    else {
-                        printf("nearby entity pos: %f %f\n", (*nearbyEntity).getPosition().x, (*nearbyEntity).getPosition().y);
-                        printf("player pos: %f %f\n", m_player->getPosition().x, m_player->getPosition().y);
-                    }
-
 //                    if (typeid(*nearbyEntity) == typeid(background)) {
 //                        entity->die();
 //                    }
