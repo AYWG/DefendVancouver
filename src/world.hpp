@@ -50,7 +50,7 @@ public:
 
     vec2 getCityPosition() const;
 
-    void addEntity();
+    void addEntity(std::shared_ptr<Entity> &entity);
 
     vec2 getSize() const;
 
@@ -90,6 +90,8 @@ private:
     std::vector<std::shared_ptr<BomberBomb>> m_bomberBombs;
     std::vector<std::shared_ptr<OneUp>> m_oneups;
     std::vector<std::shared_ptr<Shield>> m_shields;
+
+    std::vector<std::shared_ptr<Entity>> m_entities;
 
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;

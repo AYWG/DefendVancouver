@@ -2,7 +2,10 @@
 // Created by Andy on 2018-02-21.
 //
 
+#include <cmath>
 #include "isPlayerInVision.hpp"
+#include "../../../entities/enemies/enemy.hpp"
+
 
 IsPlayerInVision::STATUS IsPlayerInVision::tick(Enemy *enemy, float ms) {
     auto visionAngleFromNormal = 3.1415f / 6;

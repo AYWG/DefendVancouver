@@ -6,7 +6,6 @@
 
 
 #include "../conditionNode.hpp"
-#include "../../../entities/enemies/enemy.hpp"
 
 class AreBombsInVision : public ConditionNode {
 public:

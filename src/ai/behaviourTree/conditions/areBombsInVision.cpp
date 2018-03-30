@@ -3,7 +3,10 @@
 //
 
 #include <vector>
+#include <cmath>
 #include "areBombsInVision.hpp"
+#include "../../../entities/enemies/enemy.hpp"
+
 
 AreBombsInVision::STATUS AreBombsInVision::tick(Enemy *enemy, float ms) {
     auto visionAngleFromNormal = 3.1415f / 6;

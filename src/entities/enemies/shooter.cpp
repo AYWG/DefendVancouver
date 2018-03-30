@@ -17,8 +17,8 @@ Shooter::~Shooter() {
 }
 
 std::shared_ptr<Shooter> Shooter::spawn(World &world) {
-    ShooterAI ai;
-    auto shooter = std::make_shared<Shooter>(world, ai);
+    auto ai = new ShooterAI;
+    auto shooter = std::make_shared<Shooter>(world, *ai);
     if (shooter->init()) {
         return shooter;
     }

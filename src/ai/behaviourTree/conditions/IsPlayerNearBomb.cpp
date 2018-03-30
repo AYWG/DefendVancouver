@@ -4,6 +4,8 @@
 
 #include <cmath>
 #include "IsPlayerNearBomb.hpp"
+#include "../../../entities/enemies/enemy.hpp"
+
 
 IsPlayerNearBomb::STATUS IsPlayerNearBomb::tick(Enemy *enemy, float ms) {
     auto enemyPosition = enemy->getPosition();

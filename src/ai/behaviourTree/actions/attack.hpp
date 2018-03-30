@@ -6,7 +6,6 @@
 
 
 #include "../actionNode.hpp"
-#include "../../../entities/enemies/enemy.hpp"
 
 /**
  * An attack action.

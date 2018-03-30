@@ -7,8 +7,6 @@
 
 #include "../actionNode.hpp"
 
-class Enemy;
-
 class MoveIntoRange : public ActionNode {
 public:
     STATUS tick(Enemy *enemy, float ms) override;

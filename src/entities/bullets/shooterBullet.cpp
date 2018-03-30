@@ -7,9 +7,7 @@
 
 Texture ShooterBullet::shooterBulletTexture;
 
-ShooterBullet::ShooterBullet(World &world) : Bullet(world) {
-
-}
+ShooterBullet::ShooterBullet(World &world) : Bullet(world) {}
 
 ShooterBullet::~ShooterBullet() {
     destroy();

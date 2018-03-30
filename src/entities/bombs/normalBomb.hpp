@@ -35,8 +35,6 @@ public:
 
     void update(float ms) override;
 
-//    vec2 getBoundingBox() const;
-
     void animate();
 
     Region getBoundingBox() const override;

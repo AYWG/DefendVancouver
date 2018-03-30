@@ -715,6 +715,10 @@ vec2 World::getCityPosition() const {
     return m_background->getPosition();
 }
 
+void World::addEntity(std::shared_ptr<Entity> &entity) {
+    m_entities.emplace_back(entity);
+}
+
 vec2 World::getSize() const {
     return m_size;
 }

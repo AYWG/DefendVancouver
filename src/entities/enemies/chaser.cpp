@@ -32,8 +32,8 @@ bool Chaser::initTexture() {
 }
 
 std::shared_ptr<Chaser> Chaser::spawn(World &world) {
-    ChaserAI ai;
-    auto chaser = std::make_shared<Chaser>(world, ai);
+    auto ai = new ChaserAI;
+    auto chaser = std::make_shared<Chaser>(world, *ai);
     if (chaser->init()) {
         return chaser;
     }

@@ -26,8 +26,8 @@ bool Bomber::initTexture() {
 }
 
 std::shared_ptr<Bomber> Bomber::spawn(World &world) {
-    BomberAI ai;
-    auto bomber = std::make_shared<Bomber>(world, ai);
+    auto ai = new BomberAI;
+    auto bomber = std::make_shared<Bomber>(world, *ai);
     if (bomber->init()) {
         return bomber;
     }

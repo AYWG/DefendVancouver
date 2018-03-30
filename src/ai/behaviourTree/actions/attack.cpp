@@ -3,6 +3,7 @@
 //
 
 #include "attack.hpp"
+#include "../../../entities/enemies/enemy.hpp"
 
 Attack::STATUS Attack::tick(Enemy *enemy, float ms) {
     enemy->attack(ms);

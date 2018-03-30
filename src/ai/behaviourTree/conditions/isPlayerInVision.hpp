@@ -6,7 +6,7 @@
 
 
 #include "../conditionNode.hpp"
-#include "../../../world.hpp"
+
 
 class IsPlayerInVision : public ConditionNode {
 public:
