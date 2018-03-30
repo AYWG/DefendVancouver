@@ -8,6 +8,8 @@
 
 Texture Shield::shieldTexture;
 
+Shield::Shield(World &world) : Entity(world) {}
+
 Shield::~Shield() {
     destroy();
 }
@@ -23,8 +25,8 @@ bool Shield::initTexture() {
     return true;
 }
 
-std::shared_ptr<Shield> Shield::spawn() {
-    auto shield = std::make_shared<Shield>();
+std::shared_ptr<Shield> Shield::spawn(World &world) {
+    auto shield = std::make_shared<Shield>(world);
     if (shield->init()) {
         return shield;
     }
@@ -133,7 +135,7 @@ void Shield::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-bool Shield::update(float ms) {
+void Shield::update(float ms) {
     const float SPEED = 100.f;
     float step = SPEED * (ms / 1000);
     m_position.y += step;

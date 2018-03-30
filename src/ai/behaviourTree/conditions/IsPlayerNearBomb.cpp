@@ -5,12 +5,12 @@
 #include <cmath>
 #include "IsPlayerNearBomb.hpp"
 
-IsPlayerNearBomb::STATUS IsPlayerNearBomb::tick(World *world, Enemy *enemy, float ms) {
+IsPlayerNearBomb::STATUS IsPlayerNearBomb::tick(Enemy *enemy, float ms) {
     auto enemyPosition = enemy->getPosition();
-    auto playerPosition = world->getPlayerPosition();
+    auto playerPosition = enemy->getPlayerPosition();
     std::vector<vec2> bombsCloseToPlayer;
 
-    for (auto bombInVision : enemy->getBombsInVision()) {
+    for (auto &bombInVision : enemy->getBombsInVision()) {
         // TODO: Improve this
         if (std::abs(bombInVision.x - playerPosition.x) < 100 &&
             std::abs(bombInVision.y - playerPosition.y) < 100) {

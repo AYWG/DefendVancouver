@@ -110,10 +110,10 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initTextures();
     totalEnemies = shooters + chasers;
-    m_background = std::make_shared<background>();
+    m_background = std::make_shared<background>(*this);
     m_background->init();
-    m_player = std::make_shared<Player>();
-    return m_player->init(worldSize);
+    m_player = std::make_shared<Player>(*this);
+    return m_player->init();
 
 }
 
@@ -123,7 +123,7 @@ void World::destroy() {
 }
 
 // Update our game world
-bool World::update(float elapsed_ms) {
+void World::update(float elapsed_ms) {
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
@@ -170,7 +170,7 @@ bool World::update(float elapsed_ms) {
     }
 
     for (auto &shooter: m_shooters) {
-        shooter->update(this, elapsed_ms);
+        shooter->update(elapsed_ms);
         m_quad.insert(shooter);
         allEntities.emplace_back(shooter);
         for (auto &bullet: shooter->getBullets()) {
@@ -180,12 +180,12 @@ bool World::update(float elapsed_ms) {
         }
     }
     for (auto &chaser: m_chasers) {
-        chaser->update(this, elapsed_ms);
+        chaser->update(elapsed_ms);
         m_quad.insert(chaser);
         allEntities.emplace_back(chaser);
     }
     for (auto &bomber: m_bombers) {
-        bomber->update(this, elapsed_ms);
+        bomber->update(elapsed_ms);
         m_quad.insert(bomber);
         allEntities.emplace_back(bomber);
     }
@@ -518,7 +518,7 @@ bool World::update(float elapsed_ms) {
 
     m_next_shooter_spawn -= elapsed_ms;
     if (m_next_shooter_spawn < 0.f && shooters != 0) {
-        if (auto newShooter = Shooter::spawn()) {
+        if (auto newShooter = Shooter::spawn(*this)) {
             m_shooters.emplace_back(newShooter);
         }
         auto newShooterPtr = m_shooters.back();
@@ -533,7 +533,7 @@ bool World::update(float elapsed_ms) {
 
     m_next_chaser_spawn -= elapsed_ms;
     if (m_next_chaser_spawn < 0.f && chasers !=0) {
-        if (auto newChaser = Chaser::spawn()) {
+        if (auto newChaser = Chaser::spawn(*this)) {
             m_chasers.emplace_back(newChaser);
         }
         auto newChaserPtr = m_chasers.back();
@@ -548,7 +548,7 @@ bool World::update(float elapsed_ms) {
     // Spawing the bomber
     m_next_bomber_spawn -= elapsed_ms;
     if (m_bombers.size() < MAX_BOMBER && m_next_bomber_spawn) {
-        if (auto newBomber = Bomber::spawn()) {
+        if (auto newBomber = Bomber::spawn(*this)) {
             m_bombers.emplace_back(newBomber);
         }
         auto newBomberPtr = m_bombers.back();
@@ -564,7 +564,7 @@ bool World::update(float elapsed_ms) {
         if (bomberOnScreen(*m_bomber)) {
             m_next_bbomb_spawn -= elapsed_ms;
             if (m_bomberBombs.size() < MAX_BOMBERBOMBS && m_next_bbomb_spawn < 0.f) {
-                if (auto newBomb = BomberBomb::spawn()) {
+                if (auto newBomb = BomberBomb::spawn(*this)) {
                     m_bomberBombs.emplace_back(newBomb);
                 }
                 auto newBombPtr = m_bomberBombs.back();
@@ -579,7 +579,7 @@ bool World::update(float elapsed_ms) {
     m_next_nbomb_spawn -= elapsed_ms;
     if (m_next_nbomb_spawn < 0.f && bombs != 0) {
 
-        if (auto newNormalBomb = NormalBomb::spawn()) {
+        if (auto newNormalBomb = NormalBomb::spawn(*this)) {
             m_normalBombs.emplace_back(newNormalBomb);
         }
         auto newNormalBombPtr = m_normalBombs.back();
@@ -591,7 +591,7 @@ bool World::update(float elapsed_ms) {
     // spawn oneups
     m_next_oneup_spawn -= elapsed_ms;
     if(m_oneups.size() < MAX_POWERUP && m_next_oneup_spawn < 0.f){
-        if (auto newOneUp = OneUp::spawn()) {
+        if (auto newOneUp = OneUp::spawn(*this)) {
             m_oneups.emplace_back(newOneUp);
         }
 
@@ -604,7 +604,7 @@ bool World::update(float elapsed_ms) {
     // spawn shield
     m_next_shield_spawn -= elapsed_ms;
     if(m_shields.size() < MAX_POWERUP && m_next_shield_spawn < 0.f){
-        if (auto newShield = Shield::spawn()) {
+        if (auto newShield = Shield::spawn(*this)) {
             m_shields.emplace_back(newShield);
         }
 
@@ -613,8 +613,6 @@ bool World::update(float elapsed_ms) {
         newShieldPtr->setPosition({m_dist(m_rng) * m_size.x, -200.f});
         m_next_shield_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
     }
-
-    return true;
 }
 
 
@@ -717,6 +715,10 @@ vec2 World::getCityPosition() const {
     return m_background->getPosition();
 }
 
+vec2 World::getSize() const {
+    return m_size;
+}
+
 // Private
 
 bool World::initTextures() {
@@ -795,7 +797,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
         m_background->init();
 
-        m_player->init(m_size);
+        m_player->init();
         m_points = 0;
 
     }

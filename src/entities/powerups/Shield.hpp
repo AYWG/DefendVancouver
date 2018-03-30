@@ -16,7 +16,9 @@ public:
 
     static bool initTexture();
 
-    static std::shared_ptr<Shield> spawn();
+    static std::shared_ptr<Shield> spawn(World &world);
+
+    Shield(World &world);
 
     ~Shield() override;
 
@@ -26,7 +28,7 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    bool update(float ms);
+    void update(float ms);
 
     Region getBoundingBox() const override;
 

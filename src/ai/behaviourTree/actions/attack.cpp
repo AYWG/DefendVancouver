@@ -4,7 +4,7 @@
 
 #include "attack.hpp"
 
-Attack::STATUS Attack::tick(World *world, Enemy *enemy, float ms) {
+Attack::STATUS Attack::tick(Enemy *enemy, float ms) {
     enemy->attack(ms);
     return SUCCESS;
 }

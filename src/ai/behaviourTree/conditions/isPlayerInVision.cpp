@@ -4,9 +4,9 @@
 
 #include "isPlayerInVision.hpp"
 
-IsPlayerInVision::STATUS IsPlayerInVision::tick(World *world, Enemy *enemy, float ms) {
+IsPlayerInVision::STATUS IsPlayerInVision::tick(Enemy *enemy, float ms) {
     auto visionAngleFromNormal = 3.1415f / 6;
-    auto playerPosition = world->getPlayerPosition();
+    auto playerPosition = enemy->getPlayerPosition();
     auto enemyPosition = enemy->getPosition();
 
     if (playerPosition.y > enemyPosition.y) {

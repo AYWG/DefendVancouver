@@ -13,7 +13,7 @@
  */
 
 class Attack : public ActionNode {
-    STATUS tick(World *world, Enemy *enemy, float ms) override;
+    STATUS tick(Enemy *enemy, float ms) override;
 };
 
 

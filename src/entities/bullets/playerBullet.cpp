@@ -7,6 +7,8 @@
 
 Texture PlayerBullet::playerBulletTexture;
 
+PlayerBullet::PlayerBullet(World &world) : Bullet(world) {}
+
 PlayerBullet::~PlayerBullet() {
     destroy();
 }
@@ -21,8 +23,8 @@ bool PlayerBullet::initTexture() {
     return true;
 }
 
-std::shared_ptr<PlayerBullet> PlayerBullet::spawn() {
-    auto playerBullet = std::make_shared<PlayerBullet>();
+std::shared_ptr<PlayerBullet> PlayerBullet::spawn(World &world) {
+    auto playerBullet = std::make_shared<PlayerBullet>(world);
     if (playerBullet->init()) {
         return playerBullet;
     }

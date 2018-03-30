@@ -2,13 +2,15 @@
 // Created by gowth on 2018-02-08.
 //
 #include "player.hpp"
-
+#include "../world.hpp"
 #include <iostream>
 #include <algorithm>
 
 int Player::bulletDelayMS = 200;
 
-bool Player::init(vec2 worldSize) {
+Player::Player(World &world) : Entity(world) {}
+
+bool Player::init() {
     std::vector<uint16_t> indices;
 
     // Reads the salmon mesh from a file, which contains a list of vertices and indices
@@ -78,7 +80,6 @@ bool Player::init(vec2 worldSize) {
     m_num_indices = indices.size();
     m_lives = 5;
     m_position = {700.f, 500.f};
-    m_worldSize = worldSize;
     m_rotation = 0.f;
     m_maxSpeed = 500.f;
     m_isShootingEnabled = false;
@@ -124,8 +125,8 @@ void Player::update(float ms) {
     auto x_step = m_velocity.x * (ms / 1000);
     auto y_step = m_velocity.y * (ms / 1000);
 
-    auto newXPos = std::min(m_worldSize.x - 50.f, std::max(50.f, m_position.x + x_step));
-    auto newYPos = std::min(m_worldSize.y - 50.f, std::max(50.f, m_position.y + y_step));
+    auto newXPos = std::min(m_world->getSize().x - 50.f, std::max(50.f, m_position.x + x_step));
+    auto newYPos = std::min(m_world->getSize().y - 50.f, std::max(50.f, m_position.y + y_step));
     m_position = {newXPos, newYPos};
 
     m_nextBulletSpawn = std::max(0.f, m_nextBulletSpawn - ms);
@@ -213,7 +214,7 @@ unsigned int Player::getMass() const {
 
 void Player::shoot() {
     if (m_nextBulletSpawn == 0.f) {
-        if (auto newPlayerBullet = PlayerBullet::spawn()) {
+        if (auto newPlayerBullet = PlayerBullet::spawn(*m_world)) {
             m_bullets.emplace_back(newPlayerBullet);
         }
         auto newPlayerBulletPtr = m_bullets.back();

@@ -8,7 +8,7 @@
 #include "../../../entities/enemies/enemy.hpp"
 
 class RotateToTarget : public ActionNode {
-    STATUS tick(World *world, Enemy *enemy, float ms) override;
+    STATUS tick(Enemy *enemy, float ms) override;
 };
 
 

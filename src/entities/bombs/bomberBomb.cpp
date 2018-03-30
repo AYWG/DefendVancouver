@@ -8,6 +8,8 @@
 
 Texture BomberBomb::bomb_texture;
 
+BomberBomb::BomberBomb(World &world) : Entity(world) {}
+
 BomberBomb::~BomberBomb() {
     destroy();
 }
@@ -23,8 +25,8 @@ bool BomberBomb::initTexture() {
     return true;
 }
 
-std::shared_ptr<BomberBomb> BomberBomb::spawn() {
-    auto bomb = std::make_shared<BomberBomb>();
+std::shared_ptr<BomberBomb> BomberBomb::spawn(World &world) {
+    auto bomb = std::make_shared<BomberBomb>(world);
     if (bomb->init()) {
         return bomb;
     }
@@ -135,7 +137,7 @@ void BomberBomb::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-bool BomberBomb::update(float ms) {
+void BomberBomb::update(float ms) {
     if(countdown > 0.f){
         countdown -= ms;
     } else {
@@ -222,14 +224,12 @@ bool BomberBomb::update(float ms) {
 
     // Vertex Array (Container for Vertex + Index buffer)
     glGenVertexArrays(1, &mesh.vao);
-    if (gl_has_errors())
-        return false;
+    gl_has_errors();
+//        return false;
 
     // Loading shaders
-    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-        return false;
+    effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 
-    return true;
 }
 
 // Returns the local bounding coordinates scaled by the current size of the bomb

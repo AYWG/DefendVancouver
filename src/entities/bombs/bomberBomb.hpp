@@ -17,7 +17,9 @@ class BomberBomb : public Entity, public Renderable {
 public:
     static bool initTexture();
 
-    static std::shared_ptr<BomberBomb> spawn();
+    static std::shared_ptr<BomberBomb> spawn(World &world);
+
+    BomberBomb(World &world);
 
     ~BomberBomb() override;
 
@@ -29,7 +31,7 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    bool update(float ms);
+    void update(float ms) override;
 
     bool isBlasting();
 

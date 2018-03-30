@@ -18,9 +18,9 @@ class Shooter : public Enemy, public Renderable {
 public:
     static bool initTexture();
 
-    static std::shared_ptr<Shooter> spawn();
+    static std::shared_ptr<Shooter> spawn(World &world);
 
-    explicit Shooter(ShooterAI &ai);
+    Shooter(World &world, ShooterAI &ai);
 
     ~Shooter() override;
 
@@ -28,7 +28,7 @@ public:
 
     void destroy() override;
 
-    void update(World *world, float ms) override;
+    void update(float ms) override;
 
     void draw(const mat3 &projection) override;
 
@@ -44,13 +44,9 @@ public:
 
 
 private:
-    ShooterAI m_ai;
-
-
 //    vec2 get_bounding_box()const;
 
     std::vector<std::shared_ptr<ShooterBullet>> m_bullets;
-
 
     float m_nextBulletSpawn;
 

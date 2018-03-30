@@ -11,13 +11,13 @@
 #include "../entity.hpp"
 #include "../movable.hpp"
 
-class World;
+class AI;
 
 class Enemy : public Entity, public Movable {
 public:
-    virtual bool init() = 0;
+    Enemy(World &world, AI &ai);
 
-    virtual void update(World *world, float ms) = 0;
+    virtual ~Enemy() = default;
 
     float getAngleToTarget() const;
 
@@ -27,13 +27,20 @@ public:
 
     std::vector<vec2> getBombsInVision() const;
 
+    vec2 getPlayerPosition() const;
+
+    std::vector<vec2> getBombPositions() const;
+
+    vec2 getCityPosition() const;
+
     /**
      * Every enemy has a different attack.
      */
     virtual void attack(float ms) = 0;
 
 protected:
-    float m_maxSpeed;
+    std::unique_ptr<AI> m_ai;
+
     float m_angleToTarget;
 
     std::vector<vec2> m_bombsInVision;

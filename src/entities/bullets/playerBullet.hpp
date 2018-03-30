@@ -18,9 +18,11 @@ class PlayerBullet : public Bullet, public Renderable {
     static Texture playerBulletTexture;
 
 public:
+    PlayerBullet(World &world);
+
     static bool initTexture();
 
-    static std::shared_ptr<PlayerBullet> spawn();
+    static std::shared_ptr<PlayerBullet> spawn(World &world);
 
     ~PlayerBullet() override;
 

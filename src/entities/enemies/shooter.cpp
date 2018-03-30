@@ -10,15 +10,15 @@ Texture Shooter::shooterTexture;
 
 int Shooter::bulletDelayMS = 1000;
 
-Shooter::Shooter(ShooterAI &ai) : m_ai(ai), m_nextBulletSpawn(0.f) {}
+Shooter::Shooter(World &world, ShooterAI &ai) : Enemy(world, ai), m_nextBulletSpawn(0.f) {}
 
 Shooter::~Shooter() {
     destroy();
 }
 
-std::shared_ptr<Shooter> Shooter::spawn() {
+std::shared_ptr<Shooter> Shooter::spawn(World &world) {
     ShooterAI ai;
-    auto shooter = std::make_shared<Shooter>(ai);
+    auto shooter = std::make_shared<Shooter>(world, ai);
     if (shooter->init()) {
         return shooter;
     }
@@ -90,8 +90,8 @@ void Shooter::destroy() {
     effect.release();
 }
 
-void Shooter::update(World *world, float ms) {
-    m_ai.doNextAction(world, this, ms);
+void Shooter::update(float ms) {
+    m_ai->doNextAction(this, ms);
 }
 
 void Shooter::draw(const mat3 &projection) {
@@ -141,12 +141,6 @@ void Shooter::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// Returns the local bounding coordinates scaled by the current size of the turtle
-//vec2 Shooter::getBoundingBox() const {
-//    // fabs is to avoid negative scale due to the facing direction
-//    return {std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height};
-//}
-
 Region Shooter::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * shooterTexture.width, std::fabs(m_scale.y) * shooterTexture.height};
     vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
@@ -157,7 +151,7 @@ Region Shooter::getBoundingBox() const {
 void Shooter::attack(float ms) {
     m_nextBulletSpawn -= ms;
     if (m_nextBulletSpawn < 0.f) {
-        if (auto newShooterBullet = ShooterBullet::spawn()) {
+        if (auto newShooterBullet = ShooterBullet::spawn(*m_world)) {
             m_bullets.emplace_back(newShooterBullet);
         }
         auto newShooterBulletPtr = m_bullets.back();

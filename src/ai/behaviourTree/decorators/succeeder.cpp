@@ -4,12 +4,10 @@
 
 #include "succeeder.hpp"
 
-Succeeder::Succeeder(BehaviourTreeNode *child) : DecoratorNode(child) {
+Succeeder::Succeeder(unique_ptr<BehaviourTreeNode> child) : DecoratorNode(std::move(child)) {}
 
-}
-
-Succeeder::STATUS Succeeder::tick(World *world, Enemy *enemy, float ms) {
-    STATUS childStatus = m_child->tick(world, enemy, ms);
+Succeeder::STATUS Succeeder::tick(Enemy *enemy, float ms) {
+    STATUS childStatus = m_child->tick(enemy, ms);
     if (childStatus == RUNNING) {
         return RUNNING;
     }

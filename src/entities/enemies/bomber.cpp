@@ -8,6 +8,8 @@
 
 Texture Bomber::bomber_texture;
 
+Bomber::Bomber(World &world, BomberAI &ai) : Enemy(world, ai) {}
+
 Bomber::~Bomber() {
     destroy();
 }
@@ -23,8 +25,9 @@ bool Bomber::initTexture() {
     return true;
 }
 
-std::shared_ptr<Bomber> Bomber::spawn() {
-    auto bomber = std::make_shared<Bomber>();
+std::shared_ptr<Bomber> Bomber::spawn(World &world) {
+    BomberAI ai;
+    auto bomber = std::make_shared<Bomber>(world, ai);
     if (bomber->init()) {
         return bomber;
     }
@@ -88,10 +91,8 @@ void Bomber::destroy() {
     effect.release();
 }
 
-void Bomber::update(World *world, float ms) {
-    const float SPEED = 100.f;
-    float step = SPEED * (ms / 1000);
-    m_position.x += step;
+void Bomber::update(float ms) {
+    m_ai->doNextAction(this, ms);
 }
 
 void Bomber::draw(const mat3 &projection) {

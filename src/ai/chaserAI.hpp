@@ -8,14 +8,13 @@
 #include "aI.hpp"
 #include "behaviourTree/behaviourTreeNode.hpp"
 
-class World;
 class Enemy;
 
 class ChaserAI : public AI {
 public:
     ChaserAI();
 
-    void doNextAction(World *world, Enemy *enemy, float ms) override;
+    void doNextAction(Enemy *enemy, float ms) override;
 
 private:
     BehaviourTreeNode *m_root;

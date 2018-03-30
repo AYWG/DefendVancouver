@@ -4,6 +4,6 @@
 
 #include "decoratorNode.hpp"
 
-DecoratorNode::DecoratorNode(BehaviourTreeNode* child) : m_child(child) {
+DecoratorNode::DecoratorNode(unique_ptr<BehaviourTreeNode> child) : m_child(std::move(child)) {
 
 }

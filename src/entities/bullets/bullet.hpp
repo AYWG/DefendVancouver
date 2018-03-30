@@ -11,16 +11,11 @@
 
 class Bullet : public Entity, public Movable {
 public:
-    Bullet();
-
-    virtual void update(float ms) = 0;
-
-//    virtual vec2 getBoundingBox() const = 0;
+    Bullet(World &world);
 
     void setVelocity(vec2 velocity);
 
 protected:
-
     vec2 m_velocity;
 };
 

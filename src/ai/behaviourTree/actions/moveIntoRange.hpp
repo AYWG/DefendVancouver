@@ -6,12 +6,12 @@
 
 
 #include "../actionNode.hpp"
-#include "../../../common.hpp"
-#include "../../../world.hpp"
+
+class Enemy;
 
 class MoveIntoRange : public ActionNode {
 public:
-    STATUS tick(World *world, Enemy *enemy, float ms) override;
+    STATUS tick(Enemy *enemy, float ms) override;
 
 };
 

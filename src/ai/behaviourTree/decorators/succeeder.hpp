@@ -9,9 +9,9 @@
 
 class Succeeder : public DecoratorNode {
 public:
-    explicit Succeeder(BehaviourTreeNode* child);
+    explicit Succeeder(unique_ptr<BehaviourTreeNode> child);
 
-    STATUS tick(World *world, Enemy *enemy, float ms) override;
+    STATUS tick(Enemy *enemy, float ms) override;
 };
 
 

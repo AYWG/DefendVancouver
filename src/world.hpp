@@ -18,7 +18,6 @@
 
 // stlib
 #include <vector>
-#include <list>
 #include <random>
 
 
@@ -37,7 +36,7 @@ public:
     void destroy();
 
     // Steps the game ahead by ms milliseconds
-    bool update(float ms);
+    void update(float ms);
 
     // Renders our scene
     void draw();
@@ -50,6 +49,10 @@ public:
     std::vector<vec2> getBombPositions() const;
 
     vec2 getCityPosition() const;
+
+    void addEntity();
+
+    vec2 getSize() const;
 
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;

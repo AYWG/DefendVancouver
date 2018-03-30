@@ -16,7 +16,9 @@ public:
 
     static bool initTexture();
 
-    static std::shared_ptr<OneUp> spawn();
+    static std::shared_ptr<OneUp> spawn(World &world);
+
+    OneUp(World &world);
 
     ~OneUp() override;
 
@@ -26,7 +28,7 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    bool update(float ms);
+    void update(float ms) override;
 
     Region getBoundingBox() const override;
 

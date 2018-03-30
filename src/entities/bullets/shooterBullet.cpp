@@ -7,6 +7,10 @@
 
 Texture ShooterBullet::shooterBulletTexture;
 
+ShooterBullet::ShooterBullet(World &world) : Bullet(world) {
+
+}
+
 ShooterBullet::~ShooterBullet() {
     destroy();
 }
@@ -22,8 +26,8 @@ bool ShooterBullet::initTexture() {
     return true;
 }
 
-std::shared_ptr<ShooterBullet> ShooterBullet::spawn() {
-    auto bullet = std::make_shared<ShooterBullet>();
+std::shared_ptr<ShooterBullet> ShooterBullet::spawn(World &world) {
+    auto bullet = std::make_shared<ShooterBullet>(world);
     if (bullet->init()) {
         return bullet;
     }
