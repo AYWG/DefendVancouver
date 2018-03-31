@@ -54,6 +54,8 @@ public:
 
     vec2 getSize() const;
 
+    bool isEntityInView(const Entity &entity) const;
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;

@@ -140,6 +140,10 @@ void OneUp::update(float ms) {
     const float SPEED = 100.f;
     float step = SPEED * (ms / 1000);
     m_position.y += step;
+
+    if (m_position.y > m_world->getSize().y) {
+        m_isDead = true;
+    }
 }
 
 Region OneUp::getBoundingBox() const {

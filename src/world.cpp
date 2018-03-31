@@ -542,6 +542,10 @@ vec2 World::getSize() const {
     return m_size;
 }
 
+bool World::isEntityInView(const Entity &entity) const {
+    return m_camera.isEntityInView(entity);
+}
+
 // Private
 
 bool World::initTextures() {

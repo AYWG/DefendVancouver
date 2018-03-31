@@ -21,7 +21,7 @@ public:
 
     void update(float ms, const vec2 &targetPos);
 
-    bool isEntityInView(const Entity &entity);
+    bool isEntityInView(const Entity &entity) const;
 
 private:
     // The dimensions of the camera - should be the same as the window

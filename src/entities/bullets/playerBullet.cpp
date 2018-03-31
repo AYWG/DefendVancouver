@@ -92,6 +92,10 @@ void PlayerBullet::update(float ms) {
     float y_step = m_velocity.y * (ms / 1000);
 
     m_position = {m_position.x + x_step, m_position.y + y_step};
+
+    if (!m_world->isEntityInView(*this)) {
+        m_isDead = true;
+    }
 }
 
 

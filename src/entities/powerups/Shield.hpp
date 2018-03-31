@@ -22,13 +22,13 @@ public:
 
     ~Shield() override;
 
-    bool init();
+    bool init() override;
 
     void destroy() override;
 
     void draw(const mat3 &projection) override;
 
-    void update(float ms);
+    void update(float ms) override;
 
     Region getBoundingBox() const override;
 

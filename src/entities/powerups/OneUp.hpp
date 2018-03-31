@@ -22,7 +22,7 @@ public:
 
     ~OneUp() override;
 
-    bool init();
+    bool init() override;
 
     void destroy() override;
 
