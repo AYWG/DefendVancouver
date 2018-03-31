@@ -270,8 +270,8 @@ void Player::hit() {
 }
 
 Region Player::getBoundingBox() const {
-    Vertex min;
-    Vertex max;
+    Vertex min = vertices.front();
+    Vertex max = vertices.front();
     for (auto &vertex : vertices){
         if (vertex.position.x > max.position.x && vertex.position.y > max.position.y){
             max = vertex;

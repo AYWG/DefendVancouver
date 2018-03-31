@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <iostream>
 #include "quadTreeNode.hpp"
-#include "../entities/bullets/shooterBullet.hpp"
-#include "../entities/player.hpp"
 
 const int QuadTreeNode::MAX_ENTITIES = 5;
 const int QuadTreeNode::MAX_LEVELS = 3;
@@ -32,11 +30,6 @@ void QuadTreeNode::insert(const std::shared_ptr<Entity> &entity) {
                 childNode->insert(entity);
             }
         } else {
-            if (typeid(*entity) == typeid(Player) || typeid(*entity) == typeid(ShooterBullet)) {
-                entity->getName();
-                //std::cout << "inserting " << entity->getName() << " into leaf node with region origin " << m_region.origin.x << " and " << m_region.origin.y << std::endl;
-            }
-
             // reached leaf node, so add it to this node
             m_entities.emplace_back(entity);
 

@@ -12,7 +12,6 @@
 
 class QuadTreeNode {
 public:
-
     QuadTreeNode(const int &level, const Region &region);
 
     /**
@@ -27,7 +26,7 @@ public:
     void insert(const std::shared_ptr<Entity> &entity);
 
     /**
-     * Retrieves all entities that the given entity could potentially collide with.
+     * Retrieves all entities that the given entity could potentially collide with. To be called after the tree is formed.
      */
     std::vector<std::shared_ptr<Entity>> getNearbyEntities(const std::shared_ptr<Entity> &entity) const;
 
