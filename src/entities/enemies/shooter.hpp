@@ -36,16 +36,10 @@ public:
 
     void attack(float ms) override;
 
+    void shoot();
+
     unsigned int getMass() const override;
 
-    std::vector<std::shared_ptr<ShooterBullet>> &getBullets();
-
-
 private:
-//    vec2 get_bounding_box()const;
-
-    std::vector<std::shared_ptr<ShooterBullet>> m_bullets;
-
     float m_nextBulletSpawn;
-
 };

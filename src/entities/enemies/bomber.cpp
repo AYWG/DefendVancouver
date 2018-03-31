@@ -3,8 +3,7 @@
 //
 
 #include "bomber.hpp"
-
-#include <cmath>
+#include "../../world.hpp"
 
 Texture Bomber::bomber_texture;
 
@@ -29,6 +28,7 @@ std::shared_ptr<Bomber> Bomber::spawn(World &world) {
     auto ai = new BomberAI;
     auto bomber = std::make_shared<Bomber>(world, *ai);
     if (bomber->init()) {
+        world.addEntity(bomber);
         return bomber;
     }
     fprintf(stderr, "Failed to spawn bomber!");

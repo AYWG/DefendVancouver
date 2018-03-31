@@ -3,8 +3,8 @@
 //
 
 #include <iostream>
-#include <cmath>
 #include "OneUp.hpp"
+#include "../../world.hpp"
 
 Texture OneUp::oneupTexture;
 
@@ -28,6 +28,7 @@ bool OneUp::initTexture() {
 std::shared_ptr<OneUp> OneUp::spawn(World &world) {
     auto oneup = std::make_shared<OneUp>(world);
     if (oneup->init()) {
+        world.addEntity(oneup);
         return oneup;
     }
     fprintf(stderr, "Failed to spawn one up");

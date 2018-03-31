@@ -2,7 +2,7 @@
 // Created by gowth on 2018-02-09.
 //
 #include "playerBullet.hpp"
-#include <cmath>
+#include "../../world.hpp"
 
 
 Texture PlayerBullet::playerBulletTexture;
@@ -26,6 +26,7 @@ bool PlayerBullet::initTexture() {
 std::shared_ptr<PlayerBullet> PlayerBullet::spawn(World &world) {
     auto playerBullet = std::make_shared<PlayerBullet>(world);
     if (playerBullet->init()) {
+        world.addEntity(playerBullet);
         return playerBullet;
     }
     fprintf(stderr, "Failed to spawn player bullet");

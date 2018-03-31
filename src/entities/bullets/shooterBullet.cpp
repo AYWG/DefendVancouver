@@ -3,7 +3,7 @@
 //
 
 #include "shooterBullet.hpp"
-#include <cmath>
+#include "../../world.hpp"
 
 Texture ShooterBullet::shooterBulletTexture;
 
@@ -27,6 +27,7 @@ bool ShooterBullet::initTexture() {
 std::shared_ptr<ShooterBullet> ShooterBullet::spawn(World &world) {
     auto bullet = std::make_shared<ShooterBullet>(world);
     if (bullet->init()) {
+        world.addEntity(bullet);
         return bullet;
     }
     fprintf(stderr, "Failed to spawn shooter bullet");

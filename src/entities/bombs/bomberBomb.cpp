@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include "bomberBomb.hpp"
+#include "../../world.hpp"
 
 Texture BomberBomb::bomb_texture;
 
@@ -28,6 +29,7 @@ bool BomberBomb::initTexture() {
 std::shared_ptr<BomberBomb> BomberBomb::spawn(World &world) {
     auto bomb = std::make_shared<BomberBomb>(world);
     if (bomb->init()) {
+        world.addEntity(bomb);
         return bomb;
     }
     fprintf(stderr, "Failed to spawn bomber bomb");
@@ -230,6 +232,9 @@ void BomberBomb::update(float ms) {
     // Loading shaders
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 
+    if (frameCount == 0) {
+        m_isDead = true;
+    }
 }
 
 // Returns the local bounding coordinates scaled by the current size of the bomb

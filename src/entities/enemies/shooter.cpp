@@ -20,6 +20,7 @@ std::shared_ptr<Shooter> Shooter::spawn(World &world) {
     auto ai = new ShooterAI;
     auto shooter = std::make_shared<Shooter>(world, *ai);
     if (shooter->init()) {
+        world.addEntity(shooter);
         return shooter;
     }
     fprintf(stderr, "Failed to spawn shooter bullet");
@@ -150,25 +151,20 @@ Region Shooter::getBoundingBox() const {
 
 void Shooter::attack(float ms) {
     m_nextBulletSpawn -= ms;
-    if (m_nextBulletSpawn < 0.f) {
-        if (auto newShooterBullet = ShooterBullet::spawn(*m_world)) {
-            m_bullets.emplace_back(newShooterBullet);
-        }
-        auto newShooterBulletPtr = m_bullets.back();
-        newShooterBulletPtr->setPosition(m_position);
+}
 
+void Shooter::shoot() {
+    if (m_nextBulletSpawn < 0.f) {
+        auto newShooterBullet = ShooterBullet::spawn(*m_world);
+        newShooterBullet->setPosition(m_position);
         auto bulletAngle = m_rotation + 3.1415f / 2.f;
         vec2 bulletVelocity = {cosf(bulletAngle) * 325.0f, sinf(bulletAngle) * 325.0f};
-        newShooterBulletPtr->setVelocity(bulletVelocity);
-        newShooterBulletPtr->setRotation(atanf(bulletVelocity.y / bulletVelocity.x) + 3.1415f / 2);
+        newShooterBullet->setVelocity(bulletVelocity);
+        newShooterBullet->setRotation(atanf(bulletVelocity.y / bulletVelocity.x) + 3.1415f / 2);
         m_nextBulletSpawn = Shooter::bulletDelayMS;
     }
 }
 
 unsigned int Shooter::getMass() const {
     return 100;
-}
-
-std::vector<std::shared_ptr<ShooterBullet>> &Shooter::getBullets() {
-    return m_bullets;
 }

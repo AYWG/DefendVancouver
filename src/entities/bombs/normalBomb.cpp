@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include "normalBomb.hpp"
+#include "../../world.hpp"
 
 Texture NormalBomb::bomb_texture;
 
@@ -28,6 +29,7 @@ bool NormalBomb::initTexture() {
 std::shared_ptr<NormalBomb> NormalBomb::spawn(World &world) {
     auto bomb = std::make_shared<NormalBomb>(world);
     if (bomb->init()) {
+        world.addEntity(bomb);
         return bomb;
     }
     fprintf(stderr, "Failed to spawn normal bomb");
@@ -219,6 +221,10 @@ void NormalBomb::update(float ms) {
 
         // Loading shaders
         effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    }
+
+    if (frameCount == 0) {
+        m_isDead = true;
     }
 }
 

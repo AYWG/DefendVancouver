@@ -3,8 +3,8 @@
 //
 
 #include <iostream>
-#include <cmath>
 #include "Shield.hpp"
+#include "../../world.hpp"
 
 Texture Shield::shieldTexture;
 
@@ -28,6 +28,7 @@ bool Shield::initTexture() {
 std::shared_ptr<Shield> Shield::spawn(World &world) {
     auto shield = std::make_shared<Shield>(world);
     if (shield->init()) {
+        world.addEntity(shield);
         return shield;
     }
     fprintf(stderr, "Failed to spawn shield");

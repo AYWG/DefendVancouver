@@ -41,6 +41,8 @@ public:
 
     void setFlying(DIRECTION dir, bool isFlying);
 
+    bool isShooting() const;
+
     void enableShooting(bool isShooting);
 
     void destroy() override;
@@ -50,8 +52,6 @@ public:
     void shoot();
 
     Region getBoundingBox() const override;
-
-    std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
 
     int getLives();
 

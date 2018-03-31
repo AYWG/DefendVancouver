@@ -3,8 +3,7 @@
 //
 
 #include "chaser.hpp"
-
-#include <cmath>
+#include "../../world.hpp"
 #include <stack>
 #include <cfloat>
 #include <set>
@@ -35,6 +34,7 @@ std::shared_ptr<Chaser> Chaser::spawn(World &world) {
     auto ai = new ChaserAI;
     auto chaser = std::make_shared<Chaser>(world, *ai);
     if (chaser->init()) {
+        world.addEntity(chaser);
         return chaser;
     }
     fprintf(stderr, "Failed to spawn chaser!");

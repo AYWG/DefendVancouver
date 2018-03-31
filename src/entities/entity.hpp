@@ -19,6 +19,8 @@ public:
 
     virtual void update(float ms) = 0;
 
+    virtual void draw(const mat3 &projection) = 0;
+
     vec2 getPosition() const;
 
     void setPosition(vec2 position);

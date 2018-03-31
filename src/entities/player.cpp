@@ -8,7 +8,7 @@
 
 int Player::bulletDelayMS = 200;
 
-Player::Player(World &world) : Entity(world) {}
+Player::Player(World &world) : Entity(world), m_nextBulletSpawn(0.f) {}
 
 bool Player::init() {
     std::vector<uint16_t> indices;
@@ -76,7 +76,6 @@ bool Player::init() {
     // Setting initial values
     m_scale.x = 200.f;
     m_scale.y = 200.f;
-    m_lives = 5;
     m_num_indices = indices.size();
     m_lives = 5;
     m_position = {700.f, 500.f};
@@ -84,6 +83,7 @@ bool Player::init() {
     m_maxSpeed = 500.f;
     m_isShootingEnabled = false;
     m_timeSinceLastBulletShot = 1000.f;
+    for (int i = 0; i < NUM_DIRECTIONS; i++) m_isFlying[i] = false;
     m_rng = std::default_random_engine(std::random_device()());
     return true;
 }
@@ -131,9 +131,6 @@ void Player::update(float ms) {
 
     m_nextBulletSpawn = std::max(0.f, m_nextBulletSpawn - ms);
     m_timeSinceLastBulletShot = std::min(1000.f, m_timeSinceLastBulletShot + ms);
-    if (m_isShootingEnabled) {
-        shoot();
-    }
 }
 
 
@@ -176,8 +173,6 @@ void Player::draw(const mat3 &projection) {
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
 
-    // !!! Salmon Color
-
     float color[] = {1.f, 1.f, 1.f};
 
     glUniform3fv(color_uloc, 1, color);
@@ -185,11 +180,8 @@ void Player::draw(const mat3 &projection) {
 
     int light_up = 0;
 
-
     light_up = 0;
     glUniform1iv(light_up_uloc, 1, &light_up);
-
-
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, (GLsizei) m_num_indices, GL_UNSIGNED_SHORT, nullptr);
@@ -204,6 +196,10 @@ void Player::setFlying(DIRECTION dir, bool isFlying) {
     m_isFlying[dir] = isFlying;
 }
 
+bool Player::isShooting() const {
+    return m_isShootingEnabled;
+}
+
 void Player::enableShooting(bool isShooting) {
     m_isShootingEnabled = isShooting;
 }
@@ -214,11 +210,8 @@ unsigned int Player::getMass() const {
 
 void Player::shoot() {
     if (m_nextBulletSpawn == 0.f) {
-        if (auto newPlayerBullet = PlayerBullet::spawn(*m_world)) {
-            m_bullets.emplace_back(newPlayerBullet);
-        }
-        auto newPlayerBulletPtr = m_bullets.back();
-        newPlayerBulletPtr->setPosition(m_position);
+        auto newPlayerBullet = PlayerBullet::spawn(*m_world);
+        newPlayerBullet->setPosition(m_position);
 
         float bulletInitialSpeed = 1000.f;
         float bulletAngleRelativeToPlayer = m_rotation + 3.1415f / 2.f +
@@ -233,15 +226,11 @@ void Player::shoot() {
         vec2 bulletVelocityRelativeToWorld = {m_velocity.x + bulletVelocityRelativeToPlayer.x,
                                               m_velocity.y + bulletVelocityRelativeToPlayer.y};
 
-        newPlayerBulletPtr->setVelocity(bulletVelocityRelativeToWorld);
-        newPlayerBulletPtr->setRotation(atanf(bulletVelocityRelativeToWorld.y / bulletVelocityRelativeToWorld.x) + 3.1415f / 2);
+        newPlayerBullet->setVelocity(bulletVelocityRelativeToWorld);
+        newPlayerBullet->setRotation(atanf(bulletVelocityRelativeToWorld.y / bulletVelocityRelativeToWorld.x) + 3.1415f / 2);
         m_nextBulletSpawn = Player::bulletDelayMS;
         m_timeSinceLastBulletShot = 0.f;
     }
-}
-
-std::vector<std::shared_ptr<PlayerBullet>> &Player::getBullets() {
-    return m_bullets;
 }
 
 // Private methods
