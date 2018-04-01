@@ -153,3 +153,7 @@ Region OneUp::getBoundingBox() const {
 
     return {boxOrigin, boxSize};
 }
+
+std::string OneUp::getName() const {
+    return "OneUp";
+}

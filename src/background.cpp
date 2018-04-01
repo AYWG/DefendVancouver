@@ -140,3 +140,7 @@ Region background::getBoundingBox() const {
 
     return {boxOrigin, boxSize};
 }
+
+std::string background::getName() const {
+    return "background";
+}

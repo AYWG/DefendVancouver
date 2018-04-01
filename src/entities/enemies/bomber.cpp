@@ -157,3 +157,7 @@ unsigned int Bomber::getMass() const {
 void Bomber::attack(float ms) {
 
 }
+
+std::string Bomber::getName() const {
+    return "Bomber";
+}

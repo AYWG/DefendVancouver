@@ -153,3 +153,7 @@ Region Shield::getBoundingBox() const {
 
     return {boxOrigin, boxSize};
 }
+
+std::string Shield::getName() const {
+    return "Shield";
+}

@@ -168,3 +168,7 @@ void Shooter::shoot() {
 unsigned int Shooter::getMass() const {
     return 100;
 }
+
+std::string Shooter::getName() const {
+  return "Shooter";
+}

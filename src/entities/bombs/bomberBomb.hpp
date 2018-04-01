@@ -35,9 +35,9 @@ public:
 
     bool isBlasting();
 
-//    vec2 getBoundingBox() const;
-
     Region getBoundingBox() const override;
+
+    std::string getName() const override;
 
 
 private:

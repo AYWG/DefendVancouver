@@ -33,4 +33,6 @@ public:
     unsigned int getMass() const override;
 
     void attack(float ms) override;
+
+    std::string getName() const override;
 };

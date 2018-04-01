@@ -258,3 +258,7 @@ bool BomberBomb::isBlasting() {
 int BomberBomb::getFrameCount() const {
     return frameCount;
 }
+
+std::string BomberBomb::getName() const {
+    return "BomberBomb";
+}

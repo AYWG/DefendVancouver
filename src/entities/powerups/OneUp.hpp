@@ -32,6 +32,8 @@ public:
 
     Region getBoundingBox() const override;
 
+    std::string getName() const override;
+
 private:
 
     TexturedVertex vertices[4];

@@ -260,8 +260,8 @@ void Player::hit() {
 }
 
 Region Player::getBoundingBox() const {
-    Vertex min;
-    Vertex max;
+    Vertex min = vertices.front();
+    Vertex max = vertices.front();
     for (auto &vertex : vertices){
         if (vertex.position.x > max.position.x && vertex.position.y > max.position.y){
             max = vertex;
@@ -275,4 +275,8 @@ Region Player::getBoundingBox() const {
     vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
+}
+
+std::string Player::getName() const {
+    return "Player";
 }

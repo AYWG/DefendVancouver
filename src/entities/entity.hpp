@@ -39,6 +39,8 @@ public:
 
     bool isDead() const;
 
+    virtual std::string getName() const = 0;
+
 protected:
     World *m_world;
     vec2 m_position;

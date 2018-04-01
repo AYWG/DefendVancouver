@@ -157,3 +157,8 @@ Region PlayerBullet::getBoundingBox() const {
 unsigned int PlayerBullet::getMass() const {
     return 10;
 }
+
+std::string PlayerBullet::getName() const {
+    return "PlayerBullet";
+}
+

@@ -69,4 +69,5 @@ public:
 
     unsigned int getMass() const override;
 
+    std::string getName() const override;
 };

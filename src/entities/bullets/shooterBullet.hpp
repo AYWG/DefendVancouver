@@ -34,6 +34,8 @@ public:
     Region getBoundingBox() const override;
 
     unsigned int getMass() const override;
+
+    std::string getName() const override;
 };
 
 
