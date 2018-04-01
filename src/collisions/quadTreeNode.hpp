@@ -6,6 +6,7 @@
 
 
 #include <vector>
+#include <array>
 #include <memory>
 #include "../entities/entity.hpp"
 #include "../region.hpp"
