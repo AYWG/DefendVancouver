@@ -28,7 +28,7 @@ void Camera::update(float ms, const vec2 &targetPos) {
     m_focusPoint = {newCameraFocusPointX, newCameraFocusPointY};
 }
 
-bool Camera::isEntityInView(const Entity &entity) {
+bool Camera::isEntityInView(const Entity &entity) const {
     auto entityRegion = entity.getBoundingBox();
     bool isWithinLeftBoundary = entityRegion.origin.x + entityRegion.size.x >= getLeftBoundary();
     bool isWithinRightBoundary = entityRegion.origin.x <= getRightBoundary();

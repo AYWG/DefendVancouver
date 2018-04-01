@@ -9,8 +9,8 @@ ChaserAI::ChaserAI() : m_root(nullptr) {
     init();
 }
 
-void ChaserAI::doNextAction(World *world, Enemy *enemy, float ms) {
-    m_root->tick(world, enemy, ms);
+void ChaserAI::doNextAction(Enemy *enemy, float ms) {
+    m_root->tick(enemy, ms);
 }
 
 void ChaserAI::init() {

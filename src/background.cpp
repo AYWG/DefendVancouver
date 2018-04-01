@@ -8,6 +8,8 @@
 
 Texture background::background_texture;
 
+background::background(World &world) : Entity(world) {}
+
 bool background::initTexture() {
     //load texture
     if (!background_texture.is_valid()) {
@@ -63,6 +65,10 @@ bool background::init() {
     m_health = 1000;
 
     return true;
+}
+
+void background::update(float ms) {
+
 }
 
 void background::destroy() {

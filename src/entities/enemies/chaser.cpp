@@ -3,8 +3,7 @@
 //
 
 #include "chaser.hpp"
-
-#include <cmath>
+#include "../../world.hpp"
 #include <stack>
 #include <cfloat>
 #include <set>
@@ -15,7 +14,7 @@ using std::set;
 
 Texture Chaser::chaserTexture;
 
-Chaser::Chaser(ChaserAI &ai) : m_ai(ai) {}
+Chaser::Chaser(World &world, ChaserAI &ai) : Enemy(world, ai) {}
 
 Chaser::~Chaser() {
     destroy();
@@ -31,10 +30,11 @@ bool Chaser::initTexture() {
     return true;
 }
 
-std::shared_ptr<Chaser> Chaser::spawn() {
-    ChaserAI ai;
-    auto chaser = std::make_shared<Chaser>(ai);
+std::shared_ptr<Chaser> Chaser::spawn(World &world) {
+    auto ai = new ChaserAI;
+    auto chaser = std::make_shared<Chaser>(world, *ai);
     if (chaser->init()) {
+        world.addEntity(chaser);
         return chaser;
     }
     fprintf(stderr, "Failed to spawn chaser!");
@@ -102,7 +102,7 @@ void Chaser::destroy() {
 }
 
 
-void Chaser::update(World *world, float ms){
+void Chaser::update(float ms){
     float velcity = 30;
     float x_step = velcity * (ms/1000);
     float  y_step = velcity * (ms/1000);

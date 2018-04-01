@@ -9,9 +9,9 @@
 
 class RepeatUntilFailure : public DecoratorNode {
 public:
-    explicit RepeatUntilFailure(BehaviourTreeNode* child);
+    explicit RepeatUntilFailure(unique_ptr<BehaviourTreeNode> child);
 
-    STATUS tick(World *world, Enemy *enemy, float ms) override;
+    STATUS tick(Enemy *enemy, float ms) override;
 };
 
 

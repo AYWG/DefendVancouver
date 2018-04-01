@@ -5,6 +5,7 @@
 
 #include "../../common.hpp"
 #include "enemy.hpp"
+#include "../../ai/bomberAI.hpp"
 
 class Bomber : public Enemy, public Renderable {
 
@@ -13,7 +14,9 @@ class Bomber : public Enemy, public Renderable {
 public:
     static bool initTexture();
 
-    static std::shared_ptr<Bomber> spawn();
+    static std::shared_ptr<Bomber> spawn(World &world);
+
+    Bomber(World &world, BomberAI &ai);
 
     ~Bomber() override;
 
@@ -21,11 +24,9 @@ public:
 
     void destroy() override;
 
-    void update(World *world, float ms) override;
+    void update(float ms) override;
 
     void draw(const mat3 &projection) override;
-
-//    vec2 getBoundingBox() const override;
 
     Region getBoundingBox() const override;
 

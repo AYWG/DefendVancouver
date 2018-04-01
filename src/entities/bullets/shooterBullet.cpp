@@ -3,9 +3,11 @@
 //
 
 #include "shooterBullet.hpp"
-#include <cmath>
+#include "../../world.hpp"
 
 Texture ShooterBullet::shooterBulletTexture;
+
+ShooterBullet::ShooterBullet(World &world) : Bullet(world) {}
 
 ShooterBullet::~ShooterBullet() {
     destroy();
@@ -22,9 +24,10 @@ bool ShooterBullet::initTexture() {
     return true;
 }
 
-std::shared_ptr<ShooterBullet> ShooterBullet::spawn() {
-    auto bullet = std::make_shared<ShooterBullet>();
+std::shared_ptr<ShooterBullet> ShooterBullet::spawn(World &world) {
+    auto bullet = std::make_shared<ShooterBullet>(world);
     if (bullet->init()) {
+        world.addEntity(bullet);
         return bullet;
     }
     fprintf(stderr, "Failed to spawn shooter bullet");
@@ -136,6 +139,11 @@ void ShooterBullet::update(float ms) {
     float y_step = m_velocity.y * (ms / 1000);
 
     m_position = {m_position.x + x_step, m_position.y + y_step};
+
+    // TODO: remove
+    if (m_position.y > m_world->getSize().y) {
+        m_isDead = true;
+    }
 }
 
 Region ShooterBullet::getBoundingBox() const {

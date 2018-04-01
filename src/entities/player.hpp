@@ -13,11 +13,6 @@
 #include "entity.hpp"
 #include "movable.hpp"
 #include "bullets/playerBullet.hpp"
-#include "enemies/shooter.hpp"
-#include "enemies/bomber.hpp"
-#include "bombs/bomberBomb.hpp"
-#include "powerups/OneUp.hpp"
-#include "powerups/Shield.hpp"
 
 class Player : public Entity, public Movable, public Renderable {
 
@@ -30,8 +25,10 @@ public:
         LEFT, FORWARD, RIGHT, BACKWARD
     } DIRECTION;
 
+    Player(World &world);
+
     //init ship
-    bool init(vec2 worldSize);
+    bool init() override;
 
     // Renders the salmon
     void draw(const mat3 &projection) override;
@@ -40,9 +37,11 @@ public:
     void move(vec2 off);
 
     //UPDATE
-    void update(float ms);
+    void update(float ms) override;
 
     void setFlying(DIRECTION dir, bool isFlying);
+
+    bool isShooting() const;
 
     void enableShooting(bool isShooting);
 
@@ -53,8 +52,6 @@ public:
     void shoot();
 
     Region getBoundingBox() const override;
-
-    std::vector<std::shared_ptr<PlayerBullet>> &getBullets();
 
     int getLives();
 
@@ -72,7 +69,6 @@ private:
     bool m_isShootingEnabled;
     float m_nextBulletSpawn;
     float m_timeSinceLastBulletShot;
-    vec2 m_worldSize;
 
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist{-1.f, 1.f};

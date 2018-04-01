@@ -5,7 +5,10 @@
 #pragma once
 
 
+#include <memory>
 #include "../behaviourTreeNode.hpp"
+
+using std::unique_ptr;
 
 /**
  * A DecoratorNode has a single child
@@ -13,10 +16,10 @@
 
 class DecoratorNode : public BehaviourTreeNode {
 public:
-    explicit DecoratorNode(BehaviourTreeNode* child);
+    explicit DecoratorNode(unique_ptr<BehaviourTreeNode> child);
 
 protected:
-    BehaviourTreeNode* m_child;
+    unique_ptr<BehaviourTreeNode> m_child;
 };
 
 

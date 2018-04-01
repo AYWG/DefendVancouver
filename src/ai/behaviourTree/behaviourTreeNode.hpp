@@ -5,7 +5,6 @@
 #pragma once
 
 
-class World;
 class Enemy;
 
 class BehaviourTreeNode {
@@ -14,7 +13,7 @@ public:
         SUCCESS, FAILURE, RUNNING
     } STATUS;
 
-    virtual STATUS tick(World *world, Enemy *enemy, float ms) = 0;
+    virtual STATUS tick(Enemy *enemy, float ms) = 0;
 };
 
 

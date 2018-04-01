@@ -4,7 +4,7 @@
 
 #include "compositeNode.hpp"
 
-CompositeNode::CompositeNode(const vector<BehaviourTreeNode*>& children)
-        : m_children(children){
+CompositeNode::CompositeNode(vector<unique_ptr<BehaviourTreeNode>> children)
+        : m_children(std::move(children)){
 
 }

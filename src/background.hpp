@@ -14,7 +14,11 @@ class background : public Entity, public Renderable {
 public:
     static bool initTexture();
 
-    bool init();
+    background(World &world);
+
+    bool init() override;
+
+    void update(float ms) override;
 
     void draw(const mat3 &projection);
 

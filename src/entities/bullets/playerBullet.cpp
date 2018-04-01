@@ -2,10 +2,12 @@
 // Created by gowth on 2018-02-09.
 //
 #include "playerBullet.hpp"
-#include <cmath>
+#include "../../world.hpp"
 
 
 Texture PlayerBullet::playerBulletTexture;
+
+PlayerBullet::PlayerBullet(World &world) : Bullet(world) {}
 
 PlayerBullet::~PlayerBullet() {
     destroy();
@@ -21,9 +23,10 @@ bool PlayerBullet::initTexture() {
     return true;
 }
 
-std::shared_ptr<PlayerBullet> PlayerBullet::spawn() {
-    auto playerBullet = std::make_shared<PlayerBullet>();
+std::shared_ptr<PlayerBullet> PlayerBullet::spawn(World &world) {
+    auto playerBullet = std::make_shared<PlayerBullet>(world);
     if (playerBullet->init()) {
+        world.addEntity(playerBullet);
         return playerBullet;
     }
     fprintf(stderr, "Failed to spawn player bullet");
@@ -89,6 +92,10 @@ void PlayerBullet::update(float ms) {
     float y_step = m_velocity.y * (ms / 1000);
 
     m_position = {m_position.x + x_step, m_position.y + y_step};
+
+    if (!m_world->isEntityInView(*this)) {
+        m_isDead = true;
+    }
 }
 
 

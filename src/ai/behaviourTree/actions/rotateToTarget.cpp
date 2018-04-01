@@ -3,8 +3,10 @@
 //
 
 #include "rotateToTarget.hpp"
+#include "../../../entities/enemies/enemy.hpp"
 
-RotateToTarget::STATUS RotateToTarget::tick(World *world, Enemy *enemy, float ms) {
+
+RotateToTarget::STATUS RotateToTarget::tick(Enemy *enemy, float ms) {
     auto targetAngle = enemy->getAngleToTarget();
     auto enemyRotation = enemy->getRotation();
 

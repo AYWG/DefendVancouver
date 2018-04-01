@@ -4,16 +4,22 @@
 
 #pragma once
 
-
 #include "../common.hpp"
 #include "../region.hpp"
+class World;
 
 class Entity {
 
 public:
-    Entity();
+    Entity(World &world);
 
     virtual ~Entity() = default;
+
+    virtual bool init() = 0;
+
+    virtual void update(float ms) = 0;
+
+    virtual void draw(const mat3 &projection) = 0;
 
     vec2 getPosition() const;
 
@@ -34,6 +40,7 @@ public:
     bool isDead() const;
 
 protected:
+    World *m_world;
     vec2 m_position;
     vec2 m_scale;
     float m_rotation;

@@ -3,10 +3,12 @@
 //
 
 #include <iostream>
-#include <cmath>
 #include "OneUp.hpp"
+#include "../../world.hpp"
 
 Texture OneUp::oneupTexture;
+
+OneUp::OneUp(World &world) : Entity(world) {}
 
 OneUp::~OneUp() {
     destroy();
@@ -23,9 +25,10 @@ bool OneUp::initTexture() {
     return true;
 }
 
-std::shared_ptr<OneUp> OneUp::spawn() {
-    auto oneup = std::make_shared<OneUp>();
+std::shared_ptr<OneUp> OneUp::spawn(World &world) {
+    auto oneup = std::make_shared<OneUp>(world);
     if (oneup->init()) {
+        world.addEntity(oneup);
         return oneup;
     }
     fprintf(stderr, "Failed to spawn one up");
@@ -133,10 +136,14 @@ void OneUp::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-bool OneUp::update(float ms) {
+void OneUp::update(float ms) {
     const float SPEED = 100.f;
     float step = SPEED * (ms / 1000);
     m_position.y += step;
+
+    if (m_position.y > m_world->getSize().y) {
+        m_isDead = true;
+    }
 }
 
 Region OneUp::getBoundingBox() const {

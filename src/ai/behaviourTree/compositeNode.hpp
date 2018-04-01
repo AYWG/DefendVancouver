@@ -6,9 +6,11 @@
 
 
 #include <vector>
+#include <memory>
 #include "behaviourTreeNode.hpp"
 
 using std::vector;
+using std::unique_ptr;
 
 /**
  * A CompositeNode has one or more children. Each of its children are processed
@@ -17,10 +19,10 @@ using std::vector;
 
 class CompositeNode : public BehaviourTreeNode {
 public:
-    explicit CompositeNode(const vector<BehaviourTreeNode*>& children);
+    explicit CompositeNode(vector<unique_ptr<BehaviourTreeNode>> children);
 
 protected:
-    vector<BehaviourTreeNode*> m_children;
+    vector<unique_ptr<BehaviourTreeNode>> m_children;
 
 };
 

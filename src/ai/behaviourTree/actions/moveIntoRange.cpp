@@ -3,11 +3,13 @@
 //
 
 #include "moveIntoRange.hpp"
+#include "../../../entities/enemies/enemy.hpp"
+
 
 // TODO: make this more generic
-MoveIntoRange::STATUS MoveIntoRange::tick(World *world, Enemy *enemy, float ms) {
+MoveIntoRange::STATUS MoveIntoRange::tick(Enemy *enemy, float ms) {
     // Check if in range
-    if (world->getCityPosition().y - enemy->getPosition().y <= 500) {
+    if (enemy->getCityPosition().y - enemy->getPosition().y <= 500) {
         return SUCCESS;
     }
 

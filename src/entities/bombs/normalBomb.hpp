@@ -19,11 +19,13 @@ class NormalBomb : public Entity, public Renderable {
 public:
     static bool initTexture();
 
-    static std::shared_ptr<NormalBomb> spawn();
+    static std::shared_ptr<NormalBomb> spawn(World &world);
+
+    NormalBomb(World &world);
 
     ~NormalBomb() override;
 
-    bool init();
+    bool init() override;
 
     void destroy() override;
 
@@ -31,9 +33,7 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    bool update(float ms);
-
-//    vec2 getBoundingBox() const;
+    void update(float ms) override;
 
     void animate();
 

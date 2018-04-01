@@ -4,7 +4,8 @@
 
 #include "entity.hpp"
 
-Entity::Entity() : m_position({0.f, 0.f}), m_rotation(0.f), m_scale({1.f, 1.f}), m_isDead(false) {}
+Entity::Entity(World &world) : m_world(&world), m_position({0.f, 0.f}), m_rotation(0.f), m_scale({1.f, 1.f}),
+                               m_isDead(false) {}
 
 vec2 Entity::getPosition() const {
     return m_position;
