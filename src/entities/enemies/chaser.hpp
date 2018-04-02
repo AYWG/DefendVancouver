@@ -7,6 +7,7 @@
 
 #include "enemy.hpp"
 #include "../../ai/chaserAI.hpp"
+#include "../player.hpp"
 
 
 using std::pair;
@@ -70,4 +71,7 @@ public:
     unsigned int getMass() const override;
 
     std::string getName() const override;
+
+    void chaserMethod();
+
 };

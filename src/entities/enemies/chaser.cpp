@@ -108,6 +108,8 @@ void Chaser::update(float ms){
     float  y_step = velcity * (ms/1000);
 
     move({x_step, y_step});
+
+    chaserMethod();
 }
 
 void Chaser::draw(const mat3 &projection) {
@@ -759,4 +761,136 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest) {
 
 std::string Chaser::getName() const {
     return "Chaser";
+}
+
+void Chaser::chaserMethod(){
+    bool srcFound = false;
+    bool destFound = false;
+    float width = m_world->width;
+    float height = m_world->height;
+
+
+    int j = 0;
+    int l = 0;
+    if (!srcFound) {
+        for (float k = 50.f/*0.f*/; k <= 3000.f /*1200.f*/; k += width) {
+            for (float i = /*0*/50.f; i <= 1500.f; i += height) {
+                if (getPosition().y >= 50.f && getPosition().y < height
+                    && getPosition().x >= 50.f && getPosition().x < width) {
+                    //  Pair src = make_pair(0, 0);
+                    j = 0;
+                    l = 0;
+                    srcFound = true;
+                    if (srcFound) {
+                        break;
+                    }
+
+                } else if ((getPosition().y >= (i) && getPosition().y < (i + height))
+                           && (getPosition().x >= (k) && getPosition().x < (k + width))) {
+                    // Pair src = make_pair(j,l);
+                    srcFound = true;
+                    if (srcFound) {
+                        break;
+                    }
+                }
+                j++;
+            }
+            if (srcFound) {
+                break;
+            }
+            l++;
+            j = 0;
+        }
+    }
+
+    int a = 0;
+    int b = 0;
+
+    if (!destFound) {
+        for (float k = /*0*/50.f; k <= /*1200*/3000.f; k += width) {
+            for (float i = 50.f; i <= 1500.f; i += height) {
+                if (m_world->getPlayerPosition().y >= 50.f && m_world->getPlayerPosition().y < height
+                    && m_world->getPlayerPosition().x >= 50.f && m_world->getPlayerPosition().x < width) {
+                    //Pair dest = make_pair(0, 0);
+                    a = 0;
+                    b = 0;
+                    destFound = true;
+                    if (destFound) {
+                        break;
+                    }
+                } else if ((m_world->getPlayerPosition().y >= (i) &&m_world->getPlayerPosition().y < (i + height))
+                           && (m_world->getPlayerPosition().x >= (k) && m_world->getPlayerPosition().x < (k + width))) {
+                    //Pair dest = make_pair(a,b);
+                    destFound = true;
+                    if (destFound) {
+                        break;
+                    }
+                }
+
+                a++;
+            }
+            if (destFound) {
+                break;
+            }
+            b++;
+            a = 0;
+        }
+    }
+
+    //ASTAR
+
+
+/*    for (auto &m_bomb : m_bomberBombs){
+        int j = 0;
+        int l = 0;
+        for (float k = 50.f*//*0.f*//*; k <= 5000.f *//*1200.f*//*; k += width) {
+            for (float i = *//*0*//*50.f; i <= 1000.f; i += height) {
+                if (m_bomb.getPosition().y >= 50.f && m_bomb.getPosition().y < height
+                    && m_bomb.getPosition().x >= 50.f && m_bomb.getPosition().x < width) {
+                    //  Pair src = make_pair(0, 0);
+                    j = 0;
+                    l = 0;
+                    grid[j][l] = 0;
+                    grid[j+2][l] = 0;
+                    grid[j-2][l] = 0;
+                    grid[j][l+2] = 0;
+                    grid[j][l+2] = 0;
+                    grid[j+2][l+2] = 0;
+                    grid[j-2][l+2] = 0;
+                    grid[j+2][l-2] = 0;
+                    grid[j+2][l-2] = 0;
+
+                   // printf("FOUND!");
+
+
+                } else if ((m_bomb->getPosition().y >= (i) && m_bomb->getPosition().y < (i + height))
+                           && (m_bomb->getPosition().x >= (k) && m_bomb->getPosition().x < (k + width))) {
+                    // Pair src = make_pair(j,l);
+                    grid[j][l] = 0;
+                    grid[j+2][l] = 0;
+                    grid[j-2][l] = 0;
+                    grid[j][l+2] = 0;
+                    grid[j][l+2] = 0;
+                    grid[j+2][l+2] = 0;
+                    grid[j-2][l+2] = 0;
+                    grid[j+2][l-2] = 0;
+                    grid[j+2][l-2] = 0;
+
+                   // printf("FOUND!");
+                }
+                j++;
+            }
+
+            l++;
+            j = 0;
+        }
+    }*/
+
+
+    if (destFound && srcFound) {
+        Pair src = std::make_pair(j, l);
+        Pair dest = std::make_pair(a, b);
+        aStarSearch(m_world->grid, src, dest);
+    }
+
 }
