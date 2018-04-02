@@ -8,6 +8,8 @@
 
 Texture background::background_texture;
 
+background::background(World &world) : Entity(world) {}
+
 bool background::initTexture() {
     //load texture
     if (!background_texture.is_valid()) {
@@ -63,6 +65,10 @@ bool background::init() {
     m_health = 1000;
 
     return true;
+}
+
+void background::update(float ms) {
+
 }
 
 void background::destroy() {
@@ -133,4 +139,8 @@ Region background::getBoundingBox() const {
     vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
+}
+
+std::string background::getName() const {
+    return "background";
 }

@@ -27,9 +27,9 @@ class Chaser : public Enemy, public Renderable {
 public:
     static bool initTexture();
 
-    static std::shared_ptr<Chaser> spawn();
+    static std::shared_ptr<Chaser> spawn(World &world);
 
-    explicit Chaser(ChaserAI &ai);
+    Chaser(World &world, ChaserAI &ai);
 
     ~Chaser() override;
 
@@ -45,11 +45,9 @@ public:
 
     void destroy() override;
 
-    void update(World *world, float ms) override;
+    void update(float ms) override;
 
     void draw(const mat3 &projection) override;
-
-//    vec2 getBoundingBox() const override;
 
     Region getBoundingBox() const override;
 
@@ -71,10 +69,5 @@ public:
 
     unsigned int getMass() const override;
 
-private:
-    ChaserAI m_ai;
-
-    //    vec2 getBoundingBox()const;
-
-
+    std::string getName() const override;
 };

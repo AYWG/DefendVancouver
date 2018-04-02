@@ -14,8 +14,8 @@
 
 class SelectorNode : public CompositeNode {
 public:
-    explicit SelectorNode(const vector<BehaviourTreeNode*>& children);
-    STATUS tick(World *world, Enemy *enemy, float ms) override;
+    explicit SelectorNode(vector<unique_ptr<BehaviourTreeNode>> children);
+    SelectorNode::STATUS tick(Enemy *enemy, float ms) override;
 };
 
 

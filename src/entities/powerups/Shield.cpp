@@ -3,10 +3,12 @@
 //
 
 #include <iostream>
-#include <cmath>
 #include "Shield.hpp"
+#include "../../world.hpp"
 
 Texture Shield::shieldTexture;
+
+Shield::Shield(World &world) : Entity(world) {}
 
 Shield::~Shield() {
     destroy();
@@ -23,9 +25,10 @@ bool Shield::initTexture() {
     return true;
 }
 
-std::shared_ptr<Shield> Shield::spawn() {
-    auto shield = std::make_shared<Shield>();
+std::shared_ptr<Shield> Shield::spawn(World &world) {
+    auto shield = std::make_shared<Shield>(world);
     if (shield->init()) {
+        world.addEntity(shield);
         return shield;
     }
     fprintf(stderr, "Failed to spawn shield");
@@ -133,10 +136,14 @@ void Shield::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-bool Shield::update(float ms) {
+void Shield::update(float ms) {
     const float SPEED = 100.f;
     float step = SPEED * (ms / 1000);
     m_position.y += step;
+
+    if (m_position.y > m_world->getSize().y) {
+        m_isDead = true;
+    }
 }
 
 Region Shield::getBoundingBox() const {
@@ -145,4 +152,8 @@ Region Shield::getBoundingBox() const {
     vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
+}
+
+std::string Shield::getName() const {
+    return "Shield";
 }

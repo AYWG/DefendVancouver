@@ -2,13 +2,15 @@
 // Created by gowth on 2018-02-08.
 //
 #include "player.hpp"
-
+#include "../world.hpp"
 #include <iostream>
 #include <algorithm>
 
 int Player::bulletDelayMS = 200;
 
-bool Player::init(vec2 worldSize) {
+Player::Player(World &world) : Entity(world), m_nextBulletSpawn(0.f) {}
+
+bool Player::init() {
     std::vector<uint16_t> indices;
 
     // Reads the salmon mesh from a file, which contains a list of vertices and indices
@@ -74,15 +76,14 @@ bool Player::init(vec2 worldSize) {
     // Setting initial values
     m_scale.x = 200.f;
     m_scale.y = 200.f;
-    m_lives = 5;
     m_num_indices = indices.size();
     m_lives = 5;
     m_position = {700.f, 500.f};
-    m_worldSize = worldSize;
     m_rotation = 0.f;
     m_maxSpeed = 500.f;
     m_isShootingEnabled = false;
     m_timeSinceLastBulletShot = 1000.f;
+    for (int i = 0; i < NUM_DIRECTIONS; i++) m_isFlying[i] = false;
     m_rng = std::default_random_engine(std::random_device()());
     return true;
 }
@@ -124,15 +125,12 @@ void Player::update(float ms) {
     auto x_step = m_velocity.x * (ms / 1000);
     auto y_step = m_velocity.y * (ms / 1000);
 
-    auto newXPos = std::min(m_worldSize.x - 50.f, std::max(50.f, m_position.x + x_step));
-    auto newYPos = std::min(m_worldSize.y - 50.f, std::max(50.f, m_position.y + y_step));
+    auto newXPos = std::min(m_world->getSize().x - 50.f, std::max(50.f, m_position.x + x_step));
+    auto newYPos = std::min(m_world->getSize().y - 50.f, std::max(50.f, m_position.y + y_step));
     m_position = {newXPos, newYPos};
 
     m_nextBulletSpawn = std::max(0.f, m_nextBulletSpawn - ms);
     m_timeSinceLastBulletShot = std::min(1000.f, m_timeSinceLastBulletShot + ms);
-    if (m_isShootingEnabled) {
-        shoot();
-    }
 }
 
 
@@ -175,8 +173,6 @@ void Player::draw(const mat3 &projection) {
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
 
-    // !!! Salmon Color
-
     float color[] = {1.f, 1.f, 1.f};
 
     glUniform3fv(color_uloc, 1, color);
@@ -184,11 +180,8 @@ void Player::draw(const mat3 &projection) {
 
     int light_up = 0;
 
-
     light_up = 0;
     glUniform1iv(light_up_uloc, 1, &light_up);
-
-
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, (GLsizei) m_num_indices, GL_UNSIGNED_SHORT, nullptr);
@@ -203,6 +196,10 @@ void Player::setFlying(DIRECTION dir, bool isFlying) {
     m_isFlying[dir] = isFlying;
 }
 
+bool Player::isShooting() const {
+    return m_isShootingEnabled;
+}
+
 void Player::enableShooting(bool isShooting) {
     m_isShootingEnabled = isShooting;
 }
@@ -213,11 +210,8 @@ unsigned int Player::getMass() const {
 
 void Player::shoot() {
     if (m_nextBulletSpawn == 0.f) {
-        if (auto newPlayerBullet = PlayerBullet::spawn()) {
-            m_bullets.emplace_back(newPlayerBullet);
-        }
-        auto newPlayerBulletPtr = m_bullets.back();
-        newPlayerBulletPtr->setPosition(m_position);
+        auto newPlayerBullet = PlayerBullet::spawn(*m_world);
+        newPlayerBullet->setPosition(m_position);
 
         float bulletInitialSpeed = 1000.f;
         float bulletAngleRelativeToPlayer = m_rotation + 3.1415f / 2.f +
@@ -232,15 +226,11 @@ void Player::shoot() {
         vec2 bulletVelocityRelativeToWorld = {m_velocity.x + bulletVelocityRelativeToPlayer.x,
                                               m_velocity.y + bulletVelocityRelativeToPlayer.y};
 
-        newPlayerBulletPtr->setVelocity(bulletVelocityRelativeToWorld);
-        newPlayerBulletPtr->setRotation(atanf(bulletVelocityRelativeToWorld.y / bulletVelocityRelativeToWorld.x) + 3.1415f / 2);
+        newPlayerBullet->setVelocity(bulletVelocityRelativeToWorld);
+        newPlayerBullet->setRotation(atanf(bulletVelocityRelativeToWorld.y / bulletVelocityRelativeToWorld.x) + 3.1415f / 2);
         m_nextBulletSpawn = Player::bulletDelayMS;
         m_timeSinceLastBulletShot = 0.f;
     }
-}
-
-std::vector<std::shared_ptr<PlayerBullet>> &Player::getBullets() {
-    return m_bullets;
 }
 
 // Private methods
@@ -270,8 +260,8 @@ void Player::hit() {
 }
 
 Region Player::getBoundingBox() const {
-    Vertex min;
-    Vertex max;
+    Vertex min = vertices.front();
+    Vertex max = vertices.front();
     for (auto &vertex : vertices){
         if (vertex.position.x > max.position.x && vertex.position.y > max.position.y){
             max = vertex;
@@ -285,4 +275,8 @@ Region Player::getBoundingBox() const {
     vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
+}
+
+std::string Player::getName() const {
+    return "Player";
 }

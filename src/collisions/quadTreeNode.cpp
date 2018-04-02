@@ -3,6 +3,7 @@
 //
 
 #include <algorithm>
+#include <iostream>
 #include "quadTreeNode.hpp"
 
 const int QuadTreeNode::MAX_ENTITIES = 5;

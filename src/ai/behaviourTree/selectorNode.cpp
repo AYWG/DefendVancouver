@@ -4,13 +4,11 @@
 
 #include "selectorNode.hpp"
 
-SelectorNode::SelectorNode(const vector<BehaviourTreeNode *> &children) : CompositeNode(children) {
+SelectorNode::SelectorNode(vector<unique_ptr<BehaviourTreeNode>> children) : CompositeNode(std::move(children)) {}
 
-}
-
-SelectorNode::STATUS SelectorNode::tick(World *world, Enemy *enemy, float ms) {
+SelectorNode::STATUS SelectorNode::tick(Enemy *enemy, float ms) {
     for (auto &child : m_children) {
-        STATUS childStatus = child->tick(world, enemy, ms);
+        STATUS childStatus = child->tick(enemy, ms);
         if (childStatus == RUNNING) {
             return RUNNING;
         } else if (childStatus == SUCCESS) {

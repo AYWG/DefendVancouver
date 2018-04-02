@@ -5,8 +5,11 @@
 #include <iostream>
 #include <cmath>
 #include "normalBomb.hpp"
+#include "../../world.hpp"
 
 Texture NormalBomb::bomb_texture;
+
+NormalBomb::NormalBomb(World &world) : Entity(world) {}
 
 NormalBomb::~NormalBomb() {
     destroy();
@@ -23,9 +26,10 @@ bool NormalBomb::initTexture() {
     return true;
 }
 
-std::shared_ptr<NormalBomb> NormalBomb::spawn() {
-    auto bomb = std::make_shared<NormalBomb>();
+std::shared_ptr<NormalBomb> NormalBomb::spawn(World &world) {
+    auto bomb = std::make_shared<NormalBomb>(world);
     if (bomb->init()) {
+        world.addEntity(bomb);
         return bomb;
     }
     fprintf(stderr, "Failed to spawn normal bomb");
@@ -133,7 +137,7 @@ void NormalBomb::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-bool NormalBomb::update(float ms) {
+void NormalBomb::update(float ms) {
     if (isHit && frameCount != 0) {
         frameCount--;
 
@@ -214,14 +218,14 @@ bool NormalBomb::update(float ms) {
 
         // Vertex Array (Container for Vertex + Index buffer)
         glGenVertexArrays(1, &mesh.vao);
-        if (gl_has_errors())
-            return false;
 
         // Loading shaders
-        if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-            return false;
+        effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     }
-    return true;
+
+    if (frameCount == 0) {
+        m_isDead = true;
+    }
 }
 
 // Returns the local bounding coordinates scaled by the current size of the bomb
@@ -243,4 +247,8 @@ void NormalBomb::animate() {
 
 int NormalBomb::getFrameCount() const {
     return frameCount;
+}
+
+std::string NormalBomb::getName() const {
+    return "NormalBomb";
 }

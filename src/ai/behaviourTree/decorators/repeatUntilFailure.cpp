@@ -4,12 +4,12 @@
 
 #include "repeatUntilFailure.hpp"
 
-RepeatUntilFailure::RepeatUntilFailure(BehaviourTreeNode *child) : DecoratorNode(child) {
+RepeatUntilFailure::RepeatUntilFailure(unique_ptr<BehaviourTreeNode> child) : DecoratorNode(std::move(child)) {
 
 }
 
-RepeatUntilFailure::STATUS RepeatUntilFailure::tick(World *world, Enemy *enemy, float ms) {
-    STATUS childStatus = m_child->tick(world, enemy, ms);
+RepeatUntilFailure::STATUS RepeatUntilFailure::tick(Enemy *enemy, float ms) {
+    STATUS childStatus = m_child->tick(enemy, ms);
     if (childStatus == FAILURE) {
         return SUCCESS;
     }

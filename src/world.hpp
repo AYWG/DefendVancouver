@@ -18,7 +18,6 @@
 
 // stlib
 #include <vector>
-#include <list>
 #include <random>
 
 
@@ -37,7 +36,7 @@ public:
     void destroy();
 
     // Steps the game ahead by ms milliseconds
-    bool update(float ms);
+    void update(float ms);
 
     // Renders our scene
     void draw();
@@ -51,6 +50,12 @@ public:
 
     vec2 getCityPosition() const;
 
+    void addEntity(std::shared_ptr<Entity> entity);
+
+    vec2 getSize() const;
+
+    bool isEntityInView(const Entity &entity) const;
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;
@@ -58,9 +63,12 @@ public:
 private:
     bool initTextures();
 
-    void playerBounce(const NormalBomb &bomb);
+    std::shared_ptr<Player> getPlayer() const;
 
-    bool bomberOnScreen(Bomber &bomber);
+    std::shared_ptr<background> getBackground() const;
+
+
+    void playerBounce(const NormalBomb &bomb);
 
     // !!! INPUT CALLBACK FUNCTIONS
     void onKey(GLFWwindow *, int key, int, int action, int mod);
@@ -76,17 +84,10 @@ private:
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
 
-//    background m_background;
-    // Game entities
-    std::shared_ptr<background> m_background;
-    std::shared_ptr<Player> m_player;
-    std::vector<std::shared_ptr<Chaser>> m_chasers;
-    std::vector<std::shared_ptr<Shooter>> m_shooters;
-    std::vector<std::shared_ptr<Bomber>> m_bombers;
-    std::vector<std::shared_ptr<NormalBomb>> m_normalBombs;
-    std::vector<std::shared_ptr<BomberBomb>> m_bomberBombs;
-    std::vector<std::shared_ptr<OneUp>> m_oneups;
-    std::vector<std::shared_ptr<Shield>> m_shields;
+    /**
+     * All entities in the world. The background will always be the first entity, followed by the player.
+     */
+    std::vector<std::shared_ptr<Entity>> m_entities;
 
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;

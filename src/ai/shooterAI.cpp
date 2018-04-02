@@ -17,29 +17,32 @@ ShooterAI::ShooterAI() : m_root(nullptr) {
     init();
 }
 
-void ShooterAI::doNextAction(World *world, Enemy *enemy, float ms) {
-    m_root->tick(world, enemy, ms);
+void ShooterAI::doNextAction(Enemy *enemy, float ms) {
+    m_root->tick(enemy, ms);
 }
 
 void ShooterAI::init() {
-    auto moveIntoRangeNode = new MoveIntoRange();
-    auto attackNode = new Attack();
-    auto rotateToTargetNode = new RotateToTarget();
-    auto isPlayerInVisionNode = new IsPlayerInVision();
-    auto areBombsInVisionNode = new AreBombsInVision();
-    auto isPlayerNearBombNode = new IsPlayerNearBomb();
+    vector<std::unique_ptr<BehaviourTreeNode>> findTargetSequenceChildren;
+    findTargetSequenceChildren.emplace_back(std::unique_ptr<IsPlayerInVision>(new IsPlayerInVision));
+    findTargetSequenceChildren.emplace_back(std::unique_ptr<AreBombsInVision>(new AreBombsInVision));
+    findTargetSequenceChildren.emplace_back(std::unique_ptr<IsPlayerNearBomb>(new IsPlayerNearBomb));
 
-    vector<BehaviourTreeNode *> findTargetSequenceChildren = {isPlayerInVisionNode, areBombsInVisionNode, isPlayerNearBombNode};
-    auto findTargetSequenceNode = new SequenceNode(findTargetSequenceChildren);
-    auto succeederNode = new Succeeder(findTargetSequenceNode);
+    auto findTargetSequenceNode = std::unique_ptr<SequenceNode>(new SequenceNode(std::move(findTargetSequenceChildren)));
+    auto succeederNode = std::unique_ptr<Succeeder>(new Succeeder(std::move(findTargetSequenceNode)));
 
-    vector<BehaviourTreeNode *> attackingSequenceChildren = {succeederNode, rotateToTargetNode, attackNode};
-    auto attackingSequenceNode = new SequenceNode(attackingSequenceChildren);
+    vector<std::unique_ptr<BehaviourTreeNode>> attackingSequenceChildren;
+    attackingSequenceChildren.emplace_back(std::move(succeederNode));
+    attackingSequenceChildren.emplace_back(std::unique_ptr<RotateToTarget>(new RotateToTarget));
+    attackingSequenceChildren.emplace_back(std::unique_ptr<Attack>(new Attack));
 
-    auto repeatUntilFailureNode = new RepeatUntilFailure(attackingSequenceNode);
+    auto attackingSequenceNode = std::unique_ptr<SequenceNode>(new SequenceNode(std::move(attackingSequenceChildren)));
+    auto repeatUntilFailureNode = std::unique_ptr<RepeatUntilFailure>(new RepeatUntilFailure(std::move(attackingSequenceNode)));
 
-    vector<BehaviourTreeNode *> rootSequenceChildren = {moveIntoRangeNode, repeatUntilFailureNode};
-    auto rootSequenceNode = new SequenceNode(rootSequenceChildren);
+    vector<std::unique_ptr<BehaviourTreeNode>> rootSequenceChildren;
+    rootSequenceChildren.emplace_back(std::unique_ptr<MoveIntoRange>(new MoveIntoRange));
+    rootSequenceChildren.emplace_back(std::move(repeatUntilFailureNode));
 
-    m_root = rootSequenceNode;
+    auto rootSequenceNode = std::unique_ptr<SequenceNode>(new SequenceNode(std::move(rootSequenceChildren)));
+
+    m_root = std::move(rootSequenceNode);
 }
