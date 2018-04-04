@@ -45,8 +45,10 @@ private:
     TexturedVertex vertices[4];
 
     bool isHit;
-    // true if bomb is hit
     int frameCount;
+    float frameWidth;
+    float frameHeight;
+
 
 };
 
