@@ -1,5 +1,6 @@
 // Header
 #include "world.hpp"
+#include "../stb-cmake/stb_image.h"
 
 
 
@@ -103,6 +104,16 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetKeyCallback(m_window, key_redirect);
     glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
+
+    int width, height;
+    stbi_uc* data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
+    GLFWimage image;
+    image.width = width;
+    image.height = height;
+    image.pixels = data;
+
+    GLFWcursor* cursor = glfwCreateCursor(&image, 0, 0);
+    glfwSetCursor(m_window, cursor);
 
     waveNo = 1;
     m_size = worldSize;
@@ -655,15 +666,5 @@ void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
             getPlayer()->enableShooting(false);
         }
     }
-}
-
-////////////////////// Private methods
-
-/**
- * Initialize all of the UI elements
- * @return
- */
-bool World::initUI() {
-    return m_crosshair.init();
 }
 
