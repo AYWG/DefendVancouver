@@ -56,6 +56,7 @@ public:
 
     bool isEntityInView(const Entity &entity) const;
 
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;
@@ -67,7 +68,6 @@ private:
     bool initTextures();
 
     std::shared_ptr<Player> getPlayer() const;
-
     std::shared_ptr<background> getBackground() const;
 
 
@@ -79,6 +79,8 @@ private:
     void onMouseMove(GLFWwindow *window, double xpos, double ypos);
 
     void onMouseClick(GLFWwindow *window, int button, int action, int mod);
+
+    void waveText(const char *text, int length, int x, int y);
 
 
 

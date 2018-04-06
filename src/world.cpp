@@ -1,5 +1,6 @@
 // Header
 #include "world.hpp"
+#include "../../../../../../../../cygwin64/usr/include/w32api/GL/gl.h"
 
 
 
@@ -8,6 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
+#include <GL/gl.h>
 
 typedef pair<int, int> Pair;
 
@@ -504,18 +506,19 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     }
 
     // Resetting game
-    if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
-        int w, h;
-        glfwGetWindowSize(m_window, &w, &h);
-        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
-        waveNo = 1;
+    if (getPlayer().get()->m_lives < 1) {
+            int w, h;
+            glfwGetWindowSize(m_window, &w, &h);
+            totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
+            waveNo = 1;
 
-        getBackground()->init();
+            getBackground()->init();
 
-        getPlayer()->init();
-        m_points = 0;
+            getPlayer()->init();
+            m_points = 0;
 
     }
+
 }
 
 
@@ -539,4 +542,9 @@ void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
             getPlayer()->enableShooting(false);
         }
     }
+}
+
+void World::waveText(const char *text, int length, int x, int y) {
+
+
 }
