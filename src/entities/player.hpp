@@ -27,6 +27,8 @@ public:
 
     Player(World &world);
 
+    int m_lives;
+
     //init ship
     bool init() override;
 
@@ -67,7 +69,7 @@ private:
     float m_maxSpeed;
     size_t m_num_indices;
     std::vector<Vertex> vertices;
-    int m_lives;
+
     bool m_isShootingEnabled;
     float m_nextBulletSpawn;
     float m_timeSinceLastBulletShot;

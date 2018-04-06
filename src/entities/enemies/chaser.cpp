@@ -109,7 +109,7 @@ void Chaser::update(float ms){
 
     move({x_step, y_step});
 
-    chaserMethod();
+    aStarGridPlacement();
 }
 
 void Chaser::draw(const mat3 &projection) {
@@ -763,7 +763,7 @@ std::string Chaser::getName() const {
     return "Chaser";
 }
 
-void Chaser::chaserMethod(){
+void Chaser::aStarGridPlacement(){
     bool srcFound = false;
     bool destFound = false;
     float width = m_world->width;
@@ -884,7 +884,7 @@ void Chaser::chaserMethod(){
             l++;
             j = 0;
         }
-    }*/
+    } */
 
 
     if (destFound && srcFound) {

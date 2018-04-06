@@ -7,7 +7,7 @@
 
 #include "enemy.hpp"
 #include "../../ai/chaserAI.hpp"
-#include "../player.hpp"
+
 
 
 using std::pair;
@@ -27,6 +27,8 @@ class Chaser : public Enemy, public Renderable {
 
 public:
     static bool initTexture();
+
+
 
     static std::shared_ptr<Chaser> spawn(World &world);
 
@@ -72,6 +74,6 @@ public:
 
     std::string getName() const override;
 
-    void chaserMethod();
+    void aStarGridPlacement();
 
 };
