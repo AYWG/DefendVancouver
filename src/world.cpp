@@ -1,6 +1,5 @@
 // Header
 #include "world.hpp"
-#include "../../../../../../../../cygwin64/usr/include/w32api/GL/gl.h"
 
 
 
