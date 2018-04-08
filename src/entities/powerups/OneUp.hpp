@@ -14,13 +14,11 @@ class OneUp : public Entity, public Renderable{
 
 public:
 
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<OneUp> spawn(World &world);
 
     OneUp(World &world);
-
-    ~OneUp() override;
 
     bool init() override;
 

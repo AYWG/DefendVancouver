@@ -10,11 +10,7 @@ Texture OneUp::oneupTexture;
 
 OneUp::OneUp(World &world) : Entity(world) {}
 
-OneUp::~OneUp() {
-    destroy();
-}
-
-bool OneUp::initTexture() {
+bool OneUp::initGraphics() {
     //load texture
     if (!oneupTexture.is_valid()) {
         if (!oneupTexture.load_from_file(textures_path("1up.png"))) {
@@ -74,9 +70,6 @@ bool OneUp::init() {
     // Loading shaders
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
-
-    //m_scale.x = 0.2f;
-    //m_scale.y = 0.4f;
 
     return true;
 }

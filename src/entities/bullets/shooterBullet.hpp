@@ -17,11 +17,9 @@ class ShooterBullet : public Bullet, public Renderable {
 public:
     ShooterBullet(World& world);
 
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<ShooterBullet> spawn(World &world);
-
-    ~ShooterBullet() override;
 
     bool init();
 

@@ -14,13 +14,11 @@ class Shield : public Entity, public Renderable {
 
 public:
 
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<Shield> spawn(World &world);
 
     Shield(World &world);
-
-    ~Shield() override;
 
     bool init() override;
 

@@ -26,15 +26,13 @@ class Chaser : public Enemy, public Renderable {
     static Texture chaserTexture;
 
 public:
-    static bool initTexture();
+    static bool initGraphics();
 
 
 
     static std::shared_ptr<Chaser> spawn(World &world);
 
     Chaser(World &world, ChaserAI &ai);
-
-    ~Chaser() override;
 
     //Neccesary param
     struct cell {

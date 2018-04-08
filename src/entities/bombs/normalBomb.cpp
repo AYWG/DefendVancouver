@@ -11,11 +11,7 @@ Texture NormalBomb::bomb_texture;
 
 NormalBomb::NormalBomb(World &world) : Entity(world) {}
 
-NormalBomb::~NormalBomb() {
-    destroy();
-}
-
-bool NormalBomb::initTexture() {
+bool NormalBomb::initGraphics() {
     //load texture
     if (!bomb_texture.is_valid()) {
         if (!bomb_texture.load_from_file(textures_path("normal_bomb.png"))) {
@@ -159,12 +155,6 @@ void NormalBomb::update(float ms) {
         m_isDead = true;
     }
 }
-
-// Returns the local bounding coordinates scaled by the current size of the bomb
-//vec2 NormalBomb::getBoundingBox() const {
-//     fabs is to avoid negative scale due to the facing direction
-//    return {std::fabs(m_scale.x) * (bomb_texture.width / 3), std::fabs(m_scale.y) * (bomb_texture.height / 3)};
-//}
 
 Region NormalBomb::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * bomb_texture.width, std::fabs(m_scale.y) * bomb_texture.height};

@@ -16,11 +16,7 @@ Texture Chaser::chaserTexture;
 
 Chaser::Chaser(World &world, ChaserAI &ai) : Enemy(world, ai) {}
 
-Chaser::~Chaser() {
-    destroy();
-}
-
-bool Chaser::initTexture() {
+bool Chaser::initGraphics() {
     if (!chaserTexture.is_valid()) {
         if (!chaserTexture.load_from_file(textures_path("chaser.png"))) {
             fprintf(stderr, "Failed to load chaser texture!");

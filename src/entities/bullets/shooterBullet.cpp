@@ -9,11 +9,7 @@ Texture ShooterBullet::shooterBulletTexture;
 
 ShooterBullet::ShooterBullet(World &world) : Bullet(world) {}
 
-ShooterBullet::~ShooterBullet() {
-    destroy();
-}
-
-bool ShooterBullet::initTexture() {
+bool ShooterBullet::initGraphics() {
     //Load texture
     if (!shooterBulletTexture.is_valid()) {
         if (!shooterBulletTexture.load_from_file(textures_path("shooterBullet.png"))) {

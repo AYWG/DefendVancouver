@@ -12,7 +12,7 @@ class background : public Entity, public Renderable {
 
     static Texture background_texture;
 public:
-    static bool initTexture();
+    static bool initGraphics();
 
     background(World &world);
 

@@ -12,10 +12,6 @@ int Shooter::bulletDelayMS = 1000;
 
 Shooter::Shooter(World &world, ShooterAI &ai) : Enemy(world, ai), m_nextBulletSpawn(0.f) {}
 
-Shooter::~Shooter() {
-    destroy();
-}
-
 std::shared_ptr<Shooter> Shooter::spawn(World &world) {
     auto ai = new ShooterAI;
     auto shooter = std::make_shared<Shooter>(world, *ai);
@@ -27,7 +23,7 @@ std::shared_ptr<Shooter> Shooter::spawn(World &world) {
     return nullptr;
 }
 
-bool Shooter::initTexture() {
+bool Shooter::initGraphics() {
     if (!shooterTexture.is_valid()) {
         if (!shooterTexture.load_from_file(textures_path("shooter_new.png"))) {
             fprintf(stderr, "Failed to load shooter texture!");

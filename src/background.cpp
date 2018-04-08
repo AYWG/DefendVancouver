@@ -10,7 +10,7 @@ Texture background::background_texture;
 
 background::background(World &world) : Entity(world) {}
 
-bool background::initTexture() {
+bool background::initGraphics() {
     //load texture
     if (!background_texture.is_valid()) {
         if (!background_texture.load_from_file(textures_path("skyline.png"))) {

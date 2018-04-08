@@ -11,11 +11,7 @@ Texture BomberBomb::bomb_texture;
 
 BomberBomb::BomberBomb(World &world) : Entity(world) {}
 
-BomberBomb::~BomberBomb() {
-    destroy();
-}
-
-bool BomberBomb::initTexture() {
+bool BomberBomb::initGraphics() {
     //load texture
     if (!bomb_texture.is_valid()) {
         if (!bomb_texture.load_from_file(textures_path("bomber_bomb.png"))) {

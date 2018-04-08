@@ -15,13 +15,11 @@ class BomberBomb : public Entity, public Renderable {
 
     static Texture bomb_texture;
 public:
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<BomberBomb> spawn(World &world);
 
     BomberBomb(World &world);
-
-    ~BomberBomb() override;
 
     bool init();
 

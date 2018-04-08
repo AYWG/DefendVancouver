@@ -12,13 +12,11 @@ class Bomber : public Enemy, public Renderable {
     static Texture bomber_texture;
 
 public:
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<Bomber> spawn(World &world);
 
     Bomber(World &world, BomberAI &ai);
-
-    ~Bomber() override;
 
     bool init() override;
 

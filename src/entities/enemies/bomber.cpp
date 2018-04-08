@@ -9,11 +9,7 @@ Texture Bomber::bomber_texture;
 
 Bomber::Bomber(World &world, BomberAI &ai) : Enemy(world, ai) {}
 
-Bomber::~Bomber() {
-    destroy();
-}
-
-bool Bomber::initTexture() {
+bool Bomber::initGraphics() {
     if (!bomber_texture.is_valid()) {
         if (!bomber_texture.load_from_file(textures_path("bomber.png"))) {
 

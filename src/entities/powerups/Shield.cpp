@@ -10,11 +10,7 @@ Texture Shield::shieldTexture;
 
 Shield::Shield(World &world) : Entity(world) {}
 
-Shield::~Shield() {
-    destroy();
-}
-
-bool Shield::initTexture() {
+bool Shield::initGraphics() {
     //load texture
     if (!shieldTexture.is_valid()) {
         if (!shieldTexture.load_from_file(textures_path("shield.png"))) {
