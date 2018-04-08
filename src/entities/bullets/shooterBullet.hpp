@@ -12,7 +12,6 @@
 
 
 class ShooterBullet : public Bullet, public Renderable {
-    static Texture shooterBulletTexture;
 
 public:
     ShooterBullet(World& world);
@@ -21,7 +20,7 @@ public:
 
     static std::shared_ptr<ShooterBullet> spawn(World &world);
 
-    bool init();
+    bool init() override;
 
     void destroy() override;
 
@@ -34,6 +33,9 @@ public:
     unsigned int getMass() const override;
 
     std::string getName() const override;
+
+private:
+    static Graphics gfx;
 };
 
 

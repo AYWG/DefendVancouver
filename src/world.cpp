@@ -120,7 +120,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
-    initTextures();
+    initGraphics();
     totalEnemies = shooters + chasers;
     auto bg = std::make_shared<background>(*this);
     bg->init();
@@ -446,7 +446,7 @@ bool World::isEntityInView(const Entity &entity) const {
 
 // Private
 
-bool World::initTextures() {
+bool World::initGraphics() {
     return BomberBomb::initGraphics() &&
            NormalBomb::initGraphics() &&
            OneUp::initGraphics() &&

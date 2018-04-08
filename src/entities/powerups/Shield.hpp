@@ -10,8 +10,6 @@
 
 class Shield : public Entity, public Renderable {
 
-    static Texture shieldTexture;
-
 public:
 
     static bool initGraphics();
@@ -33,6 +31,5 @@ public:
     std::string getName() const override;
 
 private:
-
-    TexturedVertex vertices[4];
+    static Graphics gfx;
 };

@@ -2,8 +2,6 @@
 // Created by Shrey Swades Nayak on 2018-03-19.
 //
 
-#ifndef DEFENDVANCOUVER_BOMBERBOMB_HPP
-#define DEFENDVANCOUVER_BOMBERBOMB_HPP
 #pragma once
 
 #include <memory>
@@ -13,7 +11,6 @@
 
 class BomberBomb : public Entity, public Renderable {
 
-    static Texture bomb_texture;
 public:
     static bool initGraphics();
 
@@ -21,7 +18,7 @@ public:
 
     BomberBomb(World &world);
 
-    bool init();
+    bool init() override;
 
     void destroy() override;
 
@@ -39,8 +36,7 @@ public:
 
 
 private:
-    TexturedVertex vertices[4];
-
+    static Graphics gfx;
     bool isHit;
     int frameCount;
     float countdown;
@@ -48,5 +44,3 @@ private:
     float frameHeight;
 
 };
-
-#endif //DEFENDVANCOUVER_BOMBERBOMB_HPP

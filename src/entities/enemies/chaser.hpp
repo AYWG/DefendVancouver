@@ -23,7 +23,6 @@ typedef pair<double, pair<int, int> > pPair;
 
 
 class Chaser : public Enemy, public Renderable {
-    static Texture chaserTexture;
 
 public:
     static bool initGraphics();
@@ -74,4 +73,7 @@ public:
 
     void aStarGridPlacement();
 
+
+private:
+    static Graphics gfx;
 };

@@ -23,7 +23,7 @@ public:
 
     static std::shared_ptr<PlayerBullet> spawn(World &world);
 
-    bool init();
+    bool init() override;
 
     void destroy() override;
 

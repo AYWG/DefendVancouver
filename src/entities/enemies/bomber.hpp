@@ -9,8 +9,6 @@
 
 class Bomber : public Enemy, public Renderable {
 
-    static Texture bomber_texture;
-
 public:
     static bool initGraphics();
 
@@ -33,4 +31,7 @@ public:
     void attack(float ms) override;
 
     std::string getName() const override;
+
+private:
+    static Graphics gfx;
 };
