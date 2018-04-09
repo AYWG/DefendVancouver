@@ -208,7 +208,7 @@ void World::update(float elapsed_ms) {
                     } else if (typeid(*nearbyEntity) == typeid(NormalBomb)) {
                         totalEnemies--;
                         playerBounce(*(std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)));
-                        std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)->animate();
+                        std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)->explode();
                         entity->die();
                     } else if (typeid(*nearbyEntity) == typeid(Chaser)) {
                         totalEnemies--;
@@ -442,6 +442,10 @@ vec2 World::getSize() const {
 
 bool World::isEntityInView(const Entity &entity) const {
     return m_camera.isEntityInView(entity);
+}
+
+void World::addPoints(int points) {
+    m_points += points;
 }
 
 // Private

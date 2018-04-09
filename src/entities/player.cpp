@@ -255,10 +255,6 @@ void Player::addLives() {
     m_lives++;
 }
 
-void Player::hit() {
-    m_lives--;
-}
-
 Region Player::getBoundingBox() const {
     Vertex min = vertices.front();
     Vertex max = vertices.front();
@@ -282,4 +278,20 @@ std::string Player::getName() const {
     return "Player";
 }
 
+void Player::onCollision(Entity &entity) {
+    if (entity) {
 
+    }
+}
+
+void Player::takeDamage() {
+    m_lives--;
+}
+
+bool Player::isDamageable() const {
+    return true;
+}
+
+Player::FACTION Player::getFaction() const {
+    return FACTION::HUMAN;
+}

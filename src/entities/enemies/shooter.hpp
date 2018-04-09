@@ -31,11 +31,15 @@ public:
 
     void attack(float ms) override;
 
+    int getPoints() const override;
+
     void shoot();
 
     unsigned int getMass() const override;
 
     std::string getName() const override;
+
+
 private:
     static Graphics gfx;
     static int bulletDelayMS;

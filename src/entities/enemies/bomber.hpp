@@ -30,6 +30,8 @@ public:
 
     void attack(float ms) override;
 
+    int getPoints() const override;
+
     std::string getName() const override;
 
 private:

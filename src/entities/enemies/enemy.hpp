@@ -7,7 +7,6 @@
 
 #include <vector>
 #include "../../common.hpp"
-#include "../bombs/normalBomb.hpp"
 #include "../entity.hpp"
 #include "../movable.hpp"
 
@@ -37,6 +36,19 @@ public:
      * Every enemy has a different attack.
      */
     virtual void attack(float ms) = 0;
+
+    /**
+     * Every enemy is worth some number of points
+     */
+    virtual int getPoints() const = 0;
+
+    void onCollision(Entity &other) override;
+
+    void takeDamage() override;
+
+    bool isDamageable() const override;
+
+    FACTION getFaction() const override;
 
 protected:
     std::unique_ptr<AI> m_ai;

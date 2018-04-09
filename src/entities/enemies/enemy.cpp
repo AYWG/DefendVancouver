@@ -35,3 +35,24 @@ std::vector<vec2> Enemy::getBombPositions() const {
 vec2 Enemy::getCityPosition() const {
     return m_world->getCityPosition();
 }
+
+void Enemy::onCollision(Entity &other) {
+    // use faction check for short circuit eval
+    if (typeid(other) == typeid(Player) ) {
+        other.takeDamage();
+    }
+}
+
+void Enemy::takeDamage() {
+    // TODO: only add points if damage taken causes enemy health to go below 0
+    m_world->addPoints(getPoints());
+    die();
+}
+
+bool Enemy::isDamageable() const {
+    return true;
+}
+
+Enemy::FACTION Enemy::getFaction() const {
+    return FACTION::ALIEN;
+}

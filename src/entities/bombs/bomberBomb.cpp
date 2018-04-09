@@ -9,7 +9,7 @@
 
 Graphics BomberBomb::gfx;
 
-BomberBomb::BomberBomb(World &world) : Entity(world) {}
+BomberBomb::BomberBomb(World &world) : Bomb(world) {}
 
 bool BomberBomb::initGraphics() {
     //load texture
@@ -69,7 +69,7 @@ std::shared_ptr<BomberBomb> BomberBomb::spawn(World &world) {
 
 
 bool BomberBomb::init() {
-    isHit = false;
+    m_isHit = false;
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
     frameCount = 0;
@@ -146,10 +146,10 @@ void BomberBomb::update(float ms) {
     if(countdown > 0.f){
         countdown -= ms;
     } else {
-        isHit = true;
+        m_isHit = true;
     }
 
-    if(!isHit){
+    if(!m_isHit){
         frameCount = 1;
     } else {
         frameCount++;
@@ -175,13 +175,13 @@ Region BomberBomb::getBoundingBox() const {
 
 
 bool BomberBomb::isBlasting() {
-    return isHit;
-}
-
-int BomberBomb::getFrameCount() const {
-    return frameCount;
+    return m_isHit;
 }
 
 std::string BomberBomb::getName() const {
     return "BomberBomb";
+}
+
+BomberBomb::FACTION BomberBomb::getFaction() const {
+    return FACTION::ALIEN;
 }
