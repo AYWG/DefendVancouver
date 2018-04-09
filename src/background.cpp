@@ -148,6 +148,10 @@ void background::onCollision(Entity &other) {
     // do nothing
 }
 
+void background::takeDamage() {
+    decreaseHealth();
+}
+
 bool background::isDamageable() const {
     return true;
 }

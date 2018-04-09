@@ -8,7 +8,7 @@
 
 Graphics Shield::gfx;
 
-Shield::Shield(World &world) : Entity(world) {}
+Shield::Shield(World &world) : PowerUp(world) {}
 
 bool Shield::initGraphics() {
     //load texture
@@ -132,16 +132,6 @@ void Shield::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void Shield::update(float ms) {
-    const float SPEED = 100.f;
-    float step = SPEED * (ms / 1000);
-    m_position.y += step;
-
-    if (m_position.y > m_world->getSize().y) {
-        m_isDead = true;
-    }
-}
-
 Region Shield::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width,
                     std::fabs(m_scale.y) * gfx.texture.height};
@@ -155,7 +145,9 @@ std::string Shield::getName() const {
 }
 
 void Shield::onCollision(Entity &other) {
-    if () {
-
+    if (!m_isDead && typeid(other) == typeid(Player)) {
+        //TODO: replace with actual shield behaviour
+        m_world->increaseCityHealth();
+        die();
     }
 }

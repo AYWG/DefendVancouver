@@ -251,7 +251,7 @@ int Player::getLives() {
     return m_lives;
 }
 
-void Player::addLives() {
+void Player::addLife() {
     m_lives++;
 }
 
@@ -279,9 +279,7 @@ std::string Player::getName() const {
 }
 
 void Player::onCollision(Entity &entity) {
-    if (entity) {
 
-    }
 }
 
 void Player::takeDamage() {

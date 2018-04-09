@@ -37,8 +37,7 @@ vec2 Enemy::getCityPosition() const {
 }
 
 void Enemy::onCollision(Entity &other) {
-    // use faction check for short circuit eval
-    if (typeid(other) == typeid(Player) ) {
+    if (typeid(other) == typeid(Player)) {
         other.takeDamage();
     }
 }

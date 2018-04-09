@@ -11,7 +11,7 @@ void Bullet::setVelocity(vec2 velocity) {
 }
 
 void Bullet::onCollision(Entity &other) {
-    if (other.isDamageable() && other.getFaction() != getFaction()) {
+    if (!m_isDead && other.isDamageable() && other.getFaction() != getFaction()) {
         other.takeDamage();
         // The bullet has done damage; it is now dead
         die();

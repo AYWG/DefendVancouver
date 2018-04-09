@@ -57,7 +57,7 @@ public:
 
     int getLives();
 
-    void addLives();
+    void addLife();
 
     std::string getName() const override;
 

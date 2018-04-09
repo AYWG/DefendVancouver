@@ -8,7 +8,7 @@
 
 Graphics OneUp::gfx;
 
-OneUp::OneUp(World &world) : Entity(world) {}
+OneUp::OneUp(World &world) : PowerUp(world) {}
 
 bool OneUp::initGraphics() {
     //load texture
@@ -127,16 +127,6 @@ void OneUp::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void OneUp::update(float ms) {
-    const float SPEED = 100.f;
-    float step = SPEED * (ms / 1000);
-    m_position.y += step;
-
-    if (m_position.y > m_world->getSize().y) {
-        m_isDead = true;
-    }
-}
-
 Region OneUp::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width,
                     std::fabs(m_scale.y) * gfx.texture.height};
@@ -150,8 +140,8 @@ std::string OneUp::getName() const {
 }
 
 void OneUp::onCollision(Entity &other) {
-    if (other.getFaction() == ) {
-
+    if (!m_isDead && typeid(other) == typeid(Player)) {
+        m_world->addPlayerLife();
         die();
     }
 }

@@ -6,6 +6,7 @@
 
 
 #include <vector>
+#include <memory>
 #include "../../common.hpp"
 #include "../entity.hpp"
 #include "../movable.hpp"

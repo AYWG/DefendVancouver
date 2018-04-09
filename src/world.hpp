@@ -58,6 +58,10 @@ public:
 
     void addPoints(int points);
 
+    void addPlayerLife();
+
+    void increaseCityHealth();
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;

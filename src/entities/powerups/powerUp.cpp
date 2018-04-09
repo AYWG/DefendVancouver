@@ -13,12 +13,12 @@ void PowerUp::update(float ms) {
     m_position.y += step;
 
     if (m_position.y > m_world->getSize().y) {
-        m_isDead = true;
+        die();
     }
 }
 
-void PowerUp::onCollision(Entity &other) {
-
+void PowerUp::takeDamage() {
+    // PowerUps cannot take damage
 }
 
 bool PowerUp::isDamageable() const {

@@ -13,6 +13,8 @@ public:
 
     void update(float ms) override;
 
+    void takeDamage() override;
+
     bool isDamageable() const override;
 
     FACTION getFaction() const override;

@@ -197,59 +197,9 @@ void World::update(float elapsed_ms) {
         auto nearbyEntities = m_quad.getNearbyEntities(entity);
         for (auto &nearbyEntity: nearbyEntities) {
             // run collision detection between entities
-            if (typeid(*entity) == typeid(PlayerBullet)) {
-                if (entity->isCollidingWith(*nearbyEntity)) {
-                    // Handle collision based on nearbyEntity's type
-                    if (typeid(*nearbyEntity) == typeid(Shooter)) {
-                        totalEnemies--;
-                        m_points += 5;
-                        nearbyEntity->die();
-                        entity->die();
-                    } else if (typeid(*nearbyEntity) == typeid(NormalBomb)) {
-                        totalEnemies--;
-                        playerBounce(*(std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)));
-                        std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)->explode();
-                        entity->die();
-                    } else if (typeid(*nearbyEntity) == typeid(Chaser)) {
-                        totalEnemies--;
-                        m_points += 10;
-                        nearbyEntity->die();
-                        entity->die();
-                    } else if (typeid(*nearbyEntity) == typeid(Bomber)) {
-                        m_points += 10;
-                        nearbyEntity->die();
-                        entity->die();
-                    }
-                }
-            } else if (typeid(*entity) == typeid(ShooterBullet)) {
-                if (entity->isCollidingWith(*nearbyEntity)) {
-                    if (typeid(*nearbyEntity) == typeid(Player)) {
-                        entity->die();
-                        getPlayer()->hit();
-                    }
-//                    if (typeid(*nearbyEntity) == typeid(background)) {
-//                        entity->die();
-//                    }
-                }
-            } else if (typeid(*entity) == typeid(Player)) {
-                if (entity->isCollidingWith(*nearbyEntity)) {
-                    if (typeid(*nearbyEntity) == typeid(BomberBomb) &&
-                        std::dynamic_pointer_cast<BomberBomb>(nearbyEntity)->isBlasting()) {
-                        getPlayer()->hit();
-                    } else if (typeid(*nearbyEntity) == typeid(OneUp)) {
-                        getPlayer()->addLives();
-                        nearbyEntity->die();
-                    } else if (typeid(*nearbyEntity) == typeid(Shield)) {
-                        getBackground()->addHealth();
-                        nearbyEntity->die();
-                    } else if (typeid(*nearbyEntity) == typeid(Shooter)) {
-                        getPlayer()->hit();
-                    } else if (typeid(*nearbyEntity) == typeid(Chaser)) {
-                        getPlayer()->hit();
-                    } else if (typeid(*nearbyEntity) == typeid(Bomber)) {
-                        getPlayer()->hit();
-                    }
-                }
+            if (entity->isCollidingWith(*nearbyEntity)) {
+                entity->onCollision(*nearbyEntity);
+                nearbyEntity->onCollision(*entity);
             }
         }
     }
@@ -446,6 +396,14 @@ bool World::isEntityInView(const Entity &entity) const {
 
 void World::addPoints(int points) {
     m_points += points;
+}
+
+void World::addPlayerLife() {
+    getPlayer()->addLife();
+}
+
+void World::increaseCityHealth() {
+    getBackground()->addHealth();
 }
 
 // Private

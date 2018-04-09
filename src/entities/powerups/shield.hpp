@@ -24,8 +24,6 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    void update(float ms) override;
-
     Region getBoundingBox() const override;
 
     std::string getName() const override;
