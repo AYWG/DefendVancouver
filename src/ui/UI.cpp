@@ -14,6 +14,6 @@ void UI::update(World *world, float ms) {
 
 }
 
-void UI::draw() {
+void UI::draw(const mat3 &projection) {
 
 }

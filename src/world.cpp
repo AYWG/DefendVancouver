@@ -49,6 +49,7 @@ World::World() :
         m_next_oneup_spawn(0.f),
         m_next_shield_spawn(0.f),
         m_camera({}, {}),
+        m_ui({}),
         m_quad(0, {}) {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
@@ -118,6 +119,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     waveNo = 1;
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
+    m_ui = UI(screenSize);
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initGraphics();
     totalEnemies = shooters + chasers;
@@ -328,7 +330,7 @@ void World::draw() {
     glClearDepth(1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Fake projection matrix, scales with respect to window coordinates
+    // Fake projection matrix
     // PS: 1.f / w in [1][1] is correct.. do you know why ? (:
     float left = m_camera.getLeftBoundary();
     float top = m_camera.getTopBoundary();
@@ -344,6 +346,18 @@ void World::draw() {
                        {tx,  ty,  1.f}};
 
     for (auto &entity: m_entities) entity->draw(projection_2D);
+
+    // Fake projection matrix for UI with respect to window coordinates
+    float lUI = -100.f;// *-0.5;
+    float tUI = 0.f;// (float)h * -0.5;
+    float rUI = (float)w;// *0.5;
+    float bUI = (float)h;// *0.5;
+    float sX = 2.f / (rUI - lUI);
+    float sY = 2.f / (tUI - bUI);
+    float tX = -(rUI + lUI) / (rUI - lUI);
+    float tY = -(tUI + bUI) / (tUI - bUI);
+    mat3 projection_UI{ { sX, 0.f, 0.f },{ 0.f, sY, 0.f },{ tX, tY, 1.f } };
+    m_ui.draw(projection_UI);
 
     // Presenting
     glfwSwapBuffers(m_window);

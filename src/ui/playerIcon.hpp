@@ -2,13 +2,32 @@
 // Created by Shrey Swades Nayak on 2018-04-08.
 //
 
-#ifndef DEFENDVANCOUVER_PLAYERICON_HPP
-#define DEFENDVANCOUVER_PLAYERICON_HPP
+#pragma once
+
+#include "UIobject.hpp"
 
 
-class playerIcon {
+class playerIcon : public UIobject, public Renderable{
+
+    static Texture playerIconTexture;
+
+public:
+
+    static bool initTexture();
+
+    playerIcon(UI &ui);
+
+    ~playerIcon() override;
+
+    bool init();
+
+    void update(float ms) override;
+
+    void draw(const mat3 &projection) override;
+
+    void destroy() override;
+
+private:
+    TexturedVertex vertices[4];
 
 };
-
-
-#endif //DEFENDVANCOUVER_PLAYERICON_HPP

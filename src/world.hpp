@@ -15,6 +15,7 @@
 #include "collisions/quadTreeNode.hpp"
 #include "entities/powerups/oneUp.hpp"
 #include "entities/powerups/shield.hpp"
+#include "ui/UI.hpp"
 
 // stlib
 #include <vector>
@@ -118,6 +119,7 @@ private:
     // World size
     vec2 m_size;
     Camera m_camera;
+    UI m_ui;
 
     QuadTreeNode m_quad;
     
