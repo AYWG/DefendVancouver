@@ -59,7 +59,7 @@ bool background::initGraphics() {
 bool background::init() {
     m_scale.x = 1.0f;
     m_scale.y = 1.0f;
-    m_position.x = 1500;
+    m_position.x = 2100; // visually looks better but ideally should be worldWidth/2
     m_position.y = 1259;
     m_health = 1000;
 
