@@ -543,7 +543,3 @@ void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
     }
 }
 
-void World::waveText(const char *text, int length, int x, int y) {
-
-
-}
