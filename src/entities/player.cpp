@@ -116,7 +116,7 @@ void Player::update(float ms) {
         }
     }
     netAccelerationDirection = normalize(netAccelerationDirection);
-    auto accelerationMagnitude = 1000.f;
+    auto accelerationMagnitude = 2300.f;
     auto deltaXVelocity = netAccelerationDirection.x * accelerationMagnitude * ms / 1000;
     auto deltaYVelocity = netAccelerationDirection.y * accelerationMagnitude * ms / 1000;
 
@@ -277,6 +277,9 @@ Region Player::getBoundingBox() const {
     return {boxOrigin, boxSize};
 }
 
+
 std::string Player::getName() const {
     return "Player";
 }
+
+
