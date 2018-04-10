@@ -10,7 +10,7 @@ bool UI::init() {
     return false;
 }
 
-void UI::update(World *world, float ms) {
+void UI::update(float ms) {
 
 }
 

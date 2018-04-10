@@ -9,6 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
+#include <GL/gl3w.h>
 
 typedef pair<int, int> Pair;
 
