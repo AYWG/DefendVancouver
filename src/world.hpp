@@ -56,15 +56,18 @@ public:
 
     bool isEntityInView(const Entity &entity) const;
 
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;
+    int grid[ROW][COL];
+    float  width;
+    float  height;
 
 private:
     bool initTextures();
 
     std::shared_ptr<Player> getPlayer() const;
-
     std::shared_ptr<background> getBackground() const;
 
 
@@ -77,6 +80,8 @@ private:
 
     void onMouseClick(GLFWwindow *window, int button, int action, int mod);
 
+
+
 private:
     // Window handle
     GLFWwindow *m_window;
@@ -88,6 +93,7 @@ private:
      * All entities in the world. The background will always be the first entity, followed by the player.
      */
     std::vector<std::shared_ptr<Entity>> m_entities;
+
 
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;

@@ -9,6 +9,7 @@
 #include "../../ai/chaserAI.hpp"
 
 
+
 using std::pair;
 
 #define  ROW 100
@@ -26,6 +27,8 @@ class Chaser : public Enemy, public Renderable {
 
 public:
     static bool initTexture();
+
+
 
     static std::shared_ptr<Chaser> spawn(World &world);
 
@@ -70,4 +73,7 @@ public:
     unsigned int getMass() const override;
 
     std::string getName() const override;
+
+    void aStarGridPlacement();
+
 };
