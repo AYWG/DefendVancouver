@@ -766,8 +766,8 @@ std::string Chaser::getName() const {
 void Chaser::aStarGridPlacement(){
     bool srcFound = false;
     bool destFound = false;
-    float width = m_world->width;
-    float height = m_world->height;
+    float width = 3000.f/COL;
+    float height = 1500.f/ROW;
 
 
     int j = 0;
@@ -887,10 +887,12 @@ void Chaser::aStarGridPlacement(){
     } */
 
 
+
     if (destFound && srcFound) {
         Pair src = std::make_pair(j, l);
         Pair dest = std::make_pair(a, b);
         aStarSearch(m_world->grid, src, dest);
     }
+
 
 }

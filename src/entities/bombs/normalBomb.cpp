@@ -41,12 +41,15 @@ bool NormalBomb::init() {
     float wr = bomb_texture.width * 0.5f;
     float hr = bomb_texture.height * 0.5f;
 
+    frameWidth = 1.f/3;
+    frameHeight = 1.f/3;
+
     vertices[0].position = {-wr, +hr, -0.01f};
-    vertices[0].texcoord = {0.f, 0.33f};
+    vertices[0].texcoord = {0.f, frameHeight};
     vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {0.33f, 0.33f};
+    vertices[1].texcoord = {frameWidth, frameHeight};
     vertices[2].position = {+wr, -hr, -0.01f};
-    vertices[2].texcoord = {0.33f, 0.f};
+    vertices[2].texcoord = {frameWidth, 0.f};
     vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
@@ -70,11 +73,11 @@ bool NormalBomb::init() {
         return false;
 
     // Loading shaders
-    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+    if (!effect.load_from_file(shader_path("spritesheet.vs.glsl"), shader_path("spritesheet.fs.glsl")))
         return false;
 
     isHit = false;
-    frameCount = 9;
+    frameCount = 0;
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
 
@@ -91,6 +94,7 @@ void NormalBomb::destroy() {
 }
 
 void NormalBomb::draw(const mat3 &projection) {
+
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -109,6 +113,9 @@ void NormalBomb::draw(const mat3 &projection) {
     GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+    GLint frameCount_uloc = glGetUniformLocation(effect.program, "frameCount");
+    GLint frameWidth_uloc = glGetUniformLocation(effect.program, "frameWidth");
+    GLint frameHeight_uloc = glGetUniformLocation(effect.program, "frameHeight");
 
     // Setting vertices and indices
     glBindVertexArray(mesh.vao);
@@ -132,98 +139,23 @@ void NormalBomb::draw(const mat3 &projection) {
     float color[] = {1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
+    glUniform1iv(frameCount_uloc, 1, &frameCount);
+    glUniform1fv(frameWidth_uloc, 1, &frameWidth);
+    glUniform1fv(frameHeight_uloc, 1, &frameHeight);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
 void NormalBomb::update(float ms) {
-    if (isHit && frameCount != 0) {
-        frameCount--;
 
-        switch (frameCount) {
-            case 9:
-                vertices[0].texcoord = {0.f, 0.33f};
-                vertices[1].texcoord = {0.33f, 0.33f};
-                vertices[2].texcoord = {0.33f, 0.f};
-                vertices[3].texcoord = {0.f, 0.f};
-            case 8:
-                vertices[0].texcoord = {0.33f, 0.33f};
-                vertices[1].texcoord = {0.66f, 0.33f};
-                vertices[2].texcoord = {0.66f, 0.f};
-                vertices[3].texcoord = {0.33f, 0.f};
-                break;
-            case 7:
-                vertices[0].texcoord = {0.66f, 0.33f};
-                vertices[1].texcoord = {1.f, 0.33f};
-                vertices[2].texcoord = {1.f, 0.f};
-                vertices[3].texcoord = {0.66f, 0.f};
-                break;
-            case 6:
-                vertices[0].texcoord = {0.f, 0.66f};
-                vertices[1].texcoord = {0.33f, 0.66f};
-                vertices[2].texcoord = {0.33f, 0.33f};
-                vertices[3].texcoord = {0.f, 0.33f};
-                break;
-            case 5:
-                vertices[0].texcoord = {0.33f, 0.66f};
-                vertices[1].texcoord = {0.66f, 0.66f};
-                vertices[2].texcoord = {0.66f, 0.33f};
-                vertices[3].texcoord = {0.33f, 0.33f};
-                break;
-            case 4:
-                vertices[0].texcoord = {0.66f, 0.66f};
-                vertices[1].texcoord = {1.f, 0.66f};
-                vertices[2].texcoord = {1.f, 0.33f};
-                vertices[3].texcoord = {0.66f, 0.33f};
-                break;
-            case 3:
-                vertices[0].texcoord = {0.f, 1.f};
-                vertices[1].texcoord = {0.33f, 1.f};
-                vertices[2].texcoord = {0.33f, 0.66f};
-                vertices[3].texcoord = {0.f, 0.66f};
-                break;
-            case 2:
-                vertices[0].texcoord = {0.33f, 1.f};
-                vertices[1].texcoord = {0.66f, 1.f};
-                vertices[2].texcoord = {0.66f, 0.66f};
-                vertices[3].texcoord = {0.33f, 0.66f};
-                break;
-            case 1:
-                vertices[0].texcoord = {0.66f, 1.f};
-                vertices[1].texcoord = {1.f, 1.f};
-                vertices[2].texcoord = {1.f, 0.66f};
-                vertices[3].texcoord = {0.66f, 0.66f};
-                break;
-            default:
-                vertices[0].texcoord = {0.f, 0.f};
-                vertices[1].texcoord = {0.f, 0.f};
-                vertices[2].texcoord = {0.f, 0.f};
-                vertices[3].texcoord = {0.f, 0.f};
-                break;
-        }
-        uint16_t indices[] = {0, 3, 1, 1, 3, 2};
-        // Clearing errors
-        gl_flush_errors();
-
-        // Vertex Buffer creation
-        glGenBuffers(1, &mesh.vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
-
-        // Index Buffer creation
-        glGenBuffers(1, &mesh.ibo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
-
-        // Vertex Array (Container for Vertex + Index buffer)
-        glGenVertexArrays(1, &mesh.vao);
-
-        // Loading shaders
-        effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    if(!isHit){
+        frameCount = 1;
+    } else {
+        frameCount++;
     }
 
-    if (frameCount == 0) {
+    if (frameCount == 9) {
         m_isDead = true;
     }
 }
