@@ -9,6 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
+#include <GL/gl.h>
 
 typedef pair<int, int> Pair;
 
@@ -119,7 +120,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
-    initTextures();
+    initGraphics();
     totalEnemies = shooters + chasers;
     auto bg = std::make_shared<background>(*this);
     bg->init();
@@ -127,11 +128,29 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
+
+    width = m_size.x / COL;
+    height = m_size.y / ROW;
+    grid[ROW][COL];
+
+    if (!isGraphCreated) {
+        for (int p = 0; p < ROW; p++) {
+            for (int h = 0; h < COL; h++) {
+                grid[p][h] = 1;
+            }
+        }
+        isGraphCreated = true;
+    }
+
     return true;
 }
 
 // Releases all the associated resources
 void World::destroy() {
+
+    for (auto &entity : m_entities) {
+        entity->destroy();
+    }
     glfwDestroyWindow(m_window);
 }
 
@@ -235,143 +254,11 @@ void World::update(float elapsed_ms) {
         }
     }
 
-    //ASTAR
-    float width = m_size.x / COL;
-    float height = m_size.y / ROW;
-    int grid[ROW][COL];
 
-    if (!isGraphCreated) {
-        for (int p = 0; p < ROW; p++) {
-            for (int h = 0; h < COL; h++) {
-                grid[p][h] = 1;
-            }
-        }
-        isGraphCreated = true;
-    }
-
-/*    for (auto &m_bomb : m_bomberBombs){
-        int j = 0;
-        int l = 0;
-        for (float k = 50.f*//*0.f*//*; k <= 5000.f *//*1200.f*//*; k += width) {
-            for (float i = *//*0*//*50.f; i <= 1000.f; i += height) {
-                if (m_bomb.getPosition().y >= 50.f && m_bomb.getPosition().y < height
-                    && m_bomb.getPosition().x >= 50.f && m_bomb.getPosition().x < width) {
-                    //  Pair src = make_pair(0, 0);
-                    j = 0;
-                    l = 0;
-                    grid[j][l] = 0;
-                    grid[j+2][l] = 0;
-                    grid[j-2][l] = 0;
-                    grid[j][l+2] = 0;
-                    grid[j][l+2] = 0;
-                    grid[j+2][l+2] = 0;
-                    grid[j-2][l+2] = 0;
-                    grid[j+2][l-2] = 0;
-                    grid[j+2][l-2] = 0;
-
-                   // printf("FOUND!");
-
-
-                } else if ((m_bomb->getPosition().y >= (i) && m_bomb->getPosition().y < (i + height))
-                           && (m_bomb->getPosition().x >= (k) && m_bomb->getPosition().x < (k + width))) {
-                    // Pair src = make_pair(j,l);
-                    grid[j][l] = 0;
-                    grid[j+2][l] = 0;
-                    grid[j-2][l] = 0;
-                    grid[j][l+2] = 0;
-                    grid[j][l+2] = 0;
-                    grid[j+2][l+2] = 0;
-                    grid[j-2][l+2] = 0;
-                    grid[j+2][l-2] = 0;
-                    grid[j+2][l-2] = 0;
-
-                   // printf("FOUND!");
-                }
-                j++;
-            }
-
-            l++;
-            j = 0;
-        }
-    }*/
-
+//ASTAR
     for (auto &entity : m_entities) {
         if (typeid(*entity) == typeid(Chaser)) {
-            bool srcFound = false;
-            bool destFound = false;
-
-            int j = 0;
-            int l = 0;
-            if (!srcFound) {
-                for (float k = 50.f/*0.f*/; k <= 3000.f /*1200.f*/; k += width) {
-                    for (float i = /*0*/50.f; i <= 1500.f; i += height) {
-                        if (entity->getPosition().y >= 50.f && entity->getPosition().y < height
-                            && entity->getPosition().x >= 50.f && entity->getPosition().x < width) {
-                            //  Pair src = make_pair(0, 0);
-                            j = 0;
-                            l = 0;
-                            srcFound = true;
-                            if (srcFound) {
-                                break;
-                            }
-
-                        } else if ((entity->getPosition().y >= (i) && entity->getPosition().y < (i + height))
-                                   && (entity->getPosition().x >= (k) && entity->getPosition().x < (k + width))) {
-                            // Pair src = make_pair(j,l);
-                            srcFound = true;
-                            if (srcFound) {
-                                break;
-                            }
-                        }
-                        j++;
-                    }
-                    if (srcFound) {
-                        break;
-                    }
-                    l++;
-                    j = 0;
-                }
-            }
-
-            int a = 0;
-            int b = 0;
-
-            if (!destFound) {
-                for (float k = /*0*/50.f; k <= /*1200*/3000.f; k += width) {
-                    for (float i = 50.f; i <= 1500.f; i += height) {
-                        if (getPlayer()->getPosition().y >= 50.f && getPlayer()->getPosition().y < height
-                            && getPlayer()->getPosition().x >= 50.f && getPlayer()->getPosition().x < width) {
-                            //Pair dest = make_pair(0, 0);
-                            a = 0;
-                            b = 0;
-                            destFound = true;
-                            if (destFound) {
-                                break;
-                            }
-                        } else if ((getPlayer()->getPosition().y >= (i) && getPlayer()->getPosition().y < (i + height))
-                                   && (getPlayer()->getPosition().x >= (k) && getPlayer()->getPosition().x < (k + width))) {
-                            //Pair dest = make_pair(a,b);
-                            destFound = true;
-                            if (destFound) {
-                                break;
-                            }
-                        }
-
-                        a++;
-                    }
-                    if (destFound) {
-                        break;
-                    }
-                    b++;
-                    a = 0;
-                }
-            }
-
-            if (destFound && srcFound) {
-                Pair src = std::make_pair(j, l);
-                Pair dest = std::make_pair(a, b);
-                std::dynamic_pointer_cast<Chaser>(entity)->aStarSearch(grid, src, dest);
-            }
+            entity->update(elapsed_ms);
         }
     }
 
@@ -559,17 +446,17 @@ bool World::isEntityInView(const Entity &entity) const {
 
 // Private
 
-bool World::initTextures() {
-    return BomberBomb::initTexture() &&
-           NormalBomb::initTexture() &&
-           OneUp::initTexture() &&
-           Shield::initTexture() &&
-           Shooter::initTexture() &&
-           Chaser::initTexture() &&
-           Bomber::initTexture() &&
-           PlayerBullet::initTexture() &&
-           ShooterBullet::initTexture() &&
-           background::initTexture();
+bool World::initGraphics() {
+    return BomberBomb::initGraphics() &&
+           NormalBomb::initGraphics() &&
+           OneUp::initGraphics() &&
+           Shield::initGraphics() &&
+           Shooter::initGraphics() &&
+           Chaser::initGraphics() &&
+           Bomber::initGraphics() &&
+           PlayerBullet::initGraphics() &&
+           ShooterBullet::initGraphics() &&
+           background::initGraphics();
 }
 
 std::shared_ptr<Player> World::getPlayer() const {
@@ -631,18 +518,19 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     }
 
     // Resetting game
-    if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
-        int w, h;
-        glfwGetWindowSize(m_window, &w, &h);
-        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
-        waveNo = 1;
+    if (getPlayer().get()->m_lives < 1) {
+            int w, h;
+            glfwGetWindowSize(m_window, &w, &h);
+            totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
+            waveNo = 1;
 
-        getBackground()->init();
+            getBackground()->init();
 
-        getPlayer()->init();
-        m_points = 0;
+            getPlayer()->init();
+            m_points = 0;
 
     }
+
 }
 
 

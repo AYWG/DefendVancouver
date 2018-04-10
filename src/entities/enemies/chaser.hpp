@@ -9,6 +9,7 @@
 #include "../../ai/chaserAI.hpp"
 
 
+
 using std::pair;
 
 #define  ROW 100
@@ -22,16 +23,15 @@ typedef pair<double, pair<int, int> > pPair;
 
 
 class Chaser : public Enemy, public Renderable {
-    static Texture chaserTexture;
 
 public:
-    static bool initTexture();
+    static bool initGraphics();
+
+
 
     static std::shared_ptr<Chaser> spawn(World &world);
 
     Chaser(World &world, ChaserAI &ai);
-
-    ~Chaser() override;
 
     //Neccesary param
     struct cell {
@@ -70,4 +70,10 @@ public:
     unsigned int getMass() const override;
 
     std::string getName() const override;
+
+    void aStarGridPlacement();
+
+
+private:
+    static Graphics gfx;
 };
