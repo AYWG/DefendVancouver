@@ -7,13 +7,32 @@
 UI::UI(vec2 screenSize) : m_screenSize(screenSize) {}
 
 bool UI::init() {
-    return false;
+
+    UIwidth = m_screenSize.x;
+    UIheight = m_screenSize.y;
+
+    initGraphics();
+    auto icon = std::make_shared<playerIcon>(*this);
+    if(icon->init()){
+        m_objects.emplace_back(icon);
+    }
+
+    return true;
 }
 
 void UI::update(float ms) {
+    for(auto &object: m_objects){
+        object->update(ms);
+    }
 
 }
 
 void UI::draw(const mat3 &projection) {
+    for(auto &object: m_objects){
+        object->draw(projection);
+    }
+}
 
+bool UI::initGraphics() {
+    return playerIcon::initGraphics();
 }

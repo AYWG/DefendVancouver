@@ -9,11 +9,9 @@
 
 class playerIcon : public UIobject, public Renderable{
 
-    static Texture playerIconTexture;
-
 public:
 
-    static bool initTexture();
+    static bool initGraphics();
 
     playerIcon(UI &ui);
 
@@ -28,6 +26,12 @@ public:
     void destroy() override;
 
 private:
-    TexturedVertex vertices[4];
+    static Graphics gfx;
+    int frameCount;
+    float frameWidth;
+    float countdown;
+    bool start;
+    vec2 m_position;
+
 
 };

@@ -121,6 +121,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
     m_ui = UI(screenSize);
+    m_ui.init();
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initGraphics();
     totalEnemies = shooters + chasers;
@@ -192,6 +193,7 @@ void World::update(float elapsed_ms) {
     }
 
     m_camera.update(elapsed_ms, getPlayerPosition());
+    m_ui.update(elapsed_ms);
 
     // once everything is inserted, go through each entity and get vector of nearby entities
     // that could possibly collide with that entity
