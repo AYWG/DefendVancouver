@@ -10,17 +10,13 @@
 
 class OneUp : public Entity, public Renderable{
 
-    static Texture oneupTexture;
-
 public:
 
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<OneUp> spawn(World &world);
 
     OneUp(World &world);
-
-    ~OneUp() override;
 
     bool init() override;
 
@@ -35,9 +31,6 @@ public:
     std::string getName() const override;
 
 private:
-
-    TexturedVertex vertices[4];
-
-
+    static Graphics gfx;
 };
 

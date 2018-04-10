@@ -120,7 +120,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
-    initTextures();
+    initGraphics();
     totalEnemies = shooters + chasers;
     auto bg = std::make_shared<background>(*this);
     bg->init();
@@ -147,6 +147,10 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
 
 // Releases all the associated resources
 void World::destroy() {
+
+    for (auto &entity : m_entities) {
+        entity->destroy();
+    }
     glfwDestroyWindow(m_window);
 }
 
@@ -442,17 +446,17 @@ bool World::isEntityInView(const Entity &entity) const {
 
 // Private
 
-bool World::initTextures() {
-    return BomberBomb::initTexture() &&
-           NormalBomb::initTexture() &&
-           OneUp::initTexture() &&
-           Shield::initTexture() &&
-           Shooter::initTexture() &&
-           Chaser::initTexture() &&
-           Bomber::initTexture() &&
-           PlayerBullet::initTexture() &&
-           ShooterBullet::initTexture() &&
-           background::initTexture();
+bool World::initGraphics() {
+    return BomberBomb::initGraphics() &&
+           NormalBomb::initGraphics() &&
+           OneUp::initGraphics() &&
+           Shield::initGraphics() &&
+           Shooter::initGraphics() &&
+           Chaser::initGraphics() &&
+           Bomber::initGraphics() &&
+           PlayerBullet::initGraphics() &&
+           ShooterBullet::initGraphics() &&
+           background::initGraphics();
 }
 
 std::shared_ptr<Player> World::getPlayer() const {

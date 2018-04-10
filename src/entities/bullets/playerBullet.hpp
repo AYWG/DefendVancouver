@@ -15,18 +15,15 @@
 
 
 class PlayerBullet : public Bullet, public Renderable {
-    static Texture playerBulletTexture;
 
 public:
     PlayerBullet(World &world);
 
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<PlayerBullet> spawn(World &world);
 
-    ~PlayerBullet() override;
-
-    bool init();
+    bool init() override;
 
     void destroy() override;
 
@@ -41,4 +38,8 @@ public:
     unsigned int getMass() const override;
 
     std::string getName() const override;
+
+private:
+    static Graphics gfx;
+
 };

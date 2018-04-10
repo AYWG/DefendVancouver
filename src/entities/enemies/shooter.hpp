@@ -12,17 +12,12 @@
 
 class Shooter : public Enemy, public Renderable {
 
-    static Texture shooterTexture;
-    static int bulletDelayMS;
-
 public:
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<Shooter> spawn(World &world);
 
     Shooter(World &world, ShooterAI &ai);
-
-    ~Shooter() override;
 
     bool init() override;
 
@@ -42,5 +37,7 @@ public:
 
     std::string getName() const override;
 private:
+    static Graphics gfx;
+    static int bulletDelayMS;
     float m_nextBulletSpawn;
 };

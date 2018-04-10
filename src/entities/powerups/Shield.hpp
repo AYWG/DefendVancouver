@@ -10,17 +10,13 @@
 
 class Shield : public Entity, public Renderable {
 
-    static Texture shieldTexture;
-
 public:
 
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<Shield> spawn(World &world);
 
     Shield(World &world);
-
-    ~Shield() override;
 
     bool init() override;
 
@@ -35,6 +31,5 @@ public:
     std::string getName() const override;
 
 private:
-
-    TexturedVertex vertices[4];
+    static Graphics gfx;
 };

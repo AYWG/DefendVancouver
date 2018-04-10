@@ -2,9 +2,6 @@
 // Created by Shrey Swades Nayak on 2018-02-26.
 //
 
-#ifndef DEFENDVANCOUVER_SPRITESHEET_HPP
-#define DEFENDVANCOUVER_SPRITESHEET_HPP
-
 #pragma once
 
 #include <memory>
@@ -14,16 +11,12 @@
 
 class NormalBomb : public Entity, public Renderable {
 
-    static Texture bomb_texture;
-
 public:
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<NormalBomb> spawn(World &world);
 
     NormalBomb(World &world);
-
-    ~NormalBomb() override;
 
     bool init() override;
 
@@ -42,8 +35,7 @@ public:
     std::string getName() const override;
 
 private:
-    TexturedVertex vertices[4];
-
+    static Graphics gfx;
     bool isHit;
     int frameCount;
     float frameWidth;
@@ -51,5 +43,3 @@ private:
 
 
 };
-
-#endif //DEFENDVANCOUVER_SPRITESHEET_HPP

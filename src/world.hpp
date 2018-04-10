@@ -65,7 +65,7 @@ public:
     float  height;
 
 private:
-    bool initTextures();
+    bool initGraphics();
 
     std::shared_ptr<Player> getPlayer() const;
     std::shared_ptr<background> getBackground() const;
