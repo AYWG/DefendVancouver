@@ -31,6 +31,9 @@ protected:
     UI *m_ui;
     vec2 m_position;
     vec2 m_scale;
+    float m_rotation;
+
+    bool m_isHidden;
 
 };
 

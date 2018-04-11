@@ -47,6 +47,8 @@ public:
 
     vec2 getPlayerPosition() const;
 
+    vec2 getPlayerScreenPosition() const;
+
     std::vector<vec2> getBombPositions() const;
 
     vec2 getCityPosition() const;
@@ -64,6 +66,10 @@ public:
     void increaseCityHealth();
 
     void decrementTotalEnemies();
+    
+    vec2 getNearestEnemyPosToPlayer() const;
+
+    bool isOffScreenEnemyPresentAndNoEnemiesVisible() const;
 
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
