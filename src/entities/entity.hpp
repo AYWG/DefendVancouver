@@ -11,6 +11,10 @@ class World;
 class Entity {
 
 public:
+    typedef enum {
+        HUMAN, ALIEN, NONE
+    } FACTION;
+
     Entity(World &world);
 
     virtual ~Entity() = default;
@@ -34,6 +38,14 @@ public:
     virtual Region getBoundingBox() const = 0;
 
     virtual bool isCollidingWith(Entity &other) const;
+
+    virtual void onCollision(Entity &other) = 0;
+
+    virtual void takeDamage() = 0;
+
+    virtual bool isDamageable() const = 0;
+
+    virtual FACTION getFaction() const = 0;
 
     void die();
 

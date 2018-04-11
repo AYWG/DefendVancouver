@@ -9,7 +9,7 @@
 
 Graphics NormalBomb::gfx;
 
-NormalBomb::NormalBomb(World &world) : Entity(world) {}
+NormalBomb::NormalBomb(World &world) : Bomb(world) {}
 
 bool NormalBomb::initGraphics() {
     //load texture
@@ -68,7 +68,6 @@ std::shared_ptr<NormalBomb> NormalBomb::spawn(World &world) {
 }
 
 bool NormalBomb::init() {
-    isHit = false;
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
     frameCount = 0;
@@ -141,7 +140,8 @@ void NormalBomb::draw(const mat3 &projection) {
 }
 
 void NormalBomb::update(float ms) {
-    if(!isHit){
+
+    if(!m_isHit){
         frameCount = 1;
     } else {
         frameCount++;
@@ -159,14 +159,14 @@ Region NormalBomb::getBoundingBox() const {
     return {boxOrigin, boxSize};
 }
 
-void NormalBomb::animate() {
-    isHit = true;
-}
-
-int NormalBomb::getFrameCount() const {
-    return frameCount;
+void NormalBomb::explode() {
+    m_isHit = true;
 }
 
 std::string NormalBomb::getName() const {
     return "NormalBomb";
+}
+
+NormalBomb::FACTION NormalBomb::getFaction() const {
+    return FACTION::NONE;
 }

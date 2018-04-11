@@ -3,22 +3,35 @@
 //
 
 #include <iostream>
-#include "OneUp.hpp"
+#include "shield.hpp"
 #include "../../world.hpp"
 
-Graphics OneUp::gfx;
+Graphics Shield::gfx;
 
-OneUp::OneUp(World &world) : Entity(world) {}
+Shield::Shield(World &world) : PowerUp(world) {}
 
-bool OneUp::initGraphics() {
+bool Shield::initGraphics() {
     //load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("1up.png"))) {
+        if (!gfx.texture.load_from_file(textures_path("shield.png"))) {
             fprintf(stderr, "Failed to load texture!");
             return false;
         }
     }
+    return true;
+}
 
+std::shared_ptr<Shield> Shield::spawn(World &world) {
+    auto shield = std::make_shared<Shield>(world);
+    if (shield->init()) {
+        world.addEntity(shield);
+        return shield;
+    }
+    fprintf(stderr, "Failed to spawn shield");
+    return nullptr;
+}
+
+bool Shield::init() {
     //center of texture
     float width = gfx.texture.width * 0.5f;
     float height = gfx.texture.height * 0.5f;
@@ -55,24 +68,16 @@ bool OneUp::initGraphics() {
         return false;
 
     // Loading shaders
-    return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-}
+    if (!gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+        return false;
 
-std::shared_ptr<OneUp> OneUp::spawn(World &world) {
-    auto oneup = std::make_shared<OneUp>(world);
-    if (oneup->init()) {
-        world.addEntity(oneup);
-        return oneup;
-    }
-    fprintf(stderr, "Failed to spawn one up");
-    return nullptr;
-}
+    m_scale.x = 0.3f;
+    m_scale.y = 0.3f;
 
-bool OneUp::init() {
     return true;
 }
 
-void OneUp::destroy() {
+void Shield::destroy() {
     glDeleteBuffers(1, &gfx.mesh.vbo);
     glDeleteBuffers(1, &gfx.mesh.ibo);
     glDeleteVertexArrays(1, &gfx.mesh.vao);
@@ -80,7 +85,7 @@ void OneUp::destroy() {
     gfx.effect.release();
 }
 
-void OneUp::draw(const mat3 &projection) {
+void Shield::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -127,17 +132,7 @@ void OneUp::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void OneUp::update(float ms) {
-    const float SPEED = 100.f;
-    float step = SPEED * (ms / 1000);
-    m_position.y += step;
-
-    if (m_position.y > m_world->getSize().y) {
-        m_isDead = true;
-    }
-}
-
-Region OneUp::getBoundingBox() const {
+Region Shield::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width,
                     std::fabs(m_scale.y) * gfx.texture.height};
     vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
@@ -145,6 +140,14 @@ Region OneUp::getBoundingBox() const {
     return {boxOrigin, boxSize};
 }
 
-std::string OneUp::getName() const {
-    return "OneUp";
+std::string Shield::getName() const {
+    return "Shield";
+}
+
+void Shield::onCollision(Entity &other) {
+    if (!m_isDead && typeid(other) == typeid(Player)) {
+        //TODO: replace with actual shield behaviour
+        m_world->increaseCityHealth();
+        die();
+    }
 }

@@ -13,8 +13,8 @@
 #include "entities/bullets/playerBullet.hpp"
 #include "explosion.hpp"
 #include "collisions/quadTreeNode.hpp"
-#include "entities/powerups/OneUp.hpp"
-#include "entities/powerups/Shield.hpp"
+#include "entities/powerups/oneUp.hpp"
+#include "entities/powerups/shield.hpp"
 
 // stlib
 #include <vector>
@@ -56,6 +56,13 @@ public:
 
     bool isEntityInView(const Entity &entity) const;
 
+    void addPoints(int points);
+
+    void addPlayerLife();
+
+    void increaseCityHealth();
+
+    void decrementTotalEnemies();
 
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;

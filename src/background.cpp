@@ -143,3 +143,19 @@ Region background::getBoundingBox() const {
 std::string background::getName() const {
     return "background";
 }
+
+void background::onCollision(Entity &other) {
+    // do nothing
+}
+
+void background::takeDamage() {
+    decreaseHealth();
+}
+
+bool background::isDamageable() const {
+    return true;
+}
+
+background::FACTION background::getFaction() const {
+    return FACTION::HUMAN;
+}

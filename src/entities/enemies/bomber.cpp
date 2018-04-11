@@ -151,6 +151,10 @@ void Bomber::attack(float ms) {
 
 }
 
+int Bomber::getPoints() const {
+    return 10;
+}
+
 std::string Bomber::getName() const {
     return "Bomber";
 }

@@ -164,6 +164,10 @@ void Chaser::attack(float ms) {
 
 }
 
+int Chaser::getPoints() const {
+    return 10;
+}
+
 unsigned int Chaser::getMass() const {
     return 90;
 }

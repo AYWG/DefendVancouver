@@ -6,10 +6,10 @@
 
 #include <memory>
 #include "../../common.hpp"
-#include "../entity.hpp"
+#include "bomb.hpp"
 
 
-class NormalBomb : public Entity, public Renderable {
+class NormalBomb : public Bomb, public Renderable {
 
 public:
     static bool initGraphics();
@@ -22,21 +22,21 @@ public:
 
     void destroy() override;
 
-    int getFrameCount() const;
-
     void draw(const mat3 &projection) override;
 
     void update(float ms) override;
 
-    void animate();
+    void explode();
 
     Region getBoundingBox() const override;
 
     std::string getName() const override;
 
+    FACTION getFaction() const override;
+
 private:
     static Graphics gfx;
-    bool isHit;
+
     int frameCount;
     float frameWidth;
     float frameHeight;

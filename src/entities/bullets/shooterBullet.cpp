@@ -155,3 +155,7 @@ unsigned int ShooterBullet::getMass() const {
 std::string ShooterBullet::getName() const {
     return "ShooterBullet";
 }
+
+ShooterBullet::FACTION ShooterBullet::getFaction() const {
+    return FACTION::ALIEN;
+}

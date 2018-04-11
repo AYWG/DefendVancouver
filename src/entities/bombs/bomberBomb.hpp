@@ -6,10 +6,10 @@
 
 #include <memory>
 #include "../../common.hpp"
-#include "../entity.hpp"
+#include "bomb.hpp"
 
 
-class BomberBomb : public Entity, public Renderable {
+class BomberBomb : public Bomb, public Renderable {
 
 public:
     static bool initGraphics();
@@ -22,8 +22,6 @@ public:
 
     void destroy() override;
 
-    int getFrameCount() const;
-
     void draw(const mat3 &projection) override;
 
     void update(float ms) override;
@@ -34,10 +32,12 @@ public:
 
     std::string getName() const override;
 
+    FACTION getFaction() const override;
+
 
 private:
     static Graphics gfx;
-    bool isHit;
+
     int frameCount;
     float countdown;
     float frameWidth;
