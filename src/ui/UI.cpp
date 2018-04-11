@@ -56,6 +56,10 @@ bool UI::isOffScreenEnemyPresentAndNoEnemiesVisible() const {
     return m_world->isOffScreenEnemyPresentAndNoEnemiesVisible();
 }
 
+vec2 UI::getScreenSize() const {
+    return m_screenSize;
+}
+
 bool UI::initGraphics() {
     return playerIcon::initGraphics() &&
            EnemyIndicator::initGraphics();

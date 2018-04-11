@@ -5,6 +5,7 @@
 #pragma once
 
 #include "UIobject.hpp"
+#include "../region.hpp"
 
 /**
  * An arrow that points to the nearest enemy if there are no enemies on screen
@@ -24,8 +25,13 @@ public:
 
     void destroy() override;
 
+    Region getBoundingBox() const;
+
 private:
     static Graphics gfx;
+
+private:
+    bool isFullyInsideUI() const;
 
 };
 

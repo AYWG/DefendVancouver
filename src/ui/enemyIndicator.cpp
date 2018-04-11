@@ -126,15 +126,53 @@ void EnemyIndicator::draw(const mat3 &projection) {
 void EnemyIndicator::update(float ms) {
     if (m_ui->isOffScreenEnemyPresentAndNoEnemiesVisible()) {
         m_isHidden = false;
-        m_position = m_ui->getPlayerScreenPosition();
 
         float xDiffFromPlayer = m_ui->getNearestEnemyPosToPlayer().x - m_ui->getPlayerPosition().x;
         float yDiffFromPlayer = m_ui->getNearestEnemyPosToPlayer().y - m_ui->getPlayerPosition().y;
         float angle = atanf(yDiffFromPlayer / xDiffFromPlayer);
         if (xDiffFromPlayer < 0.f) angle += 3.1415f;
         m_rotation = angle;
+
+        // move indicator to appropriate position on edge of screen
+        m_position = m_ui->getPlayerScreenPosition();
+
+        vec2 dirVec = {xDiffFromPlayer, yDiffFromPlayer};
+        float length = magnitude(dirVec);
+        vec2 unitDirVec = {dirVec.x / length, dirVec.y / length};
+
+        while (isFullyInsideUI()) {
+            m_position.x += unitDirVec.x;
+            m_position.y += unitDirVec.y;
+        }
+
+        // bring the indicator slightly away from the edge of the screen so that it's still fully shown
+        // when pointing upwards
+        m_position.x -= 10 * unitDirVec.x;
+        m_position.y -= 10 * unitDirVec.y;
+
     } else {
         // hide the indicator
         m_isHidden = true;
     }
+}
+
+Region EnemyIndicator::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width,
+                    std::fabs(m_scale.y) * gfx.texture.height};
+    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
+}
+
+// Private
+
+bool EnemyIndicator::isFullyInsideUI() const {
+    Region box = getBoundingBox();
+
+    bool isWithinLeftBoundary = box.origin.x >= 0;
+    bool isWithinRightBoundary = box.origin.x + box.size.x <= m_ui->getScreenSize().x;
+    bool isWithinTopBoundary = box.origin.y >= 0;
+    bool isWithinBottomBoundary = box.origin.y + box.size.y <= m_ui->getScreenSize().y;
+
+    return isWithinLeftBoundary && isWithinRightBoundary && isWithinTopBoundary && isWithinBottomBoundary;
 }

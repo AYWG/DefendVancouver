@@ -31,6 +31,8 @@ public:
 
     bool isOffScreenEnemyPresentAndNoEnemiesVisible() const;
 
+    vec2 getScreenSize() const;
+
 private:
 
     bool initGraphics();
