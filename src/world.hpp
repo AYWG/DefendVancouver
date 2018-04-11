@@ -62,6 +62,8 @@ public:
 
     void increaseCityHealth();
 
+    void decrementTotalEnemies();
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;

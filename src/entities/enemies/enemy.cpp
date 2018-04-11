@@ -45,6 +45,7 @@ void Enemy::onCollision(Entity &other) {
 void Enemy::takeDamage() {
     // TODO: only add points if damage taken causes enemy health to go below 0
     m_world->addPoints(getPoints());
+    m_world->decrementTotalEnemies();
     die();
 }
 

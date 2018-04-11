@@ -397,6 +397,10 @@ void World::increaseCityHealth() {
     getBackground()->addHealth();
 }
 
+void World::decrementTotalEnemies() {
+    totalEnemies--;
+}
+
 // Private
 
 bool World::initGraphics() {
