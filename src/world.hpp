@@ -64,6 +64,8 @@ public:
     void increaseCityHealth();
 
     void decrementTotalEnemies();
+    
+    vec2 getNearestEnemyPosToPlayer() const;
 
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;

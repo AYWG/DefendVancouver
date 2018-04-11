@@ -108,13 +108,13 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
     int width, height;
-    stbi_uc* data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
+    stbi_uc *data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
     GLFWimage image;
     image.width = width;
     image.height = height;
     image.pixels = data;
 
-    GLFWcursor* cursor = glfwCreateCursor(&image, 0, 0);
+    GLFWcursor *cursor = glfwCreateCursor(&image, 0, 0);
     glfwSetCursor(m_window, cursor);
 
     waveNo = 1;
@@ -241,8 +241,7 @@ void World::update(float elapsed_ms) {
             if (player->isShooting()) {
                 player->shoot();
             }
-        }
-        else if (typeid(*entity) == typeid(Shooter)) {
+        } else if (typeid(*entity) == typeid(Shooter)) {
             std::dynamic_pointer_cast<Shooter>(entity)->shoot();
         }
     }
@@ -320,7 +319,8 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Lives: " << getPlayer()->getLives() << " City: " << getBackground()->getHealth()
+    title_ss << "Points: " << m_points << " Lives: " << getPlayer()->getLives() << " City: "
+             << getBackground()->getHealth()
              << " s: " << shooters << " c: " << chasers
              << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
@@ -417,6 +417,29 @@ void World::decrementTotalEnemies() {
     totalEnemies--;
 }
 
+vec2 World::getNearestEnemyPosToPlayer() const {
+    // Default position to return if there are currently no enemies in the world
+    vec2 nearestPos = {-1.f, -1.f};
+    float closestDistSq = dot(m_size, m_size);
+
+    for (auto &entity : m_entities) {
+        // Filter by enemies
+        if (entity.getFaction() == FACTION::ALIEN && entity.isDamageable()) {
+            float diffX = entity->getPosition().x - getPlayer()->getPosition().x;
+            float diffY = entity->getPosition().y - getPlayer()->getPosition().y;
+            vec2 diff = {diffX, diffY};
+            float distSq = dot(diff, diff);
+
+            if (distSq < closestDistSq) {
+                closestDistSq = distSq;
+                nearestPos = entity->getPosition();
+            }
+        }
+    }
+
+    return nearestPos;
+}
+
 // Private
 
 bool World::initGraphics() {
@@ -492,15 +515,15 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
     // Resetting game
     if (getPlayer().get()->m_lives < 1) {
-            int w, h;
-            glfwGetWindowSize(m_window, &w, &h);
-            totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
-            waveNo = 1;
+        int w, h;
+        glfwGetWindowSize(m_window, &w, &h);
+        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
+        waveNo = 1;
 
-            getBackground()->init();
+        getBackground()->init();
 
-            getPlayer()->init();
-            m_points = 0;
+        getPlayer()->init();
+        m_points = 0;
 
     }
 
