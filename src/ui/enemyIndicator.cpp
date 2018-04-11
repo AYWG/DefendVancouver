@@ -2,7 +2,7 @@
 // Created by Andy on 2018-04-11.
 //
 
-#include <math.h>
+#include <cmath>
 #include "enemyIndicator.hpp"
 #include "UI.hpp"
 
