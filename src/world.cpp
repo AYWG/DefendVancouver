@@ -424,17 +424,17 @@ vec2 World::getNearestEnemyPosToPlayer() const {
 
     for (auto &entity : m_entities) {
         // Filter by enemies
-        if (entity.getFaction() == FACTION::ALIEN && entity.isDamageable()) {
-            float diffX = entity->getPosition().x - getPlayer()->getPosition().x;
-            float diffY = entity->getPosition().y - getPlayer()->getPosition().y;
-            vec2 diff = {diffX, diffY};
-            float distSq = dot(diff, diff);
-
-            if (distSq < closestDistSq) {
-                closestDistSq = distSq;
-                nearestPos = entity->getPosition();
-            }
-        }
+//        if (entity->getFaction() == FACTION::ALIEN && entity->isDamageable()) {
+//            float diffX = entity->getPosition().x - getPlayer()->getPosition().x;
+//            float diffY = entity->getPosition().y - getPlayer()->getPosition().y;
+//            vec2 diff = {diffX, diffY};
+//            float distSq = dot(diff, diff);
+//
+//            if (distSq < closestDistSq) {
+//                closestDistSq = distSq;
+//                nearestPos = entity->getPosition();
+//            }
+//        }
     }
 
     return nearestPos;

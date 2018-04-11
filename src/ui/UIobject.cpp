@@ -4,7 +4,7 @@
 
 #include "UIobject.hpp"
 
-UIobject::UIobject(UI &ui) : m_ui(&ui), m_position({0.f, 0.f}), m_scale({1.f, 1.f}){}
+UIobject::UIobject(UI &ui) : m_ui(&ui), m_position({0.f, 0.f}), m_scale({1.f, 1.f}), m_rotation(0.f){}
 
 vec2 UIobject::getPosition() const {
     return m_position;

@@ -31,7 +31,6 @@ private:
     float frameWidth;
     float countdown;
     bool start;
-    vec2 m_position;
 
 
 };
