@@ -2,32 +2,25 @@
 // Created by Shrey Swades Nayak on 2018-03-19.
 //
 
-#ifndef DEFENDVANCOUVER_BOMBERBOMB_HPP
-#define DEFENDVANCOUVER_BOMBERBOMB_HPP
 #pragma once
 
 #include <memory>
 #include "../../common.hpp"
-#include "../entity.hpp"
+#include "bomb.hpp"
 
 
-class BomberBomb : public Entity, public Renderable {
+class BomberBomb : public Bomb, public Renderable {
 
-    static Texture bomb_texture;
 public:
-    static bool initTexture();
+    static bool initGraphics();
 
     static std::shared_ptr<BomberBomb> spawn(World &world);
 
     BomberBomb(World &world);
 
-    ~BomberBomb() override;
-
-    bool init();
+    bool init() override;
 
     void destroy() override;
-
-    int getFrameCount() const;
 
     void draw(const mat3 &projection) override;
 
@@ -39,16 +32,15 @@ public:
 
     std::string getName() const override;
 
+    FACTION getFaction() const override;
+
 
 private:
-    TexturedVertex vertices[4];
+    static Graphics gfx;
 
-    bool isHit;
     int frameCount;
     float countdown;
     float frameWidth;
     float frameHeight;
 
 };
-
-#endif //DEFENDVANCOUVER_BOMBERBOMB_HPP

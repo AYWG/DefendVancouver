@@ -5,39 +5,22 @@
 #include "shooterBullet.hpp"
 #include "../../world.hpp"
 
-Texture ShooterBullet::shooterBulletTexture;
+Graphics ShooterBullet::gfx;
 
 ShooterBullet::ShooterBullet(World &world) : Bullet(world) {}
 
-ShooterBullet::~ShooterBullet() {
-    destroy();
-}
-
-bool ShooterBullet::initTexture() {
+bool ShooterBullet::initGraphics() {
     //Load texture
-    if (!shooterBulletTexture.is_valid()) {
-        if (!shooterBulletTexture.load_from_file(textures_path("shooterBullet.png"))) {
+    if (!gfx.texture.is_valid()) {
+        if (!gfx.texture.load_from_file(textures_path("shooterBullet.png"))) {
             fprintf(stderr, "Failed to load shooter bullet texture!");
             return false;
         }
     }
-    return true;
-}
 
-std::shared_ptr<ShooterBullet> ShooterBullet::spawn(World &world) {
-    auto bullet = std::make_shared<ShooterBullet>(world);
-    if (bullet->init()) {
-        world.addEntity(bullet);
-        return bullet;
-    }
-    fprintf(stderr, "Failed to spawn shooter bullet");
-    return nullptr;
-}
-
-bool ShooterBullet::init() {
     //center of texture
-    float width = shooterBulletTexture.width * 0.5f;
-    float height = shooterBulletTexture.height * 0.5f;
+    float width = gfx.texture.width * 0.5f;
+    float height = gfx.texture.height * 0.5f;
 
     TexturedVertex vertices[4];
     vertices[0].position = {-width, +height, -0.01f};
@@ -56,35 +39,46 @@ bool ShooterBullet::init() {
     gl_flush_errors();
 
     // Vertex Buffer creation
-    glGenBuffers(1, &mesh.vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    glGenBuffers(1, &gfx.mesh.vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, gfx.mesh.vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
 
     // Index Buffer creation
-    glGenBuffers(1, &mesh.ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+    glGenBuffers(1, &gfx.mesh.ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfx.mesh.ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
 
     // Vertex Array (Container for Vertex + Index buffer)
-    glGenVertexArrays(1, &mesh.vao);
+    glGenVertexArrays(1, &gfx.mesh.vao);
     if (gl_has_errors())
         return false;
 
     // Loading shaders
-    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-        return false;
+    return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+}
 
+std::shared_ptr<ShooterBullet> ShooterBullet::spawn(World &world) {
+    auto bullet = std::make_shared<ShooterBullet>(world);
+    if (bullet->init()) {
+        world.addEntity(bullet);
+        return bullet;
+    }
+    fprintf(stderr, "Failed to spawn shooter bullet");
+    return nullptr;
+}
+
+bool ShooterBullet::init() {
     m_scale.x = 0.2f;
     m_scale.y = 0.4f;
     return true;
 }
 
 void ShooterBullet::destroy() {
-    glDeleteBuffers(1, &mesh.vbo);
-    glDeleteBuffers(1, &mesh.ibo);
-    glDeleteVertexArrays(1, &mesh.vao);
+    glDeleteBuffers(1, &gfx.mesh.vbo);
+    glDeleteBuffers(1, &gfx.mesh.ibo);
+    glDeleteVertexArrays(1, &gfx.mesh.vao);
 
-    effect.release();
+    gfx.effect.release();
 }
 
 void ShooterBullet::draw(const mat3 &projection) {
@@ -95,7 +89,7 @@ void ShooterBullet::draw(const mat3 &projection) {
     transform_end();
 
     // Setting shaders
-    glUseProgram(effect.program);
+    glUseProgram(gfx.effect.program);
 
     // Enabling alpha channel for textures
     glEnable(GL_BLEND);
@@ -103,18 +97,18 @@ void ShooterBullet::draw(const mat3 &projection) {
     glDisable(GL_DEPTH_TEST);
 
     // Getting uniform locations for glUniform* calls
-    GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-    GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-    GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+    GLint transform_uloc = glGetUniformLocation(gfx.effect.program, "transform");
+    GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
+    GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
 
     // Setting vertices and indices
-    glBindVertexArray(mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+    glBindVertexArray(gfx.mesh.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, gfx.mesh.vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfx.mesh.ibo);
 
     // Input data location as in the vertex buffer
-    GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-    GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+    GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
+    GLint in_texcoord_loc = glGetAttribLocation(gfx.effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
     glEnableVertexAttribArray(in_texcoord_loc);
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
@@ -122,7 +116,7 @@ void ShooterBullet::draw(const mat3 &projection) {
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, shooterBulletTexture.id);
+    glBindTexture(GL_TEXTURE_2D, gfx.texture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
@@ -147,8 +141,8 @@ void ShooterBullet::update(float ms) {
 }
 
 Region ShooterBullet::getBoundingBox() const {
-    vec2 boxSize = {std::fabs(m_scale.x) * shooterBulletTexture.width,
-                    std::fabs(m_scale.y) * shooterBulletTexture.height};
+    vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width,
+                    std::fabs(m_scale.y) * gfx.texture.height};
     vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
@@ -160,4 +154,8 @@ unsigned int ShooterBullet::getMass() const {
 
 std::string ShooterBullet::getName() const {
     return "ShooterBullet";
+}
+
+ShooterBullet::FACTION ShooterBullet::getFaction() const {
+    return FACTION::ALIEN;
 }

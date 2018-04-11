@@ -251,12 +251,8 @@ int Player::getLives() {
     return m_lives;
 }
 
-void Player::addLives() {
+void Player::addLife() {
     m_lives++;
-}
-
-void Player::hit() {
-    m_lives--;
 }
 
 Region Player::getBoundingBox() const {
@@ -282,4 +278,18 @@ std::string Player::getName() const {
     return "Player";
 }
 
+void Player::onCollision(Entity &entity) {
 
+}
+
+void Player::takeDamage() {
+    m_lives--;
+}
+
+bool Player::isDamageable() const {
+    return true;
+}
+
+Player::FACTION Player::getFaction() const {
+    return FACTION::HUMAN;
+}

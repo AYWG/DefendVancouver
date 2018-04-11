@@ -129,4 +129,12 @@ struct Renderable {
     void transform_end();
 };
 
+// A container to be declared as a static member for each entity
+// so that each member of the container only needs to be created once for a given entity
+struct Graphics {
+    Effect effect;
+    Mesh mesh;
+    Texture texture;
+};
+
 

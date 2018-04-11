@@ -5,22 +5,18 @@
 #pragma once
 
 #include <memory>
-#include "../entity.hpp"
 #include "../../common.hpp"
+#include "powerUp.hpp"
 
-class Shield : public Entity, public Renderable {
-
-    static Texture shieldTexture;
+class OneUp : public PowerUp, public Renderable{
 
 public:
 
-    static bool initTexture();
+    static bool initGraphics();
 
-    static std::shared_ptr<Shield> spawn(World &world);
+    static std::shared_ptr<OneUp> spawn(World &world);
 
-    Shield(World &world);
-
-    ~Shield() override;
+    OneUp(World &world);
 
     bool init() override;
 
@@ -28,13 +24,14 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    void update(float ms) override;
-
     Region getBoundingBox() const override;
 
     std::string getName() const override;
 
-private:
+    void onCollision(Entity &other) override;
 
-    TexturedVertex vertices[4];
+
+private:
+    static Graphics gfx;
 };
+

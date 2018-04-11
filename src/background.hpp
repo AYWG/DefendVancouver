@@ -10,9 +10,8 @@
 
 class background : public Entity, public Renderable {
 
-    static Texture background_texture;
 public:
-    static bool initTexture();
+    static bool initGraphics();
 
     background(World &world);
 
@@ -20,7 +19,7 @@ public:
 
     void update(float ms) override;
 
-    void draw(const mat3 &projection);
+    void draw(const mat3 &projection) override;
 
     void destroy() override;
 
@@ -34,7 +33,16 @@ public:
 
     std::string getName() const override;
 
+    void onCollision(Entity &other) override;
+
+    void takeDamage() override;
+
+    bool isDamageable() const override;
+
+    FACTION getFaction() const override;
+
 private:
+    static Graphics gfx;
     int m_health;
 
 };
