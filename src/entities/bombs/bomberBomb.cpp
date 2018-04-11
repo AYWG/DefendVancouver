@@ -69,7 +69,6 @@ std::shared_ptr<BomberBomb> BomberBomb::spawn(World &world) {
 
 
 bool BomberBomb::init() {
-    m_isHit = false;
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
     frameCount = 0;

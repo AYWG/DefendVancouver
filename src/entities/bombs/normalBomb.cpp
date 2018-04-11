@@ -68,7 +68,6 @@ std::shared_ptr<NormalBomb> NormalBomb::spawn(World &world) {
 }
 
 bool NormalBomb::init() {
-    m_isHit = false;
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
     frameCount = 0;
