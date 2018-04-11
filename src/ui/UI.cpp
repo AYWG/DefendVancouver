@@ -40,16 +40,20 @@ void UI::draw(const mat3 &projection) {
     }
 }
 
-vec2 UI::getPlayerScreenPosition() {
+vec2 UI::getPlayerScreenPosition() const {
     return m_world->getPlayerScreenPosition();
 }
 
-vec2 UI::getPlayerPosition() {
+vec2 UI::getPlayerPosition() const {
     return m_world->getPlayerPosition();
 }
 
-vec2 UI::getNearestEnemyPosToPlayer() {
+vec2 UI::getNearestEnemyPosToPlayer() const {
     return m_world->getNearestEnemyPosToPlayer();
+}
+
+bool UI::isOffScreenEnemyPresentAndNoEnemiesVisible() const {
+    return m_world->isOffScreenEnemyPresentAndNoEnemiesVisible();
 }
 
 bool UI::initGraphics() {

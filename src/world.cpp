@@ -447,6 +447,23 @@ vec2 World::getNearestEnemyPosToPlayer() const {
     return nearestPos;
 }
 
+bool World::isOffScreenEnemyPresentAndNoEnemiesVisible() const {
+    bool isAtLeastOneEnemyAlive = false;
+    bool noEnemyVisible = true;
+
+    for (auto &entity : m_entities) {
+        if (entity->getFaction() == Entity::FACTION::ALIEN && entity->isDamageable()) {
+            isAtLeastOneEnemyAlive = true;
+
+            if (m_camera.isEntityInView(*entity)) {
+                noEnemyVisible = false;
+            }
+        }
+    }
+
+    return isAtLeastOneEnemyAlive && noEnemyVisible;
+}
+
 // Private
 
 bool World::initGraphics() {

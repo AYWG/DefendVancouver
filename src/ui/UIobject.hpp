@@ -33,6 +33,8 @@ protected:
     vec2 m_scale;
     float m_rotation;
 
+    bool m_isHidden;
+
 };
 
 

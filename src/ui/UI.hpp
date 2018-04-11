@@ -23,11 +23,13 @@ public:
 
     void draw(const mat3 &projection);
 
-    vec2 getPlayerScreenPosition();
+    vec2 getPlayerScreenPosition() const;
 
-    vec2 getPlayerPosition();
+    vec2 getPlayerPosition() const;
 
-    vec2 getNearestEnemyPosToPlayer();
+    vec2 getNearestEnemyPosToPlayer() const;
+
+    bool isOffScreenEnemyPresentAndNoEnemiesVisible() const;
 
 private:
 

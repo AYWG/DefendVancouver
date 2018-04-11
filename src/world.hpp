@@ -69,6 +69,8 @@ public:
     
     vec2 getNearestEnemyPosToPlayer() const;
 
+    bool isOffScreenEnemyPresentAndNoEnemiesVisible() const;
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;
