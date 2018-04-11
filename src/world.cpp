@@ -204,14 +204,6 @@ void World::update(float elapsed_ms) {
         }
     }
 
-
-//ASTAR
-    for (auto &entity : m_entities) {
-        if (typeid(*entity) == typeid(Chaser)) {
-            entity->update(elapsed_ms);
-        }
-    }
-
     //// CLEANUP ////
 
     auto entityIt = m_entities.begin();
@@ -250,7 +242,6 @@ void World::update(float elapsed_ms) {
             std::dynamic_pointer_cast<Shooter>(entity)->shoot();
         }
     }
-
 
     m_next_chaser_spawn -= elapsed_ms;
     if (m_next_chaser_spawn < 0.f && chasers != 0) {
