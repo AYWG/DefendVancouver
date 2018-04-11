@@ -6,6 +6,7 @@
 
 
 #include <vector>
+#include <memory>
 #include "../common.hpp"
 #include "UIobject.hpp"
 #include "playerIcon.hpp"
