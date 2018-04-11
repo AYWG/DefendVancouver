@@ -351,7 +351,7 @@ void World::draw() {
     for (auto &entity: m_entities) entity->draw(projection_2D);
 
     // Fake projection matrix for UI with respect to window coordinates
-    float lUI = -100.f;// *-0.5;
+    float lUI = 0.f;// *-0.5;
     float tUI = 0.f;// (float)h * -0.5;
     float rUI = (float)w;// *0.5;
     float bUI = (float)h;// *0.5;
@@ -431,17 +431,17 @@ vec2 World::getNearestEnemyPosToPlayer() const {
 
     for (auto &entity : m_entities) {
         // Filter by enemies
-//        if (entity->getFaction() == FACTION::ALIEN && entity->isDamageable()) {
-//            float diffX = entity->getPosition().x - getPlayer()->getPosition().x;
-//            float diffY = entity->getPosition().y - getPlayer()->getPosition().y;
-//            vec2 diff = {diffX, diffY};
-//            float distSq = dot(diff, diff);
-//
-//            if (distSq < closestDistSq) {
-//                closestDistSq = distSq;
-//                nearestPos = entity->getPosition();
-//            }
-//        }
+        if (entity->getFaction() == Entity::FACTION::ALIEN && entity->isDamageable()) {
+            float diffX = entity->getPosition().x - getPlayer()->getPosition().x;
+            float diffY = entity->getPosition().y - getPlayer()->getPosition().y;
+            vec2 diff = {diffX, diffY};
+            float distSq = dot(diff, diff);
+
+            if (distSq < closestDistSq) {
+                closestDistSq = distSq;
+                nearestPos = entity->getPosition();
+            }
+        }
     }
 
     return nearestPos;

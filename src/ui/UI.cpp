@@ -44,6 +44,14 @@ vec2 UI::getPlayerScreenPosition() {
     return m_world->getPlayerScreenPosition();
 }
 
+vec2 UI::getPlayerPosition() {
+    return m_world->getPlayerPosition();
+}
+
+vec2 UI::getNearestEnemyPosToPlayer() {
+    return m_world->getNearestEnemyPosToPlayer();
+}
+
 bool UI::initGraphics() {
     return playerIcon::initGraphics() &&
            EnemyIndicator::initGraphics();

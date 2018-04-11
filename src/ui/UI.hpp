@@ -25,6 +25,10 @@ public:
 
     vec2 getPlayerScreenPosition();
 
+    vec2 getPlayerPosition();
+
+    vec2 getNearestEnemyPosToPlayer();
+
 private:
 
     bool initGraphics();

@@ -2,6 +2,7 @@
 // Created by Andy on 2018-04-11.
 //
 
+#include <math.h>
 #include "enemyIndicator.hpp"
 #include "UI.hpp"
 
@@ -123,4 +124,10 @@ void EnemyIndicator::draw(const mat3 &projection) {
 void EnemyIndicator::update(float ms) {
     // set position to be the player's screen position
     m_position = m_ui->getPlayerScreenPosition();
+
+    float xDiffFromPlayer = m_ui->getNearestEnemyPosToPlayer().x - m_ui->getPlayerPosition().x;
+    float yDiffFromPlayer = m_ui->getNearestEnemyPosToPlayer().y - m_ui->getPlayerPosition().y;
+    float angle = atanf(yDiffFromPlayer / xDiffFromPlayer);
+    if (xDiffFromPlayer < 0.f) angle += 3.1415f;
+    m_rotation = angle;
 }
