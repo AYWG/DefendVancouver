@@ -47,6 +47,8 @@ public:
 
     vec2 getPlayerPosition() const;
 
+    vec2 getPlayerScreenPosition() const;
+
     std::vector<vec2> getBombPositions() const;
 
     vec2 getCityPosition() const;

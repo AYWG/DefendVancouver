@@ -11,16 +11,19 @@
 #include "UIobject.hpp"
 #include "playerIcon.hpp"
 
+class World;
 
 class UI {
 public:
-    UI(vec2 screenSize);
+    UI(vec2 screenSize, World &world);
 
     bool init();
 
     void update(float ms);
 
     void draw(const mat3 &projection);
+
+    vec2 getPlayerScreenPosition();
 
 private:
 
@@ -38,5 +41,7 @@ private:
 
     float UIwidth;
     float UIheight;
+
+    World *m_world;
 
 };

@@ -4,8 +4,9 @@
 
 #include "UI.hpp"
 #include "enemyIndicator.hpp"
+#include "../world.hpp"
 
-UI::UI(vec2 screenSize) : m_screenSize(screenSize) {}
+UI::UI(vec2 screenSize, World &world) : m_screenSize(screenSize), m_world(&world) {}
 
 bool UI::init() {
 
@@ -37,6 +38,10 @@ void UI::draw(const mat3 &projection) {
     for (auto &object: m_objects) {
         object->draw(projection);
     }
+}
+
+vec2 UI::getPlayerScreenPosition() {
+    return m_world->getPlayerScreenPosition();
 }
 
 bool UI::initGraphics() {

@@ -50,7 +50,7 @@ World::World() :
         m_next_oneup_spawn(0.f),
         m_next_shield_spawn(0.f),
         m_camera({}, {}),
-        m_ui({}),
+        m_ui({}, *this),
         m_quad(0, {}) {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
@@ -120,7 +120,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     waveNo = 1;
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
-    m_ui = UI(screenSize);
+    m_ui = UI(screenSize, *this);
     m_ui.init();
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initGraphics();
@@ -375,6 +375,13 @@ vec2 World::getPlayerPosition() const {
     return (*m_entities.at(1)).getPosition();
 }
 
+vec2 World::getPlayerScreenPosition() const {
+    return {
+            getPlayerPosition().x - m_camera.getLeftBoundary(),
+            getPlayerPosition().y - m_camera.getTopBoundary()
+    };
+}
+
 std::vector<vec2> World::getBombPositions() const {
     auto positions = std::vector<vec2>();
     for (auto &entity : m_entities) {
@@ -531,10 +538,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
 
 void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {
-    vec2 playerScreenPos = {
-            getPlayer()->getPosition().x - m_camera.getLeftBoundary(),
-            getPlayer()->getPosition().y - m_camera.getTopBoundary()
-    };
+    vec2 playerScreenPos = getPlayerScreenPosition();
     auto playerMouseXDist = float(xpos - playerScreenPos.x);
     auto playerMouseYDist = float(ypos - playerScreenPos.y);
     float newOrientation = -1.f * atan((playerMouseXDist / playerMouseYDist));
