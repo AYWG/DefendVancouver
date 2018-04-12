@@ -1,21 +1,21 @@
 //
-// Created by Shrey Swades Nayak on 2018-04-08.
+// Created by Shrey Swades Nayak on 2018-04-11.
 //
 
-#include "playerIcon.hpp"
+#include "waveIcon.hpp"
 
-Graphics playerIcon::gfx;
+Graphics waveIcon::gfx;
 
-playerIcon::playerIcon(UI &ui) : UIobject(ui) {}
+waveIcon::waveIcon(UI &ui) : UIobject(ui) {}
 
-playerIcon::~playerIcon() {
+waveIcon::~waveIcon() {
     destroy();
 }
 
-bool playerIcon::initGraphics() {
+bool waveIcon::initGraphics() {
 //load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("playerIcon.png"))) {
+        if (!gfx.texture.load_from_file(textures_path("waveIcon.png"))) {
             fprintf(stderr, "Failed to load spritesheet!");
             return false;
         }
@@ -29,9 +29,9 @@ bool playerIcon::initGraphics() {
     vertices[0].position = {-wr, +hr, -0.01f};
     vertices[0].texcoord = {0.f, 1.f};
     vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {1.f/3, 1.f};
+    vertices[1].texcoord = {1.f/2, 1.f};
     vertices[2].position = {+wr, -hr, -0.01f};
-    vertices[2].texcoord = {1.f/3, 0.f};
+    vertices[2].texcoord = {1.f/2, 0.f};
     vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
@@ -58,11 +58,10 @@ bool playerIcon::initGraphics() {
     return gfx.effect.load_from_file(shader_path("spritesheet.vs.glsl"), shader_path("spritesheet.fs.glsl"));
 }
 
-bool playerIcon::init() {
-    frameWidth = 1.f/3;
+bool waveIcon::init() {
+    frameWidth = 1.f/2;
     frameCount = 0;
-    m_position = {70.f, 70.f};
-    m_scale.x = 0.33f;
+    m_scale.x = 0.5f;
     m_scale.y = 1.0f;
     countdown = 1500.f;
     start = false;
@@ -71,7 +70,7 @@ bool playerIcon::init() {
 
 }
 
-void playerIcon::destroy() {
+void waveIcon::destroy() {
     glDeleteBuffers(1, &gfx.mesh.vbo);
     glDeleteBuffers(1, &gfx.mesh.ibo);
     glDeleteVertexArrays(1, &gfx.mesh.vao);
@@ -79,7 +78,7 @@ void playerIcon::destroy() {
     gfx.effect.release();
 }
 
-void playerIcon::draw(const mat3 &projection) {
+void waveIcon::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -130,7 +129,7 @@ void playerIcon::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void playerIcon::update(float ms) {
+void waveIcon::update(float ms) {
     if(countdown > 0.f) {
         countdown -= ms;
     } else{

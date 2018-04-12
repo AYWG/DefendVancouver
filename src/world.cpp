@@ -464,6 +464,14 @@ bool World::isOffScreenEnemyPresentAndNoEnemiesVisible() const {
     return isAtLeastOneEnemyAlive && noEnemyVisible;
 }
 
+int World::getPlayerLives() const {
+    return getPlayer()->getLives();
+}
+
+int World::getWorldHealth() const {
+    return getBackground()->getHealth();
+}
+
 // Private
 
 bool World::initGraphics() {

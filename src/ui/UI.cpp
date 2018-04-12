@@ -14,10 +14,19 @@ bool UI::init() {
     UIheight = m_screenSize.y;
 
     initGraphics();
-    auto icon = std::make_shared<playerIcon>(*this);
-    if (icon->init()) {
-        m_objects.emplace_back(icon);
+    auto pIcon = std::make_shared<playerIcon>(*this);
+    if (pIcon->init()) {
+        m_objects.emplace_back(pIcon);
     }
+
+    vec2 wavePos = {0,0};
+    auto wIcon = std::make_shared<waveIcon>(*this);
+    if (wIcon->init()) {
+        wIcon->setPosition({UIwidth-75.f,70.f});
+        m_objects.emplace_back(wIcon);
+        wavePos = wIcon->getPosition();
+    }
+
 
     auto enemyIndicator = std::make_shared<EnemyIndicator>(*this);
     if (enemyIndicator->init()) {
@@ -26,6 +35,7 @@ bool UI::init() {
 
     auto healthBar = std::make_shared<worldHealth>(*this);
     if (healthBar->init()) {
+        healthBar->setPosition({wavePos.x-125.f, wavePos.y});
         m_objects.emplace_back(healthBar);
     }
 
@@ -66,8 +76,18 @@ vec2 UI::getScreenSize() const {
     return m_screenSize;
 }
 
+int UI::getPlayerLives() const {
+    return m_world->getPlayerLives();
+}
+
+int UI::getWorldHealth() const {
+    return m_world->getWorldHealth();
+}
+
 bool UI::initGraphics() {
     return playerIcon::initGraphics() &&
            EnemyIndicator::initGraphics() &&
-           worldHealth::initGraphics();
+           worldHealth::initGraphics() &&
+           waveIcon::initGraphics();
 }
+

@@ -71,6 +71,11 @@ public:
 
     bool isOffScreenEnemyPresentAndNoEnemiesVisible() const;
 
+    int getPlayerLives() const;
+
+    int getWorldHealth() const;
+
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;

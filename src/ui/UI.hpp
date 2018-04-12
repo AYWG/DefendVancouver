@@ -10,6 +10,7 @@
 #include "../common.hpp"
 #include "UIobject.hpp"
 #include "playerIcon.hpp"
+#include "waveIcon.hpp"
 #include "enemyIndicator.hpp"
 #include "worldHealth.hpp"
 
@@ -28,6 +29,10 @@ public:
     vec2 getPlayerScreenPosition() const;
 
     vec2 getPlayerPosition() const;
+
+    int getPlayerLives() const;
+
+    int getWorldHealth() const;
 
     vec2 getNearestEnemyPosToPlayer() const;
 

@@ -62,9 +62,8 @@ bool worldHealth::init() {
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
     frameCount = 0;
-    m_position = {200.f, 200.f};
-    m_scale.x = 1.f;
-    m_scale.y = 1.f;
+    m_scale.x = 0.5f;
+    m_scale.y = 0.5f;
     countdown = 1500.f;
     start = false;
 
