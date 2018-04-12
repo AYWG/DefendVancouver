@@ -6,16 +6,15 @@
 
 #include "UIobject.hpp"
 
-
-class playerIcon : public UIobject, public Renderable{
+class worldHealth : public UIobject, public Renderable{
 
 public:
 
     static bool initGraphics();
 
-    playerIcon(UI &ui);
+    worldHealth(UI &ui);
 
-    ~playerIcon() override;
+    ~worldHealth() override;
 
     bool init() override;
 
@@ -29,8 +28,11 @@ private:
     static Graphics gfx;
     int frameCount;
     float frameWidth;
+    float frameHeight;
     float countdown;
     bool start;
 
-
 };
+
+
+

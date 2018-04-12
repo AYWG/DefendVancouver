@@ -10,6 +10,8 @@
 #include "../common.hpp"
 #include "UIobject.hpp"
 #include "playerIcon.hpp"
+#include "enemyIndicator.hpp"
+#include "worldHealth.hpp"
 
 class World;
 

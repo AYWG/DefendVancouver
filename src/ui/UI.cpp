@@ -3,8 +3,8 @@
 //
 
 #include "UI.hpp"
-#include "enemyIndicator.hpp"
 #include "../world.hpp"
+
 
 UI::UI(vec2 screenSize, World &world) : m_screenSize(screenSize), m_world(&world) {}
 
@@ -23,6 +23,12 @@ bool UI::init() {
     if (enemyIndicator->init()) {
         m_objects.emplace_back(enemyIndicator);
     }
+
+    auto healthBar = std::make_shared<worldHealth>(*this);
+    if (healthBar->init()) {
+        m_objects.emplace_back(healthBar);
+    }
+
 
     return true;
 }
@@ -62,5 +68,6 @@ vec2 UI::getScreenSize() const {
 
 bool UI::initGraphics() {
     return playerIcon::initGraphics() &&
-           EnemyIndicator::initGraphics();
+           EnemyIndicator::initGraphics() &&
+           worldHealth::initGraphics();
 }

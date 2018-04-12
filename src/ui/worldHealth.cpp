@@ -2,20 +2,20 @@
 // Created by Shrey Swades Nayak on 2018-04-08.
 //
 
-#include "playerIcon.hpp"
+#include "worldHealth.hpp"
 
-Graphics playerIcon::gfx;
+Graphics worldHealth::gfx;
 
-playerIcon::playerIcon(UI &ui) : UIobject(ui) {}
+worldHealth::worldHealth(UI &ui) : UIobject(ui) {}
 
-playerIcon::~playerIcon() {
+worldHealth::~worldHealth() {
     destroy();
 }
 
-bool playerIcon::initGraphics() {
+bool worldHealth::initGraphics() {
 //load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("playerIcon.png"))) {
+        if (!gfx.texture.load_from_file(textures_path("cityHealthBar.png"))) {
             fprintf(stderr, "Failed to load spritesheet!");
             return false;
         }
@@ -27,9 +27,9 @@ bool playerIcon::initGraphics() {
 
     TexturedVertex vertices[4];
     vertices[0].position = {-wr, +hr, -0.01f};
-    vertices[0].texcoord = {0.f, 1.f};
+    vertices[0].texcoord = {0.f, 1.f/3};
     vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {1.f/3, 1.f};
+    vertices[1].texcoord = {1.f/3, 1.f/3};
     vertices[2].position = {+wr, -hr, -0.01f};
     vertices[2].texcoord = {1.f/3, 0.f};
     vertices[3].position = {-wr, -hr, -0.01f};
@@ -58,12 +58,13 @@ bool playerIcon::initGraphics() {
     return gfx.effect.load_from_file(shader_path("spritesheet.vs.glsl"), shader_path("spritesheet.fs.glsl"));
 }
 
-bool playerIcon::init() {
+bool worldHealth::init() {
     frameWidth = 1.f/3;
+    frameHeight = 1.f/3;
     frameCount = 0;
-    m_position = {75.f, 75.f};
-    m_scale.x = 0.5f;
-    m_scale.y = 1.5f;
+    m_position = {200.f, 200.f};
+    m_scale.x = 1.f;
+    m_scale.y = 1.f;
     countdown = 1500.f;
     start = false;
 
@@ -71,7 +72,7 @@ bool playerIcon::init() {
 
 }
 
-void playerIcon::destroy() {
+void worldHealth::destroy() {
     glDeleteBuffers(1, &gfx.mesh.vbo);
     glDeleteBuffers(1, &gfx.mesh.ibo);
     glDeleteVertexArrays(1, &gfx.mesh.vao);
@@ -79,7 +80,7 @@ void playerIcon::destroy() {
     gfx.effect.release();
 }
 
-void playerIcon::draw(const mat3 &projection) {
+void worldHealth::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -100,6 +101,7 @@ void playerIcon::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
     GLint frameCount_uloc = glGetUniformLocation(gfx.effect.program, "frameCount");
     GLint frameWidth_uloc = glGetUniformLocation(gfx.effect.program, "frameWidth");
+    GLint frameHeight_uloc = glGetUniformLocation(gfx.effect.program, "frameHeight");
 
     // Setting vertices and indices
     glBindVertexArray(gfx.mesh.vao);
@@ -125,12 +127,13 @@ void playerIcon::draw(const mat3 &projection) {
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
     glUniform1iv(frameCount_uloc, 1, &frameCount);
     glUniform1fv(frameWidth_uloc, 1, &frameWidth);
+    glUniform1fv(frameHeight_uloc, 1, &frameHeight);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void playerIcon::update(float ms) {
+void worldHealth::update(float ms) {
     if(countdown > 0.f) {
         countdown -= ms;
     } else{
@@ -142,7 +145,7 @@ void playerIcon::update(float ms) {
         frameCount++;
     }
 
-    if(frameCount>2){
+    if(frameCount>8){
         frameCount = 0;
     }
 
