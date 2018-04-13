@@ -93,6 +93,11 @@ struct Mesh {
     GLuint ibo;
 };
 
+struct particleVBO {
+    GLuint vbo;
+
+};
+
 // Container for Vertex and Fragment shader, which are then put(linked) together in a
 // single program that is then bound to the pipeline.
 struct Effect {
@@ -135,6 +140,7 @@ struct Graphics {
     Effect effect;
     Mesh mesh;
     Texture texture;
+    particleVBO particleVBO;
 };
 
 

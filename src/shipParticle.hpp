@@ -3,36 +3,63 @@
 //
 
 
+#include <vector>
+#include "common.hpp"
+#include "entities/entity.hpp"
 
-#include <memory>
-#include <../glm/glm/vec4.hpp>
+class shipParticle : public Entity, public Renderable  {
 
-
-class shipParticle {
 
 public:
-    std::unique_ptr<glm::vec4[]> m_pos;
-    std::unique_ptr<glm::vec4[]> m_col;
-    std::unique_ptr<glm::vec4[]> m_startCol;
-    std::unique_ptr<glm::vec4[]> m_endCol;
-    std::unique_ptr<glm::vec4[]> m_vel;
-    std::unique_ptr<glm::vec4[]> m_acc;
-    std::unique_ptr<glm::vec4[]> m_time;
-    std::unique_ptr<bool[]>  m_alive;
 
-    size_t m_count{ 0 };
-    size_t m_countAlive{ 0 };
-public:
-    explicit shipParticle(size_t maxCount) { generate(maxCount); }
-    ~ParticleData() { }
+    std::vector<vec2> pos_buf;
+    int FindUnusedParticle();
+    int LastUsedParticle = 0;
+    int newParticles;
 
-    shipParticle(const shipParticle &) = delete;
-    shipParticle &operator=(const shipParticle &) = delete;
+    vec2 rndmDir;
 
-    void generate(size_t maxSize);
-    void kill(size_t id);
-    void wake(size_t id);
-    void swapData(size_t a, size_t b);
+
+    void particleGenerator();
+
+    static bool initGraphics();
+
+    void SortParticles();
+
+    bool isDead();
+
+    shipParticle(World &world);
+
+    bool init() override;
+
+    void update(float ms) override;
+
+    void draw(const mat3 &projection) override;
+
+    void destroy() override;
+
+    Region getBoundingBox() const override;
+
+    std::string getName() const override;
+
+
+
+
+
+private:
+    static Graphics gfx;
+    vec2 m_position;
+    vec2 m_scale;
+
+    ///////REQUIRED VARS//////////
+    float xPos;
+    float yPos;
+    float xVelocity = 30;
+    float  yVelocity;
+
+
+
+
 
 };
 

@@ -59,6 +59,10 @@ World::~World() {
 
 }
 
+
+
+
+
 // World initialization
 bool World::init(vec2 screenSize, vec2 worldSize) {
     //-------------------------------------------------------------------------
@@ -71,10 +75,10 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
         return false;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -128,6 +132,10 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
+
+    auto particle = std::make_shared<shipParticle>(*this);
+    particle->init();
+    addEntity(particle);
 
     width = m_size.x / COL;
     height = m_size.y / ROW;
@@ -262,6 +270,15 @@ void World::update(float elapsed_ms) {
         }
     }
 
+    //particle
+    for (auto &entity : m_entities ){
+        if (typeid(*entity) == typeid(shipParticle)){
+
+
+        }
+    }
+
+
     //// CLEANUP ////
 
     auto entityIt = m_entities.begin();
@@ -379,6 +396,7 @@ void World::draw() {
              << " s: " << shooters << " c: " << chasers
              << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
+    glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer
     glViewport(0, 0, w, h);
@@ -456,7 +474,8 @@ bool World::initGraphics() {
            Bomber::initGraphics() &&
            PlayerBullet::initGraphics() &&
            ShooterBullet::initGraphics() &&
-           background::initGraphics();
+           background::initGraphics() &&
+           shipParticle::initGraphics();
 }
 
 std::shared_ptr<Player> World::getPlayer() const {
@@ -465,6 +484,10 @@ std::shared_ptr<Player> World::getPlayer() const {
 
 std::shared_ptr<background> World::getBackground() const {
     return std::dynamic_pointer_cast<background>(m_entities.front());
+}
+
+std::shared_ptr<shipParticle> World::getParticle() const {
+    return std::dynamic_pointer_cast<shipParticle>(m_entities.front());
 }
 
 void World::playerBounce(const NormalBomb &bomb) {

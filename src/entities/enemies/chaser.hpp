@@ -27,8 +27,6 @@ class Chaser : public Enemy, public Renderable {
 public:
     static bool initGraphics();
 
-
-
     static std::shared_ptr<Chaser> spawn(World &world);
 
     Chaser(World &world, ChaserAI &ai);

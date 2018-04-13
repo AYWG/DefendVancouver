@@ -7,6 +7,7 @@
 #include "entities/enemies/bomber.hpp"
 #include "entities/enemies/chaser.hpp"
 #include "background.hpp"
+#include "shipParticle.hpp"
 #include "camera.hpp"
 #include "entities/bombs/normalBomb.hpp"
 #include "entities/bombs/bomberBomb.hpp"
@@ -69,6 +70,7 @@ private:
 
     std::shared_ptr<Player> getPlayer() const;
     std::shared_ptr<background> getBackground() const;
+    std::shared_ptr<shipParticle> getParticle() const;
 
 
     void playerBounce(const NormalBomb &bomb);
