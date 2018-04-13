@@ -21,6 +21,8 @@ public:
 
     ~State();
 
+    void setPosition(vec2 pos);
+
 };
 
 

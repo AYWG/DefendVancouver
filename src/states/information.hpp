@@ -24,8 +24,6 @@ public:
 
     void destroy() override;
 
-    void setPosition(vec2 pos);
-
     Region getBoundingBox() const override;
 
     std::string getName() const override;

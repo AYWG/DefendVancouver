@@ -119,11 +119,6 @@ void Info::destroy() {
 
 }
 
-void Info::setPosition(vec2 pos) {
-    m_position.x = pos.x;
-    m_position.y = pos.y;
-}
-
 Region Info::getBoundingBox() const {
     return Region();
 }

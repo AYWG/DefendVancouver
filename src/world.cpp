@@ -1,6 +1,7 @@
 // Header
 #include "world.hpp"
 #include "states/information.hpp"
+#include "states/gameOver.hpp"
 
 
 
@@ -79,7 +80,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
     glfwWindowHint(GLFW_RESIZABLE, 0);
-    m_window = glfwCreateWindow((int) screenSize.x, (int) screenSize.y, "DefendVancouver", glfwGetPrimaryMonitor(),
+    m_window = glfwCreateWindow((int) screenSize.x, (int) screenSize.y, "DefendVancouver", nullptr,
                                 nullptr);
     if (m_window == nullptr)
         return false;
@@ -133,6 +134,11 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
             {m_camera.getLeftBoundary() + (screenSize.x / 2), m_camera.getTopBoundary() + (screenSize.y / 2)});
     info->init();
     addState(info);
+    auto over = std::make_shared<GameOver>(*this);
+    over->setPosition(
+            {m_camera.getLeftBoundary() + (screenSize.x / 2), m_camera.getTopBoundary() + (screenSize.y / 2)});
+    over->init();
+    addState(over);
 
     width = m_size.x / COL;
     height = m_size.y / ROW;
@@ -180,6 +186,15 @@ void World::update(float elapsed_ms) {
         bBombs = MAX_BOMBERBOMBS;
         bombs = MAX_BOMBS;
         totalEnemies = shooters + chasers;
+    }
+
+    for (auto &state: m_states){
+        if (state->getName() == "background"){
+            continue;
+        } else {
+            state->setPosition(
+                    {m_camera.getLeftBoundary() + (screen.x / 2), m_camera.getTopBoundary() + (screen.y / 2)});
+        }
     }
 
     //////COLLISION DETECTION/////
@@ -462,7 +477,8 @@ bool World::initTextures() {
            ShooterBullet::initTexture() &&
            background::initTexture() &&
            StartScreen::initTexture() &&
-           Info::initTexture();
+           Info::initTexture() &&
+           GameOver::initTexture();
 }
 
 std::shared_ptr<Player> World::getPlayer() const {
@@ -523,9 +539,11 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
-    if (key == GLFW_KEY_P ) {
+    if (key == GLFW_KEY_P || (key == GLFW_KEY_P && state == 3)) {
         if (action == GLFW_PRESS) {
+            std::cout << "pressed P" << std::endl;
             state = 1;
+            std::cout << state << std::endl;
         }
     }
 
@@ -542,23 +560,15 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
-    if (key == GLFW_KEY_B && state == 2){
-        if (action == GLFW_PRESS){
+    if (key == GLFW_KEY_B && state == 2) {
+        if (action == GLFW_PRESS) {
             state = 0;
         }
     }
 
     // Resetting game
     if (getPlayer().get()->m_lives < 1) {
-        int w, h;
-        glfwGetWindowSize(m_window, &w, &h);
-        totalEnemies = MAX_SHOOTERS + MAX_CHASER;
-        waveNo = 1;
-
-        getBackground()->init();
-
-        getPlayer()->init();
-        m_points = 0;
+        state = 3;
 
     }
 
