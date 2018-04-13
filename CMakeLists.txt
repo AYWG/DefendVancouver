@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 
 file(GLOB_RECURSE SOURCE_FILES "src/*.hpp" "src/*.cpp")
-add_executable(DefendVancouver gl3w/include/GL/gl3w.h gl3w/include/GL/glcorearb.h  gl3w/src/gl3w.c stb-cmake/stb_image.h glm/glm/glm.hpp glew-2.1.0/include/GL/glew.h  ${SOURCE_FILES})
+add_executable(DefendVancouver gl3w/include/GL/gl3w.h gl3w/include/GL/glcorearb.h  gl3w/src/gl3w.c stb-cmake/stb_image.h  ${SOURCE_FILES})
 
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)

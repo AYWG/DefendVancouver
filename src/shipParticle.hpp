@@ -20,6 +20,7 @@ public:
     vec2 rndmDir;
 
 
+
     void particleGenerator();
 
     static bool initGraphics();
@@ -57,7 +58,7 @@ private:
     float xVelocity = 30;
     float  yVelocity;
 
-
+    int pos;
 
 
 

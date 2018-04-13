@@ -9,7 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
-#include <GL/gl.h>
+#include <GL/gl3w.h>
 
 typedef pair<int, int> Pair;
 
@@ -75,7 +75,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
         return false;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
