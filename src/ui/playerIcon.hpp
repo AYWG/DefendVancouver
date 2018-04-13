@@ -29,8 +29,6 @@ private:
     static Graphics gfx;
     int frameCount;
     float frameWidth;
-    float countdown;
-    bool start;
 
 
 };

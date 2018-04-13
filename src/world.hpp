@@ -14,6 +14,7 @@
 #include "explosion.hpp"
 #include "collisions/quadTreeNode.hpp"
 #include "entities/powerups/oneUp.hpp"
+#include "entities/powerups/cityUp.hpp"
 #include "entities/powerups/shield.hpp"
 #include "ui/UI.hpp"
 
@@ -75,6 +76,10 @@ public:
 
     int getWorldHealth() const;
 
+    bool getInvincibility();
+
+    void makeInvincible();
+
 
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
@@ -120,6 +125,7 @@ private:
     float m_next_nbomb_spawn;
     float m_next_bbomb_spawn;
     float m_next_oneup_spawn;
+    float m_next_cityup_spawn;
     float m_next_shield_spawn;
 
     // C++ rng
@@ -136,5 +142,8 @@ private:
     
     int totalEnemies;
     int waveNo;
+
+    bool m_invincibility;
+    float m_invincibility_countdown;
     
 };

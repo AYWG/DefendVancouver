@@ -3,6 +3,7 @@
 //
 
 #include "playerIcon.hpp"
+#include "UI.hpp"
 
 Graphics playerIcon::gfx;
 
@@ -64,8 +65,6 @@ bool playerIcon::init() {
     m_position = {70.f, 70.f};
     m_scale.x = 0.33f;
     m_scale.y = 1.0f;
-    countdown = 1500.f;
-    start = false;
 
     return true;
 
@@ -131,18 +130,11 @@ void playerIcon::draw(const mat3 &projection) {
 }
 
 void playerIcon::update(float ms) {
-    if(countdown > 0.f) {
-        countdown -= ms;
-    } else{
-        start = true;
-    }
-    if(start){
-        countdown = 1500;
-        start = false;
-        frameCount++;
-    }
-
-    if(frameCount>2){
+    if(m_ui->getInvincibility()){
+        frameCount = 1;
+    } else if(m_ui->getPlayerLives() < 2){
+        frameCount = 2;
+    } else {
         frameCount = 0;
     }
 

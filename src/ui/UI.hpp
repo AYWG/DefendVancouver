@@ -34,6 +34,8 @@ public:
 
     int getWorldHealth() const;
 
+    bool getInvincibility();
+
     vec2 getNearestEnemyPosToPlayer() const;
 
     bool isOffScreenEnemyPresentAndNoEnemiesVisible() const;

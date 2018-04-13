@@ -26,11 +26,10 @@ public:
 
 private:
     static Graphics gfx;
+    int health;
     int frameCount;
     float frameWidth;
     float frameHeight;
-    float countdown;
-    bool start;
 
 };
 

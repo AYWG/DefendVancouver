@@ -44,6 +44,7 @@ bool UI::init() {
 }
 
 void UI::update(float ms) {
+
     for (auto &object: m_objects) {
         object->update(ms);
     }
@@ -82,6 +83,10 @@ int UI::getPlayerLives() const {
 
 int UI::getWorldHealth() const {
     return m_world->getWorldHealth();
+}
+
+bool UI::getInvincibility(){
+    return m_world->getInvincibility();
 }
 
 bool UI::initGraphics() {

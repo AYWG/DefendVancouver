@@ -48,10 +48,11 @@ World::World() :
         m_next_nbomb_spawn(0.f),
         m_next_bbomb_spawn(0.f),
         m_next_oneup_spawn(0.f),
+        m_next_cityup_spawn(0.f),
         m_next_shield_spawn(0.f),
         m_camera({}, {}),
         m_ui({}, *this),
-        m_quad(0, {}) {
+        m_quad(0, {}){
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
 }
@@ -117,6 +118,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     GLFWcursor *cursor = glfwCreateCursor(&image, 0, 0);
     glfwSetCursor(m_window, cursor);
 
+    m_invincibility = false;
     waveNo = 1;
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
@@ -298,12 +300,29 @@ void World::update(float elapsed_ms) {
         m_next_oneup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
     }
 
+    // spawn cityups
+    m_next_cityup_spawn -= elapsed_ms;
+    if (MAX_POWERUP != 0 && m_next_cityup_spawn < 0.f) {
+        auto newCityUp = CityUp::spawn(*this);
+        newCityUp->setPosition({m_dist(m_rng) * m_size.x, -200.f});
+        m_next_cityup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+    }
+
     // spawn shield
     m_next_shield_spawn -= elapsed_ms;
     if (MAX_POWERUP != 0 && m_next_shield_spawn < 0.f) {
         auto newShield = Shield::spawn(*this);
         newShield->setPosition({m_dist(m_rng) * m_size.x, -200.f});
         m_next_shield_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+    }
+
+    // Invincibility
+    if(m_invincibility){
+//        m_invincibility_countdown =- elapsed_ms;
+    }
+
+    if(m_invincibility_countdown <= 0.f){
+        m_invincibility = false;
     }
 }
 
@@ -472,12 +491,22 @@ int World::getWorldHealth() const {
     return getBackground()->getHealth();
 }
 
+bool World::getInvincibility() {
+    return m_invincibility;
+}
+
+void World::makeInvincible() {
+    //m_invincibility_countdown = 2000.f;
+    m_invincibility = true;
+}
+
 // Private
 
 bool World::initGraphics() {
     return BomberBomb::initGraphics() &&
            NormalBomb::initGraphics() &&
            OneUp::initGraphics() &&
+           CityUp::initGraphics() &&
            Shield::initGraphics() &&
            Shooter::initGraphics() &&
            Chaser::initGraphics() &&

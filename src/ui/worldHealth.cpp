@@ -3,6 +3,7 @@
 //
 
 #include "worldHealth.hpp"
+#include "UI.hpp"
 
 Graphics worldHealth::gfx;
 
@@ -61,11 +62,9 @@ bool worldHealth::initGraphics() {
 bool worldHealth::init() {
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
-    frameCount = 0;
+    frameCount = 8;
     m_scale.x = 0.5f;
     m_scale.y = 0.5f;
-    countdown = 1500.f;
-    start = false;
 
     return true;
 
@@ -133,18 +132,24 @@ void worldHealth::draw(const mat3 &projection) {
 }
 
 void worldHealth::update(float ms) {
-    if(countdown > 0.f) {
-        countdown -= ms;
-    } else{
-        start = true;
-    }
-    if(start){
-        countdown = 1500;
-        start = false;
-        frameCount++;
-    }
 
-    if(frameCount>8){
+    health = m_ui->getWorldHealth();
+
+    if(health < 876){
+        frameCount = 7;
+    } else if (health < 751){
+        frameCount = 6;
+    } else if(health < 625){
+        frameCount = 5;
+    } else if(health < 501){
+        frameCount = 4;
+    } else if(health < 376){
+        frameCount = 3;
+    } else if(health < 251){
+        frameCount = 2;
+    } else if(health < 125){
+        frameCount = 1;
+    } else if(health < 2){
         frameCount = 0;
     }
 
