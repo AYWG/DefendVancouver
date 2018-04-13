@@ -1,22 +1,21 @@
 //
-// Created by Shrey Swades Nayak on 2018-04-08.
+// Created by Shrey Swades Nayak on 2018-04-13.
 //
 
-#include "worldHealth.hpp"
-#include "UI.hpp"
+#include "Digit.hpp"
 
-Graphics worldHealth::gfx;
+Graphics Digit::gfx;
 
-worldHealth::worldHealth(UI &ui) : UIobject(ui) {}
+Digit::Digit(UI &ui) : UIobject(ui) {}
 
-worldHealth::~worldHealth() {
+Digit::~Digit() {
     destroy();
 }
 
-bool worldHealth::initGraphics() {
+bool Digit::initGraphics() {
 //load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("cityHealthBar.png"))) {
+        if (!gfx.texture.load_from_file(textures_path("digits.png"))) {
             fprintf(stderr, "Failed to load spritesheet!");
             return false;
         }
@@ -28,11 +27,11 @@ bool worldHealth::initGraphics() {
 
     TexturedVertex vertices[4];
     vertices[0].position = {-wr, +hr, -0.01f};
-    vertices[0].texcoord = {0.f, 1.f/3};
+    vertices[0].texcoord = {0.f, 1.f};
     vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {1.f/3, 1.f/3};
+    vertices[1].texcoord = {1.f/10, 1.f};
     vertices[2].position = {+wr, -hr, -0.01f};
-    vertices[2].texcoord = {1.f/3, 0.f};
+    vertices[2].texcoord = {1.f/10, 0.f};
     vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
@@ -59,19 +58,20 @@ bool worldHealth::initGraphics() {
     return gfx.effect.load_from_file(shader_path("spritesheet.vs.glsl"), shader_path("spritesheet.fs.glsl"));
 }
 
-bool worldHealth::init() {
-    frameWidth = 1.f/3;
-    frameHeight = 1.f/3;
-    frameCount = 8;
-    frameNumber = 3;
-    m_scale.x = 0.5f;
-    m_scale.y = 0.5f;
+bool Digit::init() {
+    frameWidth = 1.f/10;
+    frameCount = 0;
+    frameNumber = 10;
+    m_scale.x = 0.075f;
+    m_scale.y = 0.75f;
+    countdown = 1500.f;
+    start = false;
 
     return true;
 
 }
 
-void worldHealth::destroy() {
+void Digit::destroy() {
     glDeleteBuffers(1, &gfx.mesh.vbo);
     glDeleteBuffers(1, &gfx.mesh.ibo);
     glDeleteVertexArrays(1, &gfx.mesh.vao);
@@ -79,7 +79,7 @@ void worldHealth::destroy() {
     gfx.effect.release();
 }
 
-void worldHealth::draw(const mat3 &projection) {
+void Digit::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -101,7 +101,6 @@ void worldHealth::draw(const mat3 &projection) {
     GLint frameCount_uloc = glGetUniformLocation(gfx.effect.program, "frameCount");
     GLint frameNumber_uloc = glGetUniformLocation(gfx.effect.program, "frameNumber");
     GLint frameWidth_uloc = glGetUniformLocation(gfx.effect.program, "frameWidth");
-    GLint frameHeight_uloc = glGetUniformLocation(gfx.effect.program, "frameHeight");
 
     // Setting vertices and indices
     glBindVertexArray(gfx.mesh.vao);
@@ -128,31 +127,24 @@ void worldHealth::draw(const mat3 &projection) {
     glUniform1iv(frameCount_uloc, 1, &frameCount);
     glUniform1iv(frameNumber_uloc, 1, &frameNumber);
     glUniform1fv(frameWidth_uloc, 1, &frameWidth);
-    glUniform1fv(frameHeight_uloc, 1, &frameHeight);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void worldHealth::update(float ms) {
+void Digit::update(float ms) {
+    if(countdown > 0.f) {
+        countdown -= ms;
+    } else{
+        start = true;
+    }
+    if(start){
+        countdown = 1500;
+        start = false;
+        frameCount++;
+    }
 
-    health = m_ui->getWorldHealth();
-
-    if(health < 876){
-        frameCount = 7;
-    } else if (health < 751){
-        frameCount = 6;
-    } else if(health < 625){
-        frameCount = 5;
-    } else if(health < 501){
-        frameCount = 4;
-    } else if(health < 376){
-        frameCount = 3;
-    } else if(health < 251){
-        frameCount = 2;
-    } else if(health < 125){
-        frameCount = 1;
-    } else if(health < 2){
+    if(frameCount>10){
         frameCount = 0;
     }
 

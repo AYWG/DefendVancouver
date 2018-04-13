@@ -1,20 +1,19 @@
 //
-// Created by Shrey Swades Nayak on 2018-04-11.
+// Created by Shrey Swades Nayak on 2018-04-13.
 //
 
 #pragma once
 
 #include "UIobject.hpp"
 
-class waveIcon : public UIobject, public Renderable{
-
+class Digit : public UIobject, public Renderable{
 public:
 
     static bool initGraphics();
 
-    waveIcon(UI &ui);
+    Digit(UI &ui);
 
-    ~waveIcon() override;
+    ~Digit() override;
 
     bool init() override;
 

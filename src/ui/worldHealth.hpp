@@ -28,6 +28,7 @@ private:
     static Graphics gfx;
     int health;
     int frameCount;
+    int frameNumber;
     float frameWidth;
     float frameHeight;
 

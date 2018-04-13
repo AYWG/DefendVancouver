@@ -13,6 +13,7 @@
 #include "waveIcon.hpp"
 #include "enemyIndicator.hpp"
 #include "worldHealth.hpp"
+#include "Digit.hpp"
 
 class World;
 

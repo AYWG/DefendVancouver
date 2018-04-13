@@ -70,7 +70,7 @@ std::shared_ptr<NormalBomb> NormalBomb::spawn(World &world) {
 bool NormalBomb::init() {
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
-    frameCount = 0;
+    frameNumber = 3;
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
 
@@ -106,6 +106,7 @@ void NormalBomb::draw(const mat3 &projection) {
     GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
     GLint frameCount_uloc = glGetUniformLocation(gfx.effect.program, "frameCount");
+    GLint frameNumber_uloc = glGetUniformLocation(gfx.effect.program, "frameNumber");
     GLint frameWidth_uloc = glGetUniformLocation(gfx.effect.program, "frameWidth");
     GLint frameHeight_uloc = glGetUniformLocation(gfx.effect.program, "frameHeight");
 
@@ -132,6 +133,7 @@ void NormalBomb::draw(const mat3 &projection) {
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
     glUniform1iv(frameCount_uloc, 1, &frameCount);
+    glUniform1iv(frameNumber_uloc, 1, &frameNumber);
     glUniform1fv(frameWidth_uloc, 1, &frameWidth);
     glUniform1fv(frameHeight_uloc, 1, &frameHeight);
 
