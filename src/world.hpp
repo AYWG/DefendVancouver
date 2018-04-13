@@ -17,6 +17,7 @@
 #include "entities/powerups/cityUp.hpp"
 #include "entities/powerups/shield.hpp"
 #include "ui/UI.hpp"
+#include "states/startScreen.hpp"
 
 // stlib
 #include <vector>
@@ -60,7 +61,11 @@ public:
 
     bool isEntityInView(const Entity &entity) const;
 
+    int getState();
     void addPoints(int points);
+
+    void addState(std::shared_ptr<Entity> entity);
+
 
     void addPlayerLife();
 
@@ -131,6 +136,7 @@ private:
      * All entities in the world. The background will always be the first entity, followed by the player.
      */
     std::vector<std::shared_ptr<Entity>> m_entities;
+    std::vector<std::shared_ptr<Entity>> m_states;
 
 
     float m_next_shooter_spawn;
@@ -156,6 +162,7 @@ private:
     
     int totalEnemies;
     int waveNo;
+    int state;
 
     bool m_invincibility;
     float m_invincibility_countdown;

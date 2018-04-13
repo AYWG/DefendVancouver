@@ -81,7 +81,8 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
     glfwWindowHint(GLFW_RESIZABLE, 0);
-    m_window = glfwCreateWindow((int) screenSize.x, (int) screenSize.y, "DefendVancouver", nullptr, nullptr);
+    m_window = glfwCreateWindow((int) screenSize.x, (int) screenSize.y, "DefendVancouver", glfwGetPrimaryMonitor(),
+                                nullptr);
     if (m_window == nullptr)
         return false;
 
@@ -117,6 +118,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
 
     GLFWcursor *cursor = glfwCreateCursor(&image, 0, 0);
     glfwSetCursor(m_window, cursor);
+    state = 0;
 
     if (!initScore()) return false;
 
@@ -135,6 +137,17 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
+    auto start = std::make_shared<StartScreen>(*this);
+    start->setPosition(
+            {m_camera.getLeftBoundary() + (screenSize.x / 2), m_camera.getTopBoundary() + (screenSize.y / 2)});
+    start->init();
+    addState(start);
+    addState(bg);
+    auto info = std::make_shared<Info>(*this);
+    info->setPosition(
+            {m_camera.getLeftBoundary() + (screenSize.x / 2), m_camera.getTopBoundary() + (screenSize.y / 2)});
+    info->init();
+    addState(info);
 
     width = m_size.x / COL;
     height = m_size.y / ROW;
@@ -341,14 +354,6 @@ void World::draw() {
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
 
-    // Updating window title with points
-    std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Lives: " << getPlayer()->getLives() << " City: "
-             << getBackground()->getHealth()
-             << " s: " << shooters << " c: " << chasers
-             << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
-    glfwSetWindowTitle(m_window, title_ss.str().c_str());
-
     // Clearing backbuffer
     glViewport(0, 0, w, h);
     glDepthRange(0.00001, 10);
@@ -371,8 +376,19 @@ void World::draw() {
     mat3 projection_2D{{sx,  0.f, 0.f},
                        {0.f, sy,  0.f},
                        {tx,  ty,  1.f}};
+    if (state == 1) {
+        // Updating window title with points
+        std::stringstream title_ss;
+        title_ss << "Points: " << m_points << " Lives: " << getPlayer()->getLives() << " City: "
+                 << getBackground()->getHealth()
+                 << " s: " << shooters << " c: " << chasers
+                 << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
+        glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
-    for (auto &entity: m_entities) entity->draw(projection_2D);
+        for (auto &entity: m_entities) entity->draw(projection_2D);
+    } else {
+        m_states[state]->draw(projection_2D);
+    }
 
     // Fake projection matrix for UI with respect to window coordinates
     float lUI = 0.f;// *-0.5;
@@ -536,7 +552,9 @@ bool World::initGraphics() {
            Bomber::initGraphics() &&
            PlayerBullet::initGraphics() &&
            ShooterBullet::initGraphics() &&
-           background::initGraphics();
+           background::initTexture() &&
+           StartScreen::initTexture() &&
+           Info::initTexture();
 }
 
 std::shared_ptr<Player> World::getPlayer() const {
@@ -624,6 +642,31 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
+    if (key == GLFW_KEY_P ) {
+        if (action == GLFW_PRESS) {
+            state = 1;
+        }
+    }
+
+    if (key == GLFW_KEY_ESCAPE) {
+        if (action == GLFW_PRESS) {
+            glfwSetWindowShouldClose(m_window, 1);
+            is_over();
+        }
+    }
+
+    if (key == GLFW_KEY_I) {
+        if (action == GLFW_PRESS) {
+            state = 2;
+        }
+    }
+
+    if (key == GLFW_KEY_B && state == 2){
+        if (action == GLFW_PRESS){
+            state = 0;
+        }
+    }
+
     // Resetting game
     if (getPlayer()->isDead()) {
         int w, h;
@@ -659,4 +702,14 @@ void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
         }
     }
 }
+
+int World::getState() {
+    return state;
+}
+
+void World::addState(std::shared_ptr<Entity> entity) {
+    m_states.emplace_back(entity);
+}
+
+
 
