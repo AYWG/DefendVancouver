@@ -1,6 +1,7 @@
 // Header
 #include "world.hpp"
 #include "../stb-cmake/stb_image.h"
+#include "states/information.hpp"
 
 
 
@@ -571,7 +572,7 @@ bool World::initGraphics() {
            Bomber::initGraphics() &&
            PlayerBullet::initGraphics() &&
            ShooterBullet::initGraphics() &&
-           background::initTexture() &&
+           background::initGraphics();
            StartScreen::initTexture() &&
            Info::initTexture() &&
            GameOver::initTexture();
