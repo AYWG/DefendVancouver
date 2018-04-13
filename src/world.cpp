@@ -2,6 +2,7 @@
 #include "world.hpp"
 #include "../stb-cmake/stb_image.h"
 #include "states/information.hpp"
+#include "states/gameOver.hpp"
 
 
 
