@@ -15,3 +15,8 @@ State::~State() {
 State::State(World &world) : Entity(world) {
 
 }
+
+void State::setPosition(vec2 pos) {
+    m_position.x = pos.x;
+    m_position.y = pos.y;
+}
