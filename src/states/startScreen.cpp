@@ -128,7 +128,3 @@ StartScreen::StartScreen(World &world) : State(world) {
 
 }
 
-void StartScreen::setPosition(vec2 pos) {
-    m_position.x = pos.x;
-    m_position.y = pos.y;
-}

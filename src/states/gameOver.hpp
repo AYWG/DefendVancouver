@@ -28,14 +28,7 @@ public:
 
     std::string getName() const override;
 
-private:
-    void onKey(GLFWwindow *, int key, int, int action, int mod);
-
-    void onMouseMove(GLFWwindow *window, double xpos, double ypos);
-
-    void onMouseClick(GLFWwindow *window, int button, int action, int mod);
 
 };
-
 
 #endif //DEFENDVANCOUVER_GAMEOVER_HPP
