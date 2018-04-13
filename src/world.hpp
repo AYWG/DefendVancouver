@@ -15,6 +15,7 @@
 #include "collisions/quadTreeNode.hpp"
 #include "entities/powerups/OneUp.hpp"
 #include "entities/powerups/Shield.hpp"
+#include "states/startScreen.hpp"
 
 // stlib
 #include <vector>
@@ -56,6 +57,10 @@ public:
 
     bool isEntityInView(const Entity &entity) const;
 
+    int getState();
+
+    void addState(std::shared_ptr<Entity> entity);
+
 
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
@@ -93,6 +98,7 @@ private:
      * All entities in the world. The background will always be the first entity, followed by the player.
      */
     std::vector<std::shared_ptr<Entity>> m_entities;
+    std::vector<std::shared_ptr<Entity>> m_states;
 
 
     float m_next_shooter_spawn;
@@ -116,5 +122,6 @@ private:
     
     int totalEnemies;
     int waveNo;
+    int state;
     
 };
