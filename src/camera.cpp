@@ -37,3 +37,7 @@ bool Camera::isEntityInView(const Entity &entity) const {
 
     return isWithinLeftBoundary && isWithinRightBoundary && isWithinTopBoundary && isWithinBottomBoundary;
 }
+
+vec2 Camera::getFocusPoint() {
+    return m_focusPoint;
+}

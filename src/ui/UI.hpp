@@ -28,6 +28,8 @@ public:
 
     void draw(const mat3 &projection);
 
+    void destroy();
+
     vec2 getPlayerScreenPosition() const;
 
     vec2 getPlayerPosition() const;

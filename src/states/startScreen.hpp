@@ -10,9 +10,8 @@
 
 class StartScreen: public State {
 public:
-    static Texture start_texture;
 
-    static bool initTexture();
+    static bool initGraphics();
 
     StartScreen(World &world);
 
@@ -28,6 +27,9 @@ public:
 
     std::string getName() const override;
 
+private:
+
+    static Graphics gfx;
 
 };
 

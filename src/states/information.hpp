@@ -10,13 +10,10 @@
 
 class Info: public State {
 public:
-    static Texture info_texture;
 
-    static bool initTexture();
+    static bool initGraphics();
 
     Info(World &world);
-
-    bool init() override;
 
     void update(float ms) override;
 
@@ -28,6 +25,9 @@ public:
 
     std::string getName() const override;
 
+private:
+
+    static Graphics gfx;
 
 };
 

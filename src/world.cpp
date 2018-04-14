@@ -1,8 +1,6 @@
 // Header
 #include "world.hpp"
 #include "../stb-cmake/stb_image.h"
-#include "states/information.hpp"
-#include "states/gameOver.hpp"
 
 
 
@@ -20,7 +18,7 @@ namespace {
 
     size_t MAX_BOMBS = 0;
     size_t MAX_BOMBERBOMBS = 0;
-    size_t MAX_SHOOTERS = 1;
+    size_t MAX_SHOOTERS = 3;
     size_t MAX_CHASER = 0;
     size_t MAX_BOMBER = 0;
     size_t MAX_POWERUP = 1;
@@ -120,8 +118,8 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
 
     GLFWcursor *cursor = glfwCreateCursor(&image, 0, 0);
     glfwSetCursor(m_window, cursor);
-    state = 0;
 
+    state = 0;
     m_invincibility = false;
     waveNo = 1;
     m_size = worldSize;
@@ -138,19 +136,14 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     player->init();
     addEntity(player);
     auto start = std::make_shared<StartScreen>(*this);
-    start->setPosition(
-            {m_camera.getLeftBoundary() + (screenSize.x / 2), m_camera.getTopBoundary() + (screenSize.y / 2)});
+    start->setPosition(m_camera.getFocusPoint());
     start->init();
     addState(start);
     addState(bg);
     auto info = std::make_shared<Info>(*this);
-    info->setPosition(
-            {m_camera.getLeftBoundary() + (screenSize.x / 2), m_camera.getTopBoundary() + (screenSize.y / 2)});
     info->init();
     addState(info);
     auto over = std::make_shared<GameOver>(*this);
-    over->setPosition(
-            {m_camera.getLeftBoundary() + (screenSize.x / 2), m_camera.getTopBoundary() + (screenSize.y / 2)});
     over->init();
     addState(over);
 
@@ -186,8 +179,9 @@ void World::update(float elapsed_ms) {
     vec2 screen = {(float) w, (float) h};
 
     // Resetting game
-    if (getPlayer().get()->m_lives < 1) {
+    if (getPlayerLives() < 1) {
         state = 3;
+        m_ui.destroy();
     }
 
     // Setting wave spawn conditions
@@ -215,8 +209,7 @@ void World::update(float elapsed_ms) {
         if (state->getName() == "background") {
             continue;
         } else {
-            state->setPosition(
-                    {m_camera.getLeftBoundary() + (screen.x / 2), m_camera.getTopBoundary() + (screen.y / 2)});
+            state->setPosition(m_camera.getFocusPoint());
         }
     }
 
@@ -392,6 +385,15 @@ void World::draw() {
     mat3 projection_2D{{sx,  0.f, 0.f},
                        {0.f, sy,  0.f},
                        {tx,  ty,  1.f}};
+    for (auto &state: m_states){
+        if (state->getName() == "background") {
+            continue;
+        } else {
+            state->setPosition(m_camera.getFocusPoint());
+        }
+    }
+
+
     if (state == 1) {
         // Updating window title with points
         std::stringstream title_ss;
@@ -402,21 +404,22 @@ void World::draw() {
         glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
         for (auto &entity: m_entities) entity->draw(projection_2D);
-    } else {
-        m_states[state]->draw(projection_2D);
-    }
 
-    // Fake projection matrix for UI with respect to window coordinates
-    float lUI = 0.f;// *-0.5;
-    float tUI = 0.f;// (float)h * -0.5;
-    float rUI = (float)w;// *0.5;
-    float bUI = (float)h;// *0.5;
-    float sX = 2.f / (rUI - lUI);
-    float sY = 2.f / (tUI - bUI);
-    float tX = -(rUI + lUI) / (rUI - lUI);
-    float tY = -(tUI + bUI) / (tUI - bUI);
-    mat3 projection_UI{ { sX, 0.f, 0.f },{ 0.f, sY, 0.f },{ tX, tY, 1.f } };
-    m_ui.draw(projection_UI);
+        // Fake projection matrix for UI with respect to window coordinates
+        float lUI = 0.f;// *-0.5;
+        float tUI = 0.f;// (float)h * -0.5;
+        float rUI = (float)w;// *0.5;
+        float bUI = (float)h;// *0.5;
+        float sX = 2.f / (rUI - lUI);
+        float sY = 2.f / (tUI - bUI);
+        float tX = -(rUI + lUI) / (rUI - lUI);
+        float tY = -(tUI + bUI) / (tUI - bUI);
+        mat3 projection_UI{ { sX, 0.f, 0.f },{ 0.f, sY, 0.f },{ tX, tY, 1.f } };
+        m_ui.draw(projection_UI);
+
+    } else {
+        m_states[0]->draw(projection_2D);
+    }
 
     // Presenting
     glfwSwapBuffers(m_window);
@@ -558,10 +561,10 @@ bool World::initGraphics() {
            Bomber::initGraphics() &&
            PlayerBullet::initGraphics() &&
            ShooterBullet::initGraphics() &&
-           background::initGraphics();
-           StartScreen::initTexture() &&
-           Info::initTexture() &&
-           GameOver::initTexture();
+           background::initGraphics() &&
+           StartScreen::initGraphics() &&
+           Info::initGraphics() &&
+           GameOver::initGraphics();
 }
 
 std::shared_ptr<Player> World::getPlayer() const {
@@ -642,35 +645,51 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     }
 
     if (key == GLFW_KEY_P && state == 3) {
-        state = 1;
-
-        waveNo = 1;
-        initTextures();
-        totalEnemies = shooters + chasers;
-        m_entities.clear();
-        auto bg = std::make_shared<background>(*this);
-        bg->init();
-        addEntity(bg);
-        auto player = std::make_shared<Player>(*this);
-        player->init();
-        addEntity(player);
-        width = m_size.x / COL;
-        height = m_size.y / ROW;
-        grid[ROW][COL];
-
-        if (!isGraphCreated) {
-            for (int p = 0; p < ROW; p++) {
-                for (int h = 0; h < COL; h++) {
-                    grid[p][h] = 1;
-                }
+        if (action == GLFW_PRESS) {
+            MAX_BOMBS = 0;
+            MAX_BOMBERBOMBS = 0;
+            MAX_SHOOTERS = 1;
+            MAX_CHASER = 0;
+            MAX_BOMBER = 0;
+            MAX_POWERUP = 1;
+            bombs = MAX_BOMBS;
+            bBombs = MAX_BOMBERBOMBS;
+            shooters = MAX_SHOOTERS;
+            chasers = MAX_CHASER;
+            bombers = MAX_BOMBER;
+            for(auto &entity : m_entities){
+                entity->destroy();
             }
-            isGraphCreated = true;
+            m_entities.clear();
+            state = 1;
+            m_invincibility = false;
+            totalEnemies = shooters + chasers;
+            waveNo = 1;
+            m_ui.init();
+            initGraphics();
+            auto bg = std::make_shared<background>(*this);
+            bg->init();
+            addEntity(bg);
+            auto player = std::make_shared<Player>(*this);
+            player->init();
+            addEntity(player);
+
+            width = m_size.x / COL;
+            height = m_size.y / ROW;
+            grid[ROW][COL];
+
+            if (!isGraphCreated) {
+                for (int p = 0; p < ROW; p++) {
+                    for (int h = 0; h < COL; h++) {
+                        grid[p][h] = 1;
+                    }
+                }
+                isGraphCreated = true;
+            }
         }
     } else if (key == GLFW_KEY_P) {
         if (action == GLFW_PRESS) {
-            std::cout << "pressed P" << std::endl;
             state = 1;
-            std::cout << state << std::endl;
         }
     }
 

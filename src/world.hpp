@@ -20,6 +20,8 @@
 #include "entities/powerups/OneUp.hpp"
 #include "entities/powerups/Shield.hpp"
 #include "states/startScreen.hpp"
+#include "states/information.hpp"
+#include "states/gameOver.hpp"
 
 // stlib
 #include <vector>
