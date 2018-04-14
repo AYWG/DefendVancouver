@@ -1,39 +1,41 @@
 //
-// Created by Anun Ganbat on 2018-02-09.
+// Created by Shrey Swades Nayak on 2018-03-26.
 //
-#include <vector>
+
 #include <iostream>
-#include <cmath>
-#include "background.hpp"
+#include "oneUp.hpp"
+#include "../../world.hpp"
 
-Graphics background::gfx;
+Graphics OneUp::gfx;
 
-background::background(World &world) : Entity(world) {}
+OneUp::OneUp(World &world) : PowerUp(world) {}
 
-bool background::initGraphics() {
+bool OneUp::initGraphics() {
     //load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("skyline.png"))) {
-            fprintf(stderr, "Failed to load background texture!");
+        if (!gfx.texture.load_from_file(textures_path("1up.png"))) {
+            fprintf(stderr, "Failed to load texture!");
             return false;
         }
     }
 
-    // The position corresponds to the center of the texture
-    float wr = gfx.texture.width * 0.5f;
-    float hr = gfx.texture.height * 0.5f;
+    //center of texture
+    float width = gfx.texture.width * 0.5f;
+    float height = gfx.texture.height * 0.5f;
 
     TexturedVertex vertices[4];
-    vertices[0].position = {-wr, +hr, -0.01f};
+    vertices[0].position = {-width, +height, -0.01f};
     vertices[0].texcoord = {0.f, 1.f};
-    vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {1.f, 1.f,};
-    vertices[2].position = {+wr, -hr, -0.01f};
+    vertices[1].position = {+width, +height, -0.01f};
+    vertices[1].texcoord = {1.f, 1.f};
+    vertices[2].position = {+width, -height, -0.01f};
     vertices[2].texcoord = {1.f, 0.f};
-    vertices[3].position = {-wr, -hr, -0.01f};
+    vertices[3].position = {-width, -height, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
+    // counterclockwise as it's the default opengl front winding direction
     uint16_t indices[] = {0, 3, 1, 1, 3, 2};
+
     // Clearing errors
     gl_flush_errors();
 
@@ -56,25 +58,29 @@ bool background::initGraphics() {
     return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 }
 
-bool background::init() {
-    m_scale.x = 1.0f;
-    m_scale.y = 1.0f;
-    m_position.x = 2100; // visually looks better but ideally should be worldWidth/2
-    m_position.y = 1259;
-    m_health = 1000;
+std::shared_ptr<OneUp> OneUp::spawn(World &world) {
+    auto oneup = std::make_shared<OneUp>(world);
+    if (oneup->init()) {
+        world.addEntity(oneup);
+        return oneup;
+    }
+    fprintf(stderr, "Failed to spawn one up");
+    return nullptr;
+}
 
+bool OneUp::init() {
     return true;
 }
 
-void background::update(float ms) {
+void OneUp::destroy() {
+    glDeleteBuffers(1, &gfx.mesh.vbo);
+    glDeleteBuffers(1, &gfx.mesh.ibo);
+    glDeleteVertexArrays(1, &gfx.mesh.vao);
 
+    gfx.effect.release();
 }
 
-void background::destroy() {
-
-}
-
-void background::draw(const mat3 &projection) {
+void OneUp::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -121,41 +127,23 @@ void background::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-int background::getHealth() {
-    return m_health;
-}
-
-void background::addHealth() {
-    m_health = m_health + 5;
-}
-
-void background::decreaseHealth() {
-    m_health--;
-}
-
-Region background::getBoundingBox() const {
-    vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width, std::fabs(m_scale.y) * gfx.texture.height};
-    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+Region OneUp::getBoundingBox() const {
+    vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width,
+                    std::fabs(m_scale.y) * gfx.texture.height};
+    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
 }
 
-std::string background::getName() const {
-    return "background";
+std::string OneUp::getName() const {
+    return "OneUp";
 }
 
-void background::onCollision(Entity &other) {
-    // do nothing
+void OneUp::onCollision(Entity &other) {
+    if (!m_isDead && typeid(other) == typeid(Player)) {
+        m_world->addPlayerLife();
+        die();
+    }
 }
 
-void background::takeDamage() {
-    decreaseHealth();
-}
 
-bool background::isDamageable() const {
-    return true;
-}
-
-background::FACTION background::getFaction() const {
-    return FACTION::HUMAN;
-}

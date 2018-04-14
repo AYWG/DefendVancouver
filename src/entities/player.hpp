@@ -57,11 +57,17 @@ public:
 
     int getLives();
 
-    void addLives();
-
-    void hit();
+    void addLife();
 
     std::string getName() const override;
+
+    void onCollision(Entity &entity) override;
+
+    void takeDamage() override;
+
+    bool isDamageable() const override;
+
+    FACTION getFaction() const override;
 
 private:
     vec2 m_velocity;

@@ -1,41 +1,42 @@
 //
-// Created by Shrey Swades Nayak on 2018-03-26.
+// Created by Shrey Swades Nayak on 2018-04-08.
 //
 
-#include <iostream>
-#include "OneUp.hpp"
-#include "../../world.hpp"
+#include "worldHealth.hpp"
+#include "UI.hpp"
 
-Graphics OneUp::gfx;
+Graphics worldHealth::gfx;
 
-OneUp::OneUp(World &world) : Entity(world) {}
+worldHealth::worldHealth(UI &ui) : UIobject(ui) {}
 
-bool OneUp::initGraphics() {
-    //load texture
+worldHealth::~worldHealth() {
+    destroy();
+}
+
+bool worldHealth::initGraphics() {
+//load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("1up.png"))) {
-            fprintf(stderr, "Failed to load texture!");
+        if (!gfx.texture.load_from_file(textures_path("cityHealthBar.png"))) {
+            fprintf(stderr, "Failed to load spritesheet!");
             return false;
         }
     }
 
-    //center of texture
-    float width = gfx.texture.width * 0.5f;
-    float height = gfx.texture.height * 0.5f;
+    // The position corresponds to the center of the bomb
+    float wr = gfx.texture.width * 0.5f;
+    float hr = gfx.texture.height * 0.5f;
 
     TexturedVertex vertices[4];
-    vertices[0].position = {-width, +height, -0.01f};
-    vertices[0].texcoord = {0.f, 1.f};
-    vertices[1].position = {+width, +height, -0.01f};
-    vertices[1].texcoord = {1.f, 1.f};
-    vertices[2].position = {+width, -height, -0.01f};
-    vertices[2].texcoord = {1.f, 0.f};
-    vertices[3].position = {-width, -height, -0.01f};
+    vertices[0].position = {-wr, +hr, -0.01f};
+    vertices[0].texcoord = {0.f, 1.f/3};
+    vertices[1].position = {+wr, +hr, -0.01f};
+    vertices[1].texcoord = {1.f/3, 1.f/3};
+    vertices[2].position = {+wr, -hr, -0.01f};
+    vertices[2].texcoord = {1.f/3, 0.f};
+    vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
-    // counterclockwise as it's the default opengl front winding direction
     uint16_t indices[] = {0, 3, 1, 1, 3, 2};
-
     // Clearing errors
     gl_flush_errors();
 
@@ -55,24 +56,22 @@ bool OneUp::initGraphics() {
         return false;
 
     // Loading shaders
-    return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    return gfx.effect.load_from_file(shader_path("spritesheet.vs.glsl"), shader_path("spritesheet.fs.glsl"));
 }
 
-std::shared_ptr<OneUp> OneUp::spawn(World &world) {
-    auto oneup = std::make_shared<OneUp>(world);
-    if (oneup->init()) {
-        world.addEntity(oneup);
-        return oneup;
-    }
-    fprintf(stderr, "Failed to spawn one up");
-    return nullptr;
-}
+bool worldHealth::init() {
+    frameWidth = 1.f/3;
+    frameHeight = 1.f/3;
+    frameCount = 8;
+    frameNumber = 3;
+    m_scale.x = 0.5f;
+    m_scale.y = 0.5f;
 
-bool OneUp::init() {
     return true;
+
 }
 
-void OneUp::destroy() {
+void worldHealth::destroy() {
     glDeleteBuffers(1, &gfx.mesh.vbo);
     glDeleteBuffers(1, &gfx.mesh.ibo);
     glDeleteVertexArrays(1, &gfx.mesh.vao);
@@ -80,7 +79,7 @@ void OneUp::destroy() {
     gfx.effect.release();
 }
 
-void OneUp::draw(const mat3 &projection) {
+void worldHealth::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -99,6 +98,10 @@ void OneUp::draw(const mat3 &projection) {
     GLint transform_uloc = glGetUniformLocation(gfx.effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
+    GLint frameCount_uloc = glGetUniformLocation(gfx.effect.program, "frameCount");
+    GLint frameNumber_uloc = glGetUniformLocation(gfx.effect.program, "frameNumber");
+    GLint frameWidth_uloc = glGetUniformLocation(gfx.effect.program, "frameWidth");
+    GLint frameHeight_uloc = glGetUniformLocation(gfx.effect.program, "frameHeight");
 
     // Setting vertices and indices
     glBindVertexArray(gfx.mesh.vao);
@@ -122,29 +125,35 @@ void OneUp::draw(const mat3 &projection) {
     float color[] = {1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
+    glUniform1iv(frameCount_uloc, 1, &frameCount);
+    glUniform1iv(frameNumber_uloc, 1, &frameNumber);
+    glUniform1fv(frameWidth_uloc, 1, &frameWidth);
+    glUniform1fv(frameHeight_uloc, 1, &frameHeight);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void OneUp::update(float ms) {
-    const float SPEED = 100.f;
-    float step = SPEED * (ms / 1000);
-    m_position.y += step;
+void worldHealth::update(float ms) {
 
-    if (m_position.y > m_world->getSize().y) {
-        m_isDead = true;
+    health = m_ui->getWorldHealth();
+
+    if(health < 876){
+        frameCount = 7;
+    } else if (health < 751){
+        frameCount = 6;
+    } else if(health < 625){
+        frameCount = 5;
+    } else if(health < 501){
+        frameCount = 4;
+    } else if(health < 376){
+        frameCount = 3;
+    } else if(health < 251){
+        frameCount = 2;
+    } else if(health < 125){
+        frameCount = 1;
+    } else if(health < 2){
+        frameCount = 0;
     }
-}
 
-Region OneUp::getBoundingBox() const {
-    vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width,
-                    std::fabs(m_scale.y) * gfx.texture.height};
-    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
-
-    return {boxOrigin, boxSize};
-}
-
-std::string OneUp::getName() const {
-    return "OneUp";
 }

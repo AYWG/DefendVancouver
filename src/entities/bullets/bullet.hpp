@@ -15,6 +15,12 @@ public:
 
     void setVelocity(vec2 velocity);
 
+    void onCollision(Entity &other) override;
+
+    void takeDamage() override;
+
+    bool isDamageable() const override;
+
 protected:
     vec2 m_velocity;
 };

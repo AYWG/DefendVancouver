@@ -5,18 +5,18 @@
 #pragma once
 
 #include <memory>
-#include "../entity.hpp"
 #include "../../common.hpp"
+#include "powerUp.hpp"
 
-class OneUp : public Entity, public Renderable{
+class Shield : public PowerUp, public Renderable {
 
 public:
 
     static bool initGraphics();
 
-    static std::shared_ptr<OneUp> spawn(World &world);
+    static std::shared_ptr<Shield> spawn(World &world);
 
-    OneUp(World &world);
+    Shield(World &world);
 
     bool init() override;
 
@@ -24,13 +24,12 @@ public:
 
     void draw(const mat3 &projection) override;
 
-    void update(float ms) override;
-
     Region getBoundingBox() const override;
 
     std::string getName() const override;
 
+    void onCollision(Entity &other) override;
+
 private:
     static Graphics gfx;
 };
-

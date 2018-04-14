@@ -10,28 +10,13 @@
 #include <algorithm>
 #include <math.h>
 #include <GL/gl3w.h>
+#include <typeinfo>
+
 
 typedef pair<int, int> Pair;
 
 
-static void APIENTRY openglCallbackFunction(
-        GLenum source,
-        GLenum type,
-        GLuint id,
-        GLenum severity,
-        GLsizei length,
-        const GLchar* message,
-        const void* userParam
-){
-    (void)source; (void)type; (void)id;
-    (void)severity; (void)length; (void)userParam;
-    fprintf(stderr, "%s\n", message);
-    if (severity==GL_DEBUG_SEVERITY_HIGH) {
-        fprintf(stderr, "Aborting...\n");
-        abort();
-    }
 
-}
 
 
 // Same as static in c, local to compilation unit
@@ -53,12 +38,14 @@ namespace {
     const size_t CHASER_DELAY_MS = 10000;
     const size_t POWERUP_DELAY_MS = 2000;
 
-
     namespace {
         void glfw_err_cb(int error, const char *desc) {
-            fprintf(stderr, "%d: %s", error, desc);
+//            fprintf(stderr, "%d: %s", error, desc);
         }
     }
+
+
+
 }
 
 World::World() :
@@ -69,9 +56,11 @@ World::World() :
         m_next_nbomb_spawn(0.f),
         m_next_bbomb_spawn(0.f),
         m_next_oneup_spawn(0.f),
+        m_next_cityup_spawn(0.f),
         m_next_shield_spawn(0.f),
         m_camera({}, {}),
-        m_quad(0, {}) {
+        m_ui({}, *this),
+        m_quad(0, {}){
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
 }
@@ -92,12 +81,17 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetErrorCallback(glfw_err_cb);
 
     if (!glfwInit()) {
-        fprintf(stderr, "Failed to initialize GLFW");
+//        fprintf(stderr, "Failed to initialize GLFW");
         return false;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    typeEnemy = typeid(Enemy).name();
+
+
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #if __APPLE__
@@ -132,18 +126,21 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
     int width, height;
-    stbi_uc* data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
+    stbi_uc *data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
     GLFWimage image;
     image.width = width;
     image.height = height;
     image.pixels = data;
 
-    GLFWcursor* cursor = glfwCreateCursor(&image, 0, 0);
+    GLFWcursor *cursor = glfwCreateCursor(&image, 0, 0);
     glfwSetCursor(m_window, cursor);
 
+    m_invincibility = false;
     waveNo = 1;
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
+    m_ui = UI(screenSize, *this);
+    m_ui.init();
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initGraphics();
     totalEnemies = shooters + chasers;
@@ -198,6 +195,7 @@ void World::destroy() {
 
 // Update our game world
 void World::update(float elapsed_ms) {
+
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
@@ -223,6 +221,10 @@ void World::update(float elapsed_ms) {
         totalEnemies = shooters + chasers;
     }
 
+    auto particle = std::make_shared<shipParticle>(*this);
+
+
+
     //////COLLISION DETECTION/////
     m_quad.clear();
 
@@ -232,215 +234,158 @@ void World::update(float elapsed_ms) {
     }
 
     m_camera.update(elapsed_ms, getPlayerPosition());
-
-    auto particle = std::make_shared<shipParticle>(*this);
-
-    if (isShot()) {
-
-        particle->init();
-        addEntity(particle);
-
-    } else{
-
-    }
-
+    m_ui.update(elapsed_ms);
 
     // once everything is inserted, go through each entity and get vector of nearby entities
     // that could possibly collide with that entity
-    is_shot = false;
     for (auto &entity: m_entities) {
         auto nearbyEntities = m_quad.getNearbyEntities(entity);
         for (auto &nearbyEntity: nearbyEntities) {
             // run collision detection between entities
-            if (typeid(*entity) == typeid(PlayerBullet)) {
-                particle->setPosition(entity.get()->getPosition());
-                if (entity->isCollidingWith(*nearbyEntity)) {
-                    particle->setPosition(entity.get()->getPosition());
-                    // Handle collision based on nearbyEntity's type
-                    if (typeid(*nearbyEntity) == typeid(Shooter)) {
-                        particle->setPosition(entity.get()->getPosition());
-                        totalEnemies--;
-                        m_points += 5;
-                        nearbyEntity->die();
-                        entity->die();
-                        is_shot = true;
-                        printf("shot");
 
-                    } else if (typeid(*nearbyEntity) == typeid(NormalBomb)) {
-                        particle->setPosition(entity.get()->getPosition());
-                        totalEnemies--;
-                        playerBounce(*(std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)));
-                        std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)->animate();
-                        entity->die();
-                        is_shot = true;
-                    } else if (typeid(*nearbyEntity) == typeid(Chaser)) {
-                        particle->setPosition(entity.get()->getPosition());
-                        totalEnemies--;
-                        m_points += 10;
-                        nearbyEntity->die();
-                        entity->die();
-                        is_shot = true;
-                    } else if (typeid(*nearbyEntity) == typeid(Bomber)) {
-                        particle->setPosition(entity.get()->getPosition());
-                        m_points += 10;
-                        nearbyEntity->die();
-                        entity->die();
-                        is_shot = true;
-                    }
-                }
-            } else if (typeid(*entity) == typeid(ShooterBullet)) {
-                if (entity->isCollidingWith(*nearbyEntity)) {
-                    if (typeid(*nearbyEntity) == typeid(Player)) {
-                        entity->die();
-                        getPlayer()->hit();
-                    }
-//                    if (typeid(*nearbyEntity) == typeid(background)) {
-//                        entity->die();
-//                    }
-                }
-            } else if (typeid(*entity) == typeid(Player)) {
-                if (entity->isCollidingWith(*nearbyEntity)) {
-                    if (typeid(*nearbyEntity) == typeid(BomberBomb) &&
-                        std::dynamic_pointer_cast<BomberBomb>(nearbyEntity)->isBlasting()) {
-                        particle->setPosition(entity.get()->getPosition());
-                        getPlayer()->hit();
-                    } else if (typeid(*nearbyEntity) == typeid(OneUp)) {
-                        getPlayer()->addLives();
-                        nearbyEntity->die();
-                    } else if (typeid(*nearbyEntity) == typeid(Shield)) {
-                        getBackground()->addHealth();
-                        nearbyEntity->die();
-                    } else if (typeid(*nearbyEntity) == typeid(Shooter)) {
-                        getPlayer()->hit();
-                    } else if (typeid(*nearbyEntity) == typeid(Chaser)) {
-                        getPlayer()->hit();
-                    } else if (typeid(*nearbyEntity) == typeid(Bomber)) {
-                        getPlayer()->hit();
-                    }
-                }
+            if (entity->isCollidingWith(*nearbyEntity)) {
+                entity->onCollision(*nearbyEntity);
+                nearbyEntity->onCollision(*entity);
+
             }
         }
     }
+    //is_shot = false;
+        //// CLEANUP ////
 
+        auto entityIt = m_entities.begin();
+        while (entityIt != m_entities.end()) {
 
-//ASTAR
-    for (auto &entity : m_entities) {
-        if (typeid(*entity) == typeid(Chaser)) {
-            entity->update(elapsed_ms);
+            if ((*entityIt)->isDead()) {
+            if ((entityIt->get()->getName() == "Shooter")||
+                (entityIt->get()->getName() == "Chaser") ||
+                (entityIt->get()->getName() == "Bomber") ||
+                (entityIt->get()->getName() == "BomberBomb") ||
+                (entityIt->get()->getName() == "NormalBomb")){
+                particle->setPosition(entityIt->get()->getPosition());
+                is_shot = true;
+            }
+
+                entityIt = m_entities.erase(entityIt);
+
+                continue;
+            }
+
+            ++entityIt;
         }
+
+    if (isShot()) {
+        particle->init();
+        addEntity(particle);
+        is_shot = false;
+
     }
 
-    //particle
-    for (auto &entity : m_entities ){
-        if (typeid(*entity) == typeid(shipParticle)){
-
-
-        }
-    }
-
-    ////PARTICLE//////
-
-
-    //// CLEANUP ////
-
-    auto entityIt = m_entities.begin();
-    while (entityIt != m_entities.end()) {
-        if ((*entityIt)->isDead()) {
-            entityIt = m_entities.erase(entityIt);
-            continue;
-        }
-        ++entityIt;
-    }
 
     //// SPAWNING ////
 
-    m_next_shooter_spawn -= elapsed_ms;
-    if (m_next_shooter_spawn < 0.f && shooters != 0) {
-        auto newShooter = Shooter::spawn(*this);
-        // Setting random initial position
-        newShooter->setPosition({m_dist(m_rng) * m_size.x, -200.f});
-        // Next spawn
-        m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
-        shooters--;
-    }
+        m_next_shooter_spawn -= elapsed_ms;
+        if (m_next_shooter_spawn < 0.f && shooters != 0) {
+            auto newShooter = Shooter::spawn(*this);
+            // Setting random initial position
+            newShooter->setPosition({m_dist(m_rng) * m_size.x, -200.f});
+            // Next spawn
+            m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+            shooters--;
+        }
 
-    // bullet spawning
+        // bullet spawning
 
-    // create copy vector which is not affected during iteration
-    auto entities = m_entities;
-    for (auto &entity : entities) {
-        if (typeid(*entity) == typeid(Player)) {
-            auto player = std::dynamic_pointer_cast<Player>(entity);
-            if (player->isShooting()) {
-                player->shoot();
+        // create copy vector which is not affected during iteration
+        auto entities = m_entities;
+        for (auto &entity : entities) {
+            if (typeid(*entity) == typeid(Player)) {
+                auto player = std::dynamic_pointer_cast<Player>(entity);
+                if (player->isShooting()) {
+                    player->shoot();
+                }
+            } else if (typeid(*entity) == typeid(Shooter)) {
+                std::dynamic_pointer_cast<Shooter>(entity)->shoot();
             }
         }
-        else if (typeid(*entity) == typeid(Shooter)) {
-            std::dynamic_pointer_cast<Shooter>(entity)->shoot();
+
+        m_next_chaser_spawn -= elapsed_ms;
+        if (m_next_chaser_spawn < 0.f && chasers != 0) {
+            auto newChaser = Chaser::spawn(*this);
+            // Setting random initial position
+            newChaser->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
+            m_next_chaser_spawn = (CHASER_DELAY_MS / 2) + m_dist(m_rng) * (CHASER_DELAY_MS / 2);
+            chasers--;
         }
-    }
 
+        m_next_bomber_spawn -= elapsed_ms;
+        if (m_next_bomber_spawn < 0.f && bombers != 0) {
+            auto newBomber = Bomber::spawn(*this);
+            // Setting initial position on top
+            newBomber->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
+            // Next spawn
+            m_next_bomber_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
+            bombers--;
+        }
 
-    m_next_chaser_spawn -= elapsed_ms;
-    if (m_next_chaser_spawn < 0.f && chasers != 0) {
-        auto newChaser = Chaser::spawn(*this);
-        // Setting random initial position
-        newChaser->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
-        m_next_chaser_spawn = (CHASER_DELAY_MS / 2) + m_dist(m_rng) * (CHASER_DELAY_MS / 2);
-        chasers--;
-    }
-
-    m_next_bomber_spawn -= elapsed_ms;
-    if (m_next_bomber_spawn < 0.f && bombers != 0) {
-        auto newBomber = Bomber::spawn(*this);
-        // Setting initial position on top
-        newBomber->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
-        // Next spawn
-        m_next_bomber_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
-        bombers--;
-    }
-
-    // create copy vector which is not affected during iteration
-    entities = m_entities;
-    for (auto &entity : entities) {
-        if (typeid(*entity) == typeid(Bomber)) {
-            if (m_camera.isEntityInView(*entity)) {
-                m_next_bbomb_spawn -= elapsed_ms;
-                if (m_next_bbomb_spawn < 0.f) {
-                    auto newBomb = BomberBomb::spawn(*this);
-                    newBomb->setPosition(getPlayerPosition());
-                    m_next_bbomb_spawn = (BOMB_DELAY_MS * 2) + m_dist(m_rng) * (BOMB_DELAY_MS * 2);
-                    bBombs--;
+        // create copy vector which is not affected during iteration
+        entities = m_entities;
+        for (auto &entity : entities) {
+            if (typeid(*entity) == typeid(Bomber)) {
+                if (m_camera.isEntityInView(*entity)) {
+                    m_next_bbomb_spawn -= elapsed_ms;
+                    if (m_next_bbomb_spawn < 0.f) {
+                        auto newBomb = BomberBomb::spawn(*this);
+                        newBomb->setPosition(getPlayerPosition());
+                        m_next_bbomb_spawn = (BOMB_DELAY_MS * 2) + m_dist(m_rng) * (BOMB_DELAY_MS * 2);
+                        bBombs--;
+                    }
                 }
             }
         }
-    }
 
-    // Spawn new normal bombs
-    m_next_nbomb_spawn -= elapsed_ms;
-    if (m_next_nbomb_spawn < 0.f && bombs != 0) {
-        auto newNormalBomb = NormalBomb::spawn(*this);
-        newNormalBomb->setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
-        m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
-        bombs--;
-    }
+        // Spawn new normal bombs
+        m_next_nbomb_spawn -= elapsed_ms;
+        if (m_next_nbomb_spawn < 0.f && bombs != 0) {
+            auto newNormalBomb = NormalBomb::spawn(*this);
+            newNormalBomb->setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
+            m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
+            bombs--;
+        }
 
-    // spawn oneups
-    m_next_oneup_spawn -= elapsed_ms;
-    if (MAX_POWERUP != 0 && m_next_oneup_spawn < 0.f) {
-        auto newOneUp = OneUp::spawn(*this);
-        newOneUp->setPosition({m_dist(m_rng) * m_size.x, -200.f});
-        m_next_oneup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
-    }
+        // spawn oneups
+        m_next_oneup_spawn -= elapsed_ms;
+        if (MAX_POWERUP != 0 && m_next_oneup_spawn < 0.f) {
+            auto newOneUp = OneUp::spawn(*this);
+            newOneUp->setPosition({m_dist(m_rng) * m_size.x, -200.f});
+            m_next_oneup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+        }
 
-    // spawn shield
-    m_next_shield_spawn -= elapsed_ms;
-    if (MAX_POWERUP != 0 && m_next_shield_spawn < 0.f) {
-        auto newShield = Shield::spawn(*this);
-        newShield->setPosition({m_dist(m_rng) * m_size.x, -200.f});
-        m_next_shield_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+        // spawn cityups
+        m_next_cityup_spawn -= elapsed_ms;
+        if (MAX_POWERUP != 0 && m_next_cityup_spawn < 0.f) {
+            auto newCityUp = CityUp::spawn(*this);
+            newCityUp->setPosition({m_dist(m_rng) * m_size.x, -200.f});
+            m_next_cityup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+        }
+
+        // spawn shield
+        m_next_shield_spawn -= elapsed_ms;
+        if (MAX_POWERUP != 0 && m_next_shield_spawn < 0.f) {
+            auto newShield = Shield::spawn(*this);
+            newShield->setPosition({m_dist(m_rng) * m_size.x, -200.f});
+            m_next_shield_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+        }
+
+        // Invincibility
+        if (m_invincibility) {
+            m_invincibility_countdown = -elapsed_ms;
+        }
+
+        if (m_invincibility_countdown <= 0.f) {
+            m_invincibility = false;
+        }
     }
-}
 
 
 // Render our game world
@@ -454,7 +399,8 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Lives: " << getPlayer()->getLives() << " City: " << getBackground()->getHealth()
+    title_ss << "Points: " << m_points << " Lives: " << getPlayer()->getLives() << " City: "
+             << getBackground()->getHealth()
              << " s: " << shooters << " c: " << chasers
              << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
@@ -468,7 +414,7 @@ void World::draw() {
     glClearDepth(1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Fake projection matrix, scales with respect to window coordinates
+    // Fake projection matrix
     // PS: 1.f / w in [1][1] is correct.. do you know why ? (:
     float left = m_camera.getLeftBoundary();
     float top = m_camera.getTopBoundary();
@@ -485,6 +431,18 @@ void World::draw() {
 
     for (auto &entity: m_entities) entity->draw(projection_2D);
 
+    // Fake projection matrix for UI with respect to window coordinates
+    float lUI = 0.f;// *-0.5;
+    float tUI = 0.f;// (float)h * -0.5;
+    float rUI = (float)w;// *0.5;
+    float bUI = (float)h;// *0.5;
+    float sX = 2.f / (rUI - lUI);
+    float sY = 2.f / (tUI - bUI);
+    float tX = -(rUI + lUI) / (rUI - lUI);
+    float tY = -(tUI + bUI) / (tUI - bUI);
+    mat3 projection_UI{ { sX, 0.f, 0.f },{ 0.f, sY, 0.f },{ tX, tY, 1.f } };
+    m_ui.draw(projection_UI);
+
     // Presenting
     glfwSwapBuffers(m_window);
 }
@@ -498,15 +456,14 @@ vec2 World::getPlayerPosition() const {
     return (*m_entities.at(1)).getPosition();
 }
 
-float World::getPlayerRotation() const {
-    return (*m_entities.at(1)).getRotation();
+
+vec2 World::getPlayerScreenPosition() const {
+    return {
+            getPlayerPosition().x - m_camera.getLeftBoundary(),
+            getPlayerPosition().y - m_camera.getTopBoundary()
+    };
 }
 
-/*
-vec2 World::getPlayerBulletPosition() const {
-    return ;
-}
-*/
 
 std::vector<vec2> World::getBombPositions() const {
     auto positions = std::vector<vec2>();
@@ -543,12 +500,95 @@ bool World::isShot() const {
 }
 
 
+void World::addPoints(int points) {
+    m_points += points;
+}
+
+void World::addPlayerLife() {
+    getPlayer()->addLife();
+}
+
+void World::increaseCityHealth() {
+    getBackground()->addHealth();
+}
+
+void World::decrementTotalEnemies() {
+    totalEnemies--;
+}
+
+vec2 World::getNearestEnemyPosToPlayer() const {
+    // Default position to return if there are currently no enemies in the world
+    vec2 nearestPos = {-1.f, -1.f};
+    float closestDistSq = dot(m_size, m_size);
+
+    for (auto &entity : m_entities) {
+        // Filter by enemies
+        if (entity->getFaction() == Entity::FACTION::ALIEN && entity->isDamageable()) {
+            float diffX = entity->getPosition().x - getPlayer()->getPosition().x;
+            float diffY = entity->getPosition().y - getPlayer()->getPosition().y;
+            vec2 diff = {diffX, diffY};
+            float distSq = dot(diff, diff);
+
+            if (distSq < closestDistSq) {
+                closestDistSq = distSq;
+                nearestPos = entity->getPosition();
+            }
+        }
+    }
+
+    return nearestPos;
+}
+
+bool World::isOffScreenEnemyPresentAndNoEnemiesVisible() const {
+    bool isAtLeastOneEnemyAlive = false;
+    bool noEnemyVisible = true;
+
+    for (auto &entity : m_entities) {
+        if (entity->getFaction() == Entity::FACTION::ALIEN && entity->isDamageable()) {
+            isAtLeastOneEnemyAlive = true;
+
+            if (m_camera.isEntityInView(*entity)) {
+                noEnemyVisible = false;
+            }
+        }
+    }
+
+    return isAtLeastOneEnemyAlive && noEnemyVisible;
+}
+
+int World::getPlayerLives() const {
+    return getPlayer()->getLives();
+}
+
+int World::getWorldHealth() const {
+    return getBackground()->getHealth();
+}
+
+int World::getWave() const {
+    return waveNo;
+}
+
+int World::getScore() const {
+    return m_points;
+}
+
+bool World::getInvincibility() {
+    return m_invincibility;
+}
+
+void World::makeInvincible() {
+    m_invincibility = true;
+    m_invincibility_countdown = 2000.f;
+}
+
+
 // Private
 
 bool World::initGraphics() {
     return BomberBomb::initGraphics() &&
            NormalBomb::initGraphics() &&
            OneUp::initGraphics() &&
+           CityUp::initGraphics() &&
            Shield::initGraphics() &&
            Shooter::initGraphics() &&
            Chaser::initGraphics() &&
@@ -635,15 +675,15 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
     // Resetting game
     if (getPlayer().get()->m_lives < 1) {
-            int w, h;
-            glfwGetWindowSize(m_window, &w, &h);
-            totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
-            waveNo = 1;
+        int w, h;
+        glfwGetWindowSize(m_window, &w, &h);
+        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
+        waveNo = 1;
 
-            getBackground()->init();
+        getBackground()->init();
 
-            getPlayer()->init();
-            m_points = 0;
+        getPlayer()->init();
+        m_points = 0;
 
     }
 
@@ -653,10 +693,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
 
 void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {
-    vec2 playerScreenPos = {
-            getPlayer()->getPosition().x - m_camera.getLeftBoundary(),
-            getPlayer()->getPosition().y - m_camera.getTopBoundary()
-    };
+    vec2 playerScreenPos = getPlayerScreenPosition();
     auto playerMouseXDist = float(xpos - playerScreenPos.x);
     auto playerMouseYDist = float(ypos - playerScreenPos.y);
     float newOrientation = -1.f * atan((playerMouseXDist / playerMouseYDist));

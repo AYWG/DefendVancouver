@@ -163,3 +163,6 @@ std::string PlayerBullet::getName() const {
     return "PlayerBullet";
 }
 
+PlayerBullet::FACTION PlayerBullet::getFaction() const {
+    return FACTION::HUMAN;
+}

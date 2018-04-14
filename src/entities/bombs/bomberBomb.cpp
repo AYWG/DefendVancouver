@@ -9,7 +9,7 @@
 
 Graphics BomberBomb::gfx;
 
-BomberBomb::BomberBomb(World &world) : Entity(world) {}
+BomberBomb::BomberBomb(World &world) : Bomb(world) {}
 
 bool BomberBomb::initGraphics() {
     //load texture
@@ -69,9 +69,9 @@ std::shared_ptr<BomberBomb> BomberBomb::spawn(World &world) {
 
 
 bool BomberBomb::init() {
-    isHit = false;
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
+    frameNumber = 3;
     frameCount = 0;
     countdown = 1500.f;
     m_scale.x = 0.25f;
@@ -109,6 +109,7 @@ void BomberBomb::draw(const mat3 &projection) {
     GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
     GLint frameCount_uloc = glGetUniformLocation(gfx.effect.program, "frameCount");
+    GLint frameNumber_uloc = glGetUniformLocation(gfx.effect.program, "frameNumber");
     GLint frameWidth_uloc = glGetUniformLocation(gfx.effect.program, "frameWidth");
     GLint frameHeight_uloc = glGetUniformLocation(gfx.effect.program, "frameHeight");
 
@@ -135,6 +136,7 @@ void BomberBomb::draw(const mat3 &projection) {
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
     glUniform1iv(frameCount_uloc, 1, &frameCount);
+    glUniform1iv(frameNumber_uloc, 1, &frameNumber);
     glUniform1fv(frameWidth_uloc, 1, &frameWidth);
     glUniform1fv(frameHeight_uloc, 1, &frameHeight);
 
@@ -146,10 +148,10 @@ void BomberBomb::update(float ms) {
     if(countdown > 0.f){
         countdown -= ms;
     } else {
-        isHit = true;
+        m_isHit = true;
     }
 
-    if(!isHit){
+    if(!m_isHit){
         frameCount = 1;
     } else {
         frameCount++;
@@ -175,13 +177,13 @@ Region BomberBomb::getBoundingBox() const {
 
 
 bool BomberBomb::isBlasting() {
-    return isHit;
-}
-
-int BomberBomb::getFrameCount() const {
-    return frameCount;
+    return m_isHit;
 }
 
 std::string BomberBomb::getName() const {
     return "BomberBomb";
+}
+
+BomberBomb::FACTION BomberBomb::getFaction() const {
+    return FACTION::ALIEN;
 }

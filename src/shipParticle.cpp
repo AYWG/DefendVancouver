@@ -18,11 +18,11 @@ shipParticle::shipParticle(World &world) : Entity(world) {};
 struct Particle{
     vec2 pos;
     vec2 speed ;
-    float life = 600;
+    float life = 1000;
     float angle;
 
 };
-const int MaxParticles = 1000;
+const int MaxParticles = 10000;
 Particle ParticlesContainer[MaxParticles];;
 int ParticlesCount = 0;
 
@@ -227,33 +227,24 @@ void shipParticle::draw(const mat3 &projection) {
 
 void shipParticle::update(float ms) {
 
-
-    /*m_position.x = m_world->getPlayerPosition().x;
-    m_position.y = m_world->getPlayerPosition().y;*/
     setPosition(m_position);
 
-    m_rotation =  m_world->getPlayerRotation() ;
+
 
 
     pos_buf.clear();
 
     int ParticlesCount = 0;
 
-   /* if (m_world->isMoving()){
-       plife = 1000;
-    }else{
 
-       init();
-
-    }*/
 
     for (auto& p : ParticlesContainer) {
         p.life = plife;
         if (p.life > 0.0f) {
             p.life -= 20;
             if (p.life > 0.0f) {
-                p.pos.x += p.speed.x * 10 ;
-                p.pos.y += p.speed.y * 10 ;
+                p.pos.x += p.speed.x * 30;
+                p.pos.y += p.speed.y * 30;
                 p.angle = m_rotation;
 
                 m_position = p.pos;
@@ -293,6 +284,22 @@ void shipParticle::destroy() {
 
 Region shipParticle::getBoundingBox() const {
 
+}
+
+void shipParticle::onCollision(Entity &other) {
+    // do nothing
+}
+
+void shipParticle::takeDamage() {
+    // do nothing
+}
+
+bool shipParticle::isDamageable() const {
+    return false;
+}
+
+shipParticle::FACTION shipParticle::getFaction() const {
+    return FACTION::NONE;
 }
 
 

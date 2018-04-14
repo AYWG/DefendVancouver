@@ -65,6 +65,8 @@ public:
 
     void attack(float ms) override;
 
+    int getPoints() const override;
+
     unsigned int getMass() const override;
 
     std::string getName() const override;

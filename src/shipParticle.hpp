@@ -41,6 +41,14 @@ public:
 
     std::string getName() const override;
 
+    void onCollision(Entity &other) override;
+
+    void takeDamage() override;
+
+    bool isDamageable() const override;
+
+    FACTION getFaction() const override;
+
 
 
 

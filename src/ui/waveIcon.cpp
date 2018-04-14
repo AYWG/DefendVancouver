@@ -1,54 +1,42 @@
 //
-// Created by Shrey Swades Nayak on 2018-03-26.
+// Created by Shrey Swades Nayak on 2018-04-11.
 //
 
-#include <iostream>
-#include "Shield.hpp"
-#include "../../world.hpp"
+#include "waveIcon.hpp"
+#include "UI.hpp"
 
-Graphics Shield::gfx;
+Graphics waveIcon::gfx;
 
-Shield::Shield(World &world) : Entity(world) {}
+waveIcon::waveIcon(UI &ui) : UIobject(ui) {}
 
-bool Shield::initGraphics() {
-    //load texture
+waveIcon::~waveIcon() {
+    destroy();
+}
+
+bool waveIcon::initGraphics() {
+//load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("shield.png"))) {
-            fprintf(stderr, "Failed to load texture!");
+        if (!gfx.texture.load_from_file(textures_path("waveIcon.png"))) {
+            fprintf(stderr, "Failed to load spritesheet!");
             return false;
         }
     }
-    return true;
-}
 
-std::shared_ptr<Shield> Shield::spawn(World &world) {
-    auto shield = std::make_shared<Shield>(world);
-    if (shield->init()) {
-        world.addEntity(shield);
-        return shield;
-    }
-    fprintf(stderr, "Failed to spawn shield");
-    return nullptr;
-}
-
-bool Shield::init() {
-    //center of texture
-    float width = gfx.texture.width * 0.5f;
-    float height = gfx.texture.height * 0.5f;
+    // The position corresponds to the center of the bomb
+    float wr = gfx.texture.width * 0.5f;
+    float hr = gfx.texture.height * 0.5f;
 
     TexturedVertex vertices[4];
-    vertices[0].position = {-width, +height, -0.01f};
+    vertices[0].position = {-wr, +hr, -0.01f};
     vertices[0].texcoord = {0.f, 1.f};
-    vertices[1].position = {+width, +height, -0.01f};
-    vertices[1].texcoord = {1.f, 1.f};
-    vertices[2].position = {+width, -height, -0.01f};
-    vertices[2].texcoord = {1.f, 0.f};
-    vertices[3].position = {-width, -height, -0.01f};
+    vertices[1].position = {+wr, +hr, -0.01f};
+    vertices[1].texcoord = {1.f/2, 1.f};
+    vertices[2].position = {+wr, -hr, -0.01f};
+    vertices[2].texcoord = {1.f/2, 0.f};
+    vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
-    // counterclockwise as it's the default opengl front winding direction
     uint16_t indices[] = {0, 3, 1, 1, 3, 2};
-
     // Clearing errors
     gl_flush_errors();
 
@@ -68,16 +56,38 @@ bool Shield::init() {
         return false;
 
     // Loading shaders
-    if (!gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-        return false;
-
-    m_scale.x = 0.3f;
-    m_scale.y = 0.3f;
-
-    return true;
+    return gfx.effect.load_from_file(shader_path("spritesheet.vs.glsl"), shader_path("spritesheet.fs.glsl"));
 }
 
-void Shield::destroy() {
+bool waveIcon::init() {
+    frameWidth = 1.f/2;
+    frameCount = 0;
+    frameNumber = 2;
+    m_scale.x = 0.5f;
+    m_scale.y = 1.0f;
+    countdown = 1500.f;
+    start = false;
+
+    vec2 lifeScale = {0.035f, 0.35f};
+    vec2 UIsize = m_ui->getScreenSize();
+    auto firstDigit = std::make_shared<Digit>(*m_ui);
+    if (firstDigit->init()) {
+        firstDigit->setPosition({UIsize.x-85.f,80.f});
+        firstDigit->setScale(lifeScale);
+        m_digits.emplace_back(firstDigit);
+    }
+    auto secondDigit = std::make_shared<Digit>(*m_ui);
+    if (secondDigit->init()) {
+        secondDigit->setPosition({firstDigit->getPosition().x+20.f, firstDigit->getPosition().y});
+        secondDigit->setScale(lifeScale);
+        m_digits.emplace_back(secondDigit);
+    }
+
+    return true;
+
+}
+
+void waveIcon::destroy() {
     glDeleteBuffers(1, &gfx.mesh.vbo);
     glDeleteBuffers(1, &gfx.mesh.ibo);
     glDeleteVertexArrays(1, &gfx.mesh.vao);
@@ -85,7 +95,7 @@ void Shield::destroy() {
     gfx.effect.release();
 }
 
-void Shield::draw(const mat3 &projection) {
+void waveIcon::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -104,6 +114,9 @@ void Shield::draw(const mat3 &projection) {
     GLint transform_uloc = glGetUniformLocation(gfx.effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
+    GLint frameCount_uloc = glGetUniformLocation(gfx.effect.program, "frameCount");
+    GLint frameNumber_uloc = glGetUniformLocation(gfx.effect.program, "frameNumber");
+    GLint frameWidth_uloc = glGetUniformLocation(gfx.effect.program, "frameWidth");
 
     // Setting vertices and indices
     glBindVertexArray(gfx.mesh.vao);
@@ -127,29 +140,40 @@ void Shield::draw(const mat3 &projection) {
     float color[] = {1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
+    glUniform1iv(frameCount_uloc, 1, &frameCount);
+    glUniform1iv(frameNumber_uloc, 1, &frameNumber);
+    glUniform1fv(frameWidth_uloc, 1, &frameWidth);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
 
-void Shield::update(float ms) {
-    const float SPEED = 100.f;
-    float step = SPEED * (ms / 1000);
-    m_position.y += step;
-
-    if (m_position.y > m_world->getSize().y) {
-        m_isDead = true;
+    for (auto &m_digit : m_digits) {
+        m_digit->draw(projection);
     }
 }
 
-Region Shield::getBoundingBox() const {
-    vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width,
-                    std::fabs(m_scale.y) * gfx.texture.height};
-    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+void waveIcon::update(float ms) {
+    waveCount = m_ui->getWave();
 
-    return {boxOrigin, boxSize};
-}
+    for(int i = 1; i>=0; i--){
+        m_digits[i]->setDigit(waveCount % 10);
+        waveCount /= 10;
+    }
 
-std::string Shield::getName() const {
-    return "Shield";
+
+    if(countdown > 0.f) {
+        countdown -= ms;
+    } else{
+        start = true;
+    }
+    if(start){
+        countdown = 1500;
+        start = false;
+        frameCount++;
+    }
+    if(frameCount>2) {
+        frameCount = 0;
+    }
+
+
 }

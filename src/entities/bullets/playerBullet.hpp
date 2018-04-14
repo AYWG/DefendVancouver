@@ -41,6 +41,8 @@ public:
 
     std::string getName() const override;
 
+    FACTION getFaction() const override;
+
 private:
     static Graphics gfx;
 

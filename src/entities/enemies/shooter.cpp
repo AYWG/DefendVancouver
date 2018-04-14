@@ -147,6 +147,10 @@ void Shooter::attack(float ms) {
     m_nextBulletSpawn -= ms;
 }
 
+int Shooter::getPoints() const {
+    return 5;
+}
+
 void Shooter::shoot() {
     if (m_nextBulletSpawn < 0.f) {
         auto newShooterBullet = ShooterBullet::spawn(*m_world);

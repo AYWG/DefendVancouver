@@ -11,14 +11,15 @@ out vec2 texcoord;
 uniform mat3 transform;
 uniform mat3 projection;
 uniform int frameCount;
+uniform int frameNumber;
 uniform float frameWidth;
 uniform float frameHeight;
 
 void main()
 {
 
-    int FRAMEX = frameCount % 3;
-    int FRAMEY = frameCount / 3;
+    int FRAMEX = frameCount % frameNumber;
+    int FRAMEY = frameCount / frameNumber;
 	texcoord = in_texcoord;
 	texcoord.x += FRAMEX * frameWidth;
 	texcoord.y += FRAMEY * frameHeight;

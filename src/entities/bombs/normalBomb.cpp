@@ -9,7 +9,7 @@
 
 Graphics NormalBomb::gfx;
 
-NormalBomb::NormalBomb(World &world) : Entity(world) {}
+NormalBomb::NormalBomb(World &world) : Bomb(world) {}
 
 bool NormalBomb::initGraphics() {
     //load texture
@@ -68,10 +68,9 @@ std::shared_ptr<NormalBomb> NormalBomb::spawn(World &world) {
 }
 
 bool NormalBomb::init() {
-    isHit = false;
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
-    frameCount = 0;
+    frameNumber = 3;
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
 
@@ -107,6 +106,7 @@ void NormalBomb::draw(const mat3 &projection) {
     GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
     GLint frameCount_uloc = glGetUniformLocation(gfx.effect.program, "frameCount");
+    GLint frameNumber_uloc = glGetUniformLocation(gfx.effect.program, "frameNumber");
     GLint frameWidth_uloc = glGetUniformLocation(gfx.effect.program, "frameWidth");
     GLint frameHeight_uloc = glGetUniformLocation(gfx.effect.program, "frameHeight");
 
@@ -133,6 +133,7 @@ void NormalBomb::draw(const mat3 &projection) {
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
     glUniform1iv(frameCount_uloc, 1, &frameCount);
+    glUniform1iv(frameNumber_uloc, 1, &frameNumber);
     glUniform1fv(frameWidth_uloc, 1, &frameWidth);
     glUniform1fv(frameHeight_uloc, 1, &frameHeight);
 
@@ -141,7 +142,8 @@ void NormalBomb::draw(const mat3 &projection) {
 }
 
 void NormalBomb::update(float ms) {
-    if(!isHit){
+
+    if(!m_isHit){
         frameCount = 1;
     } else {
         frameCount++;
@@ -159,14 +161,14 @@ Region NormalBomb::getBoundingBox() const {
     return {boxOrigin, boxSize};
 }
 
-void NormalBomb::animate() {
-    isHit = true;
-}
-
-int NormalBomb::getFrameCount() const {
-    return frameCount;
+void NormalBomb::explode() {
+    m_isHit = true;
 }
 
 std::string NormalBomb::getName() const {
     return "NormalBomb";
+}
+
+NormalBomb::FACTION NormalBomb::getFaction() const {
+    return FACTION::NONE;
 }
