@@ -41,9 +41,13 @@ public:
 
     FACTION getFaction() const override;
 
+    void setInvincibility(bool isInvincible);
+
 private:
     static Graphics gfx;
     int m_health;
+
+    bool m_isInvincible;
 
 };
 
