@@ -80,6 +80,8 @@ public:
 
     int getScore() const;
 
+    int getBestScore() const;
+
     bool getInvincibility();
 
     void makeInvincible();

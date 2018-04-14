@@ -502,6 +502,10 @@ int World::getScore() const {
     return m_points;
 }
 
+int World::getBestScore() const {
+    return m_bestScore;
+}
+
 bool World::getInvincibility() {
     return m_invincibility;
 }
@@ -601,7 +605,8 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     // TODO: integrate with game over
     if (key == GLFW_KEY_C) {
         if (action == GLFW_RELEASE) {
-            // Update the best score if possible
+            // Update the best score if possible - run this code when
+            // we reach game over screen
             if (m_points > m_bestScore) {
                 m_bestScore = m_points;
                 m_scoreFile = fopen(scores_path("score.txt"), "w+");
