@@ -83,10 +83,9 @@ bool Player::init() {
     m_maxSpeed = 500.f;
     m_isShootingEnabled = false;
     m_timeSinceLastBulletShot = 1000.f;
-    m_isHit = 0;
+    m_isHit = false;
     transparency = 1.f;
     countdown = 0.f;
-    m_dead = false;
     for (int i = 0; i < NUM_DIRECTIONS; i++) m_isFlying[i] = false;
     m_rng = std::default_random_engine(std::random_device()());
     return true;
@@ -136,23 +135,22 @@ void Player::update(float ms) {
     m_nextBulletSpawn = std::max(0.f, m_nextBulletSpawn - ms);
     m_timeSinceLastBulletShot = std::min(1000.f, m_timeSinceLastBulletShot + ms);
 
-    if (countdown > 0.f)
-    {
+    if (countdown > 0.f) {
         countdown -= ms;
     } else {
-        m_isHit = 0;
+        m_isHit = false;
     }
 
-    if(m_isHit == 1 && m_lives > 0){
-        transparency = sin(ms*1000);
-    } else if(m_isHit == 1 && m_lives <= 0){
-        transparency = countdown/1500;
+    if (m_isHit && m_lives > 0) {
+        transparency = sin(ms * 1000);
+    } else if (m_isHit && m_lives <= 0) {
+        transparency = countdown / 1500;
     } else {
         transparency = 1.f;
     }
 
-    if(m_lives <= 0 & countdown < 0.f){
-        m_dead = true;
+    if (m_lives <= 0 & countdown < 0.f) {
+        die();
     }
 
 }
@@ -249,10 +247,69 @@ void Player::shoot() {
                                               m_velocity.y + bulletVelocityRelativeToPlayer.y};
 
         newPlayerBullet->setVelocity(bulletVelocityRelativeToWorld);
-        newPlayerBullet->setRotation(atanf(bulletVelocityRelativeToWorld.y / bulletVelocityRelativeToWorld.x) + 3.1415f / 2);
+        newPlayerBullet->setRotation(
+                atanf(bulletVelocityRelativeToWorld.y / bulletVelocityRelativeToWorld.x) + 3.1415f / 2);
         m_nextBulletSpawn = Player::bulletDelayMS;
         m_timeSinceLastBulletShot = 0.f;
     }
+}
+
+int Player::getLives() {
+    return m_lives;
+}
+
+void Player::addLife() {
+    m_lives++;
+}
+
+Region Player::getBoundingBox() const {
+    Vertex min = vertices.front();
+    Vertex max = vertices.front();
+    for (auto &vertex : vertices) {
+        if (vertex.position.x > max.position.x && vertex.position.y > max.position.y) {
+            max = vertex;
+        }
+        if (vertex.position.x < min.position.x && vertex.position.y < min.position.y) {
+            min = vertex;
+        }
+    }
+
+    vec2 boxSize = {std::fabs(m_scale.x) * (max.position.x - min.position.x),
+                    std::fabs(m_scale.y) * (max.position.y - min.position.y)};
+    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+
+    return {boxOrigin, boxSize};
+}
+
+
+std::string Player::getName() const {
+    return "Player";
+}
+
+void Player::onCollision(Entity &entity) {
+
+}
+
+void Player::takeDamage() {
+    m_isHit = true;
+    countdown = 1500.f;
+    m_lives--;
+}
+
+bool Player::isDamageable() const {
+    return !m_isInvincible && !m_isHit;
+}
+
+Player::FACTION Player::getFaction() const {
+    return FACTION::HUMAN;
+}
+
+void Player::setInvincibility(bool isInvincible) {
+    m_isInvincible = isInvincible;
+}
+
+bool Player::isCritical() const {
+    return m_lives == 1;
 }
 
 // Private methods
@@ -269,57 +326,5 @@ vec2 Player::getNewVelocity(vec2 oldVelocity, vec2 delta) {
     return {newDirection.x * newMagnitude, newDirection.y * newMagnitude};
 }
 
-int Player::getLives() {
-    return m_lives;
-}
-
-void Player::addLife() {
-    m_lives++;
-}
-
-bool Player::isDead() const {
-    return m_dead;
-}
-
-Region Player::getBoundingBox() const {
-    Vertex min = vertices.front();
-    Vertex max = vertices.front();
-    for (auto &vertex : vertices){
-        if (vertex.position.x > max.position.x && vertex.position.y > max.position.y){
-            max = vertex;
-        }
-        if (vertex.position.x < min.position.x && vertex.position.y < min.position.y){
-            min = vertex;
-        }
-    }
-
-    vec2 boxSize = {std::fabs(m_scale.x) * (max.position.x - min.position.x), std::fabs(m_scale.y) * (max.position.y - min.position.y)};
-    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
-
-    return {boxOrigin, boxSize};
-}
 
 
-std::string Player::getName() const {
-    return "Player";
-}
-
-void Player::onCollision(Entity &entity) {
-
-}
-
-void Player::takeDamage() {
-    if(m_isHit == 0){
-        m_isHit = 1;
-        countdown = 1500.f;
-        m_lives--;
-    }
-}
-
-bool Player::isDamageable() const {
-    return true;
-}
-
-Player::FACTION Player::getFaction() const {
-    return FACTION::HUMAN;
-}

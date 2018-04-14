@@ -105,6 +105,10 @@ bool UI::getInvincibility(){
     return m_world->getInvincibility();
 }
 
+bool UI::isPlayerCritical() const {
+    return m_world->isPlayerCritical();
+}
+
 bool UI::initGraphics() {
     return playerIcon::initGraphics() &&
            EnemyIndicator::initGraphics() &&
