@@ -150,13 +150,15 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     auto bg = std::make_shared<background>(*this);
     bg->init();
     addEntity(bg);
+
+
+
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
 
-    auto particle = std::make_shared<shipParticle>(*this);
-    particle->init();
-    addEntity(particle);
+
+
 
     width = m_size.x / COL;
     height = m_size.y / ROW;
@@ -231,34 +233,59 @@ void World::update(float elapsed_ms) {
 
     m_camera.update(elapsed_ms, getPlayerPosition());
 
+    auto particle = std::make_shared<shipParticle>(*this);
+
+    if (isShot()) {
+
+        particle->init();
+        addEntity(particle);
+
+    } else{
+
+    }
+
+
     // once everything is inserted, go through each entity and get vector of nearby entities
     // that could possibly collide with that entity
+    is_shot = false;
     for (auto &entity: m_entities) {
         auto nearbyEntities = m_quad.getNearbyEntities(entity);
         for (auto &nearbyEntity: nearbyEntities) {
             // run collision detection between entities
             if (typeid(*entity) == typeid(PlayerBullet)) {
+                particle->setPosition(entity.get()->getPosition());
                 if (entity->isCollidingWith(*nearbyEntity)) {
+                    particle->setPosition(entity.get()->getPosition());
                     // Handle collision based on nearbyEntity's type
                     if (typeid(*nearbyEntity) == typeid(Shooter)) {
+                        particle->setPosition(entity.get()->getPosition());
                         totalEnemies--;
                         m_points += 5;
                         nearbyEntity->die();
                         entity->die();
+                        is_shot = true;
+                        printf("shot");
+
                     } else if (typeid(*nearbyEntity) == typeid(NormalBomb)) {
+                        particle->setPosition(entity.get()->getPosition());
                         totalEnemies--;
                         playerBounce(*(std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)));
                         std::dynamic_pointer_cast<NormalBomb>(nearbyEntity)->animate();
                         entity->die();
+                        is_shot = true;
                     } else if (typeid(*nearbyEntity) == typeid(Chaser)) {
+                        particle->setPosition(entity.get()->getPosition());
                         totalEnemies--;
                         m_points += 10;
                         nearbyEntity->die();
                         entity->die();
+                        is_shot = true;
                     } else if (typeid(*nearbyEntity) == typeid(Bomber)) {
+                        particle->setPosition(entity.get()->getPosition());
                         m_points += 10;
                         nearbyEntity->die();
                         entity->die();
+                        is_shot = true;
                     }
                 }
             } else if (typeid(*entity) == typeid(ShooterBullet)) {
@@ -275,6 +302,7 @@ void World::update(float elapsed_ms) {
                 if (entity->isCollidingWith(*nearbyEntity)) {
                     if (typeid(*nearbyEntity) == typeid(BomberBomb) &&
                         std::dynamic_pointer_cast<BomberBomb>(nearbyEntity)->isBlasting()) {
+                        particle->setPosition(entity.get()->getPosition());
                         getPlayer()->hit();
                     } else if (typeid(*nearbyEntity) == typeid(OneUp)) {
                         getPlayer()->addLives();
@@ -312,7 +340,6 @@ void World::update(float elapsed_ms) {
 
     ////PARTICLE//////
 
-    getParticle().get()->setPosition(getPlayer().get()->getPosition());
 
     //// CLEANUP ////
 
@@ -471,6 +498,16 @@ vec2 World::getPlayerPosition() const {
     return (*m_entities.at(1)).getPosition();
 }
 
+float World::getPlayerRotation() const {
+    return (*m_entities.at(1)).getRotation();
+}
+
+/*
+vec2 World::getPlayerBulletPosition() const {
+    return ;
+}
+*/
+
 std::vector<vec2> World::getBombPositions() const {
     auto positions = std::vector<vec2>();
     for (auto &entity : m_entities) {
@@ -496,6 +533,15 @@ vec2 World::getSize() const {
 bool World::isEntityInView(const Entity &entity) const {
     return m_camera.isEntityInView(entity);
 }
+
+bool World::isMoving() const {
+    return  playerMoving;
+}
+
+bool World::isShot() const {
+    return  is_shot;
+}
+
 
 // Private
 
@@ -544,35 +590,47 @@ void World::playerBounce(const NormalBomb &bomb) {
 // On key callback
 void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     if (key == GLFW_KEY_W) {
+        playerMoving = true;
         if (action == GLFW_PRESS) {
+
             getPlayer()->setFlying(Player::DIRECTION::FORWARD, true);
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::FORWARD, false);
         }
     }
 
     if (key == GLFW_KEY_S) {
         if (action == GLFW_PRESS) {
+            playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::BACKWARD, true);
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::BACKWARD, false);
         }
     }
 
     if (key == GLFW_KEY_A) {
         if (action == GLFW_PRESS) {
+            playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::LEFT, true);
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::LEFT, false);
         }
     }
 
     if (key == GLFW_KEY_D) {
         if (action == GLFW_PRESS) {
+            playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, true);
+            std::cout<<getPlayerPosition().x<<" ,"<<getPlayerPosition().y;
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, false);
         }
+
+
     }
 
     // Resetting game
@@ -590,6 +648,8 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     }
 
 }
+
+
 
 
 void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {

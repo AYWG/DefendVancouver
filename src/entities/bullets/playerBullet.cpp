@@ -82,6 +82,10 @@ void PlayerBullet::destroy() {
     gfx.effect.release();
 }
 
+vec2 PlayerBullet::getPosition() {
+    return m_position;
+}
+
 void PlayerBullet::update(float ms) {
     float x_step = m_velocity.x * (ms / 1000);
     float y_step = m_velocity.y * (ms / 1000);
@@ -92,6 +96,8 @@ void PlayerBullet::update(float ms) {
         m_isDead = true;
     }
 }
+
+
 
 
 void PlayerBullet::draw(const mat3 &projection) {

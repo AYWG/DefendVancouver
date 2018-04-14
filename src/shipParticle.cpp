@@ -18,10 +18,11 @@ shipParticle::shipParticle(World &world) : Entity(world) {};
 struct Particle{
     vec2 pos;
     vec2 speed ;
-    float life = 10000;
+    float life = 600;
+    float angle;
 
 };
-const int MaxParticles = 100;
+const int MaxParticles = 1000;
 Particle ParticlesContainer[MaxParticles];;
 int ParticlesCount = 0;
 
@@ -86,12 +87,12 @@ bool shipParticle::initGraphics() {
         //DYNAMIC Vertex Buffer creation
         glGenBuffers(1, &gfx.particleVBO.vbo);
         glBindBuffer(GL_ARRAY_BUFFER, gfx.particleVBO.vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 2, vertices, GL_DYNAMIC_DRAW);
+        //glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 2, vertices, GL_DYNAMIC_DRAW);
 
         glEnableVertexAttribArray(in_wrldposition_loc);
         glEnableVertexAttribArray(in_texcoord_loc);
         glVertexAttribPointer(in_wrldposition_loc, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
-        glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
+        //glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
         gl_flush_errors();
     }
 // These functions are specific to glDrawArrays*Instanced*.
@@ -105,24 +106,38 @@ bool shipParticle::initGraphics() {
 }
 
 bool shipParticle::init() {
-    m_position.x = m_world->getPlayerPosition().x;
-    m_position.y = m_world->getPlayerPosition().y;
-    m_scale.x = 0.5f;
-    m_scale.y = 0.5f;
+
+   /* m_position.x = m_world->getPlayerPosition().x;
+    m_position.y = m_world->getPlayerPosition().y;*/
+    setPosition(m_position);
+
+   /* m_position.x = 200;
+    m_position.y = 400;*/
+
 
 
     for (auto& p : ParticlesContainer){
         //Particle& p = ParticlesContainer[i]; // shortcut
         p.pos = m_position;
 
-        float vel = ((float)rand() / RAND_MAX);
-        float vel2 = ((float)rand() / RAND_MAX);
+        plife = p.life;
+
+
+        float vel = (rand() % 1500 - 750) / 10000.0f;//((float)rand() / RAND_MAX);
+        float vel2 = (rand() % 1500 - 750) / 10000.0f;//((float)rand() / RAND_MAX);
 
         p.speed.x = vel ;
-        p.speed.y = vel2 ;
+        p.speed.y = vel2;
+
+        normalize(p.speed);
+
+    /*    p.speed.x = cos(vel);
+        p.speed.y = sin(vel2);*/
     }
 
-    std::cout<<ParticlesContainer[1].pos.x<<", "<<ParticlesContainer[1].pos.y;
+
+    alphaBlend = true;
+
 
 
     return true;
@@ -133,14 +148,23 @@ void shipParticle::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
     transform_begin();
-    transform_translate(m_position);
+    //transform_translate(m_position);
     transform_scale(m_scale);
+    transform_rotate(m_rotation);
     transform_end();
     glUseProgram(gfx.effect.program);
 
     // Enabling alpha channel for textures
+
+
+
     glEnable(GL_BLEND);
+    if (alphaBlend) {
+        glBlendFunc(GL_ONE, GL_ONE);
+        alphaBlend = false;
+    }
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glDisable(GL_DEPTH_TEST);
 
     // Getting uniform locations for glUniform* calls
@@ -195,39 +219,66 @@ void shipParticle::draw(const mat3 &projection) {
     glDisableVertexAttribArray(in_texcoord_loc);
     glDisableVertexAttribArray(in_wrldposition_loc);
 
+
+
     gl_has_errors();
 
 }
 
 void shipParticle::update(float ms) {
 
+
+    /*m_position.x = m_world->getPlayerPosition().x;
+    m_position.y = m_world->getPlayerPosition().y;*/
+    setPosition(m_position);
+
+    m_rotation =  m_world->getPlayerRotation() ;
+
+
     pos_buf.clear();
 
     int ParticlesCount = 0;
 
-    for (auto& p : ParticlesContainer)
+   /* if (m_world->isMoving()){
+       plife = 1000;
+    }else{
+
+       init();
+
+    }*/
+
+    for (auto& p : ParticlesContainer) {
+        p.life = plife;
         if (p.life > 0.0f) {
             p.life -= 20;
             if (p.life > 0.0f) {
-                p.pos.x += p.speed.x * 10;
-                p.pos.y += p.speed.y * 10;
+                p.pos.x += p.speed.x * 10 ;
+                p.pos.y += p.speed.y * 10 ;
+                p.angle = m_rotation;
 
                 m_position = p.pos;
 
                 pos_buf.push_back(p.pos);
+                rot_buf.push_back(p.angle);
 
 
             }
             ParticlesCount++;
         }
+    }
+
 
 
     glBindBuffer(GL_ARRAY_BUFFER, gfx.particleVBO.vbo);
     glBufferData(GL_ARRAY_BUFFER, MaxParticles * sizeof(GLfloat) * 2,NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 2, pos_buf.data() );
+    glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 2, pos_buf.data());
 
 }
 
+
+void shipParticle::setPosition(vec2 position) {
+    m_position = position;
+}
 
 
 
@@ -243,4 +294,7 @@ void shipParticle::destroy() {
 Region shipParticle::getBoundingBox() const {
 
 }
+
+
+
 

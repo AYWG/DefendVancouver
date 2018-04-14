@@ -31,6 +31,8 @@ public:
 
     void update(float ms) override;
 
+    vec2 getPosition();
+
 //    vec2 getBoundingBox() const override;
 
     Region getBoundingBox() const override;

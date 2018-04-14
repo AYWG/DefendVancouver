@@ -14,9 +14,9 @@ uniform mat3 projection;
 void main()
 {
 	texcoord = in_texcoord;
-	float scale = 0.2;
+	float scale = 0.005;
 
-	vec3 pos = projection  * vec3(in_position.xy * scale + in_world_pos.xy, 1.0);
+	vec3 pos = projection  *  vec3(in_position.xy * scale + in_world_pos.xy, 1.0);
 
 
 

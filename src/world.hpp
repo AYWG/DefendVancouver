@@ -48,15 +48,24 @@ public:
 
     vec2 getPlayerPosition() const;
 
+    vec2 getPlayerBulletPosition() const;
+
+    float getPlayerRotation() const;
+
     std::vector<vec2> getBombPositions() const;
 
+
     vec2 getCityPosition() const;
+
 
     void addEntity(std::shared_ptr<Entity> entity);
 
     vec2 getSize() const;
 
     bool isEntityInView(const Entity &entity) const;
+
+    bool isMoving() const;
+    bool isShot() const;
 
 
     float bulletAngleRelativeToPlayer;
@@ -65,9 +74,12 @@ public:
     int grid[ROW][COL];
     float  width;
     float  height;
+    bool playerMoving = false;
+    bool is_shot = false;
 
 private:
     bool initGraphics();
+
 
     std::shared_ptr<Player> getPlayer() const;
     std::shared_ptr<background> getBackground() const;
@@ -114,6 +126,7 @@ private:
     // World size
     vec2 m_size;
     Camera m_camera;
+    //PlayerBullet m_pbullet;
 
     QuadTreeNode m_quad;
     
