@@ -151,11 +151,9 @@ void Player::update(float ms) {
         transparency = 1.f;
     }
 
-    if(transparency < 0.f){
+    if(m_lives <= 0 & countdown < 0.f){
         m_dead = true;
-        transparency = 0.f;
     }
-
 
 }
 
