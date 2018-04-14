@@ -44,10 +44,9 @@ void Enemy::onCollision(Entity &other) {
 
 void Enemy::takeDamage() {
     // TODO: only add points if damage taken causes enemy health to go below 0
-    m_dying = 1;
-    countdown = 1500.f;
     m_world->addPoints(getPoints());
     m_world->decrementTotalEnemies();
+    die();
 }
 
 bool Enemy::isDamageable() const {

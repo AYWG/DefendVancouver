@@ -73,8 +73,6 @@ bool Shooter::initGraphics() {
 bool Shooter::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4;
-    m_dying = 0;
-    transparency = 1.f;
 
     return true;
 }
@@ -89,22 +87,6 @@ void Shooter::destroy() {
 
 void Shooter::update(float ms) {
     m_ai->doNextAction(this, ms);
-
-    if (countdown > 0.f)
-    {
-        countdown -= ms;
-    } else {
-        countdown = 0;
-    }
-
-    if(m_dying == 1){
-        transparency = countdown/1500;
-    }
-
-    if(transparency <= 0.f){
-        this->die();
-    }
-
 }
 
 void Shooter::draw(const mat3 &projection) {
@@ -126,8 +108,6 @@ void Shooter::draw(const mat3 &projection) {
     GLint transform_uloc = glGetUniformLocation(gfx.effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
-    GLint transparency_uloc = glGetUniformLocation(effect.program, "transparency");
-    GLint dying_uloc = glGetUniformLocation(effect.program, "dying");
 
     // Setting vertices and indices
     glBindVertexArray(gfx.mesh.vao);
@@ -151,9 +131,6 @@ void Shooter::draw(const mat3 &projection) {
     float color[] = {1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
-
-    glUniform1fv(transparency_uloc, 1, &transparency);
-    glUniform1iv(dying_uloc, 1, &m_dying);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
