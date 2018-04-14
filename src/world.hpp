@@ -84,6 +84,8 @@ public:
 
     void makeInvincible();
 
+    bool isPlayerCritical() const;
+
 
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;

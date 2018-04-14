@@ -37,7 +37,7 @@ vec2 Enemy::getCityPosition() const {
 }
 
 void Enemy::onCollision(Entity &other) {
-    if (typeid(other) == typeid(Player)) {
+    if (other.isDamageable() && typeid(other) == typeid(Player)) {
         other.takeDamage();
     }
 }

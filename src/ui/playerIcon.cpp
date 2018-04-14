@@ -135,7 +135,7 @@ void playerIcon::draw(const mat3 &projection) {
 void playerIcon::update(float ms) {
     if(m_ui->getInvincibility()){
         frameCount = 1;
-    } else if(m_ui->getPlayerLives() < 2){
+    } else if(m_ui->isPlayerCritical()){
         frameCount = 2;
     } else {
         frameCount = 0;

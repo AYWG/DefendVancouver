@@ -42,6 +42,8 @@ public:
 
     bool getInvincibility();
 
+    bool isPlayerCritical() const;
+
     vec2 getNearestEnemyPosToPlayer() const;
 
     bool isOffScreenEnemyPresentAndNoEnemiesVisible() const;
