@@ -57,6 +57,10 @@ protected:
     float m_angleToTarget;
 
     std::vector<vec2> m_bombsInVision;
+
+    int m_dying;
+    float transparency;
+    float countdown;
 };
 
 
