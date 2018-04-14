@@ -115,7 +115,9 @@ struct Effect {
 struct Renderable {
     Mesh mesh;
     Effect effect;
+    particleVBO particleVBO;
     mat3 transform;
+
 
     // projection contains the orthographic projection matrix. As every Renderable::draw()
     // renders itself it needs it to correctly bind it to its shader.

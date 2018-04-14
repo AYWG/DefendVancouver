@@ -96,7 +96,7 @@ void Player::destroy() {
 
     glDeleteShader(effect.vertex);
     glDeleteShader(effect.fragment);
-    glDeleteShader(effect.program);
+    glDeleteProgram(effect.program);
 }
 
 void Player::update(float ms) {

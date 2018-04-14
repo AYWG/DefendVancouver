@@ -4,9 +4,11 @@
 
 #include <memory>
 #include "shipParticle.hpp"
+#include "world.hpp"
 #include <vector>
 #include <iostream>
 #include <algorithm>
+
 
 Graphics shipParticle::gfx;
 
@@ -24,29 +26,8 @@ Particle ParticlesContainer[MaxParticles];;
 int ParticlesCount = 0;
 
 
-static GLfloat* g_particule_position_size_data = new GLfloat[MaxParticles * 4];
-
 
 /////////////////////////////////////////
-
-/*static void APIENTRY openglCallbackFunction(
-        GLenum source,
-        GLenum type,
-        GLuint id,
-        GLenum severity,
-        GLsizei length,
-        const GLchar* message,
-        const void* userParam
-){
-    (void)source; (void)type; (void)id;
-    (void)severity; (void)length; (void)userParam;
-    fprintf(stderr, "%s\n", message);
-    if (severity==GL_DEBUG_SEVERITY_HIGH) {
-        fprintf(stderr, "Aborting...\n");
-        abort();
-    }
-
-}*/
 
 
 
@@ -78,84 +59,70 @@ bool shipParticle::initGraphics() {
     // Clearing errors
     gl_flush_errors();
 
-    GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
-    GLint in_texcoord_loc = glGetAttribLocation(gfx.effect.program, "in_texcoord");
+    if (gfx.effect.load_from_file(shader_path("particleTexture.vs.glsl"), shader_path("textured.fs.glsl"))) {
 
-
-    // Vertex Array (Container for Vertex + Index buffer)
-    glGenVertexArrays(1, &gfx.mesh.vao);
-    glBindVertexArray(gfx.mesh.vao);
-
-    // Index Buffer creation
-    glGenBuffers(1, &gfx.mesh.ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfx.mesh.ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
-
-
-    // Vertex Buffer creation
-    glGenBuffers(1, &gfx.mesh.vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, gfx.mesh.vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
-
-
-    //DYNAMIC Vertex Buffer creation
-    glGenBuffers(1, &gfx.particleVBO.vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, gfx.particleVBO.vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex)*4, vertices, GL_DYNAMIC_DRAW);
-
-    glEnableVertexAttribArray(in_position_loc);
-    glEnableVertexAttribArray(in_texcoord_loc);
-    glVertexAttribPointer(in_position_loc, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
-    glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
+        // GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
+        GLint in_wrldposition_loc = glGetAttribLocation(gfx.effect.program, "in_world_pos");
+        GLint in_texcoord_loc = glGetAttribLocation(gfx.effect.program, "in_texcoord");
 
 
 
+        // Vertex Array (Container for Vertex + Index buffer)
+        glGenVertexArrays(1, &gfx.mesh.vao);
+        glBindVertexArray(gfx.mesh.vao);
 
+        // Index Buffer creation
+        glGenBuffers(1, &gfx.mesh.ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfx.mesh.ibo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
+
+
+        // Vertex Buffer creation
+        glGenBuffers(1, &gfx.mesh.vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, gfx.mesh.vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
+
+
+        //DYNAMIC Vertex Buffer creation
+        glGenBuffers(1, &gfx.particleVBO.vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, gfx.particleVBO.vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 2, vertices, GL_DYNAMIC_DRAW);
+
+        glEnableVertexAttribArray(in_wrldposition_loc);
+        glEnableVertexAttribArray(in_texcoord_loc);
+        glVertexAttribPointer(in_wrldposition_loc, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
+        glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
+        gl_flush_errors();
+    }
 // These functions are specific to glDrawArrays*Instanced*.
-    glVertexAttribDivisor(in_position_loc, 1); // particles vertices : always reuse the same 4 vertices -> 0
-    glVertexAttribDivisor(in_texcoord_loc, 1); // positions : one per quad (its center) -> 1
 
-
-/*    if (gl_has_errors()){
-        // Enable the debug callback
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        glDebugMessageCallback(openglCallbackFunction, nullptr);
-        glDebugMessageControl(
-                GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true
-        );
-
-    }*/
 
     // Loading shaders
-    return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+
+    return true;
 
 
 }
 
 bool shipParticle::init() {
-    m_position.x = 500;
-    m_position.y = 500;
-    m_scale.x = 0.05f;
-    m_scale.y = 0.05f;
+    m_position.x = m_world->getPlayerPosition().x;
+    m_position.y = m_world->getPlayerPosition().y;
+    m_scale.x = 0.5f;
+    m_scale.y = 0.5f;
 
-    vec2 maindir = {0.0f, 10.0f};
-    float spread = 1.5f;
 
-    for(int i=0; i<MaxParticles; i++){
-        Particle& p = ParticlesContainer[i]; // shortcut
+    for (auto& p : ParticlesContainer){
+        //Particle& p = ParticlesContainer[i]; // shortcut
         p.pos = m_position;
 
-        rndmDir = {
-                (rand()%90000 - 1000.0f)/1000.0f,
-                (rand()%90000 - 1000.0f)/1000.0f
-        };
+        float vel = ((float)rand() / RAND_MAX);
+        float vel2 = ((float)rand() / RAND_MAX);
 
-        p.speed.x = maindir.x + rndmDir.x *spread;
-        p.speed.y = maindir.y + rndmDir.y *spread;
+        p.speed.x = vel ;
+        p.speed.y = vel2 ;
     }
 
-    std::cout<<ParticlesContainer[3].speed.y<<", "<<ParticlesContainer[53].speed.y;
+    std::cout<<ParticlesContainer[1].pos.x<<", "<<ParticlesContainer[1].pos.y;
 
 
     return true;
@@ -188,18 +155,24 @@ void shipParticle::draw(const mat3 &projection) {
 
 
 
+
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
+    GLint in_wrldposition_loc = glGetAttribLocation(gfx.effect.program, "in_world_pos");
     GLint in_texcoord_loc = glGetAttribLocation(gfx.effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
+    glEnableVertexAttribArray(in_wrldposition_loc);
     glEnableVertexAttribArray(in_texcoord_loc);
+
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
     glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
 
     glVertexAttribDivisor(in_position_loc, 0); // particles vertices : always reuse the same 4 vertices -> 0
     glVertexAttribDivisor(in_texcoord_loc, 0);
 
-
+    glVertexAttribDivisor(in_wrldposition_loc, 1); // particles vertices : always reuse the same 4 vertices -> 0
+   // glVertexAttribDivisor(in_texcoord_loc, 1); // positions : one per quad (its center) -> 1
+    glBindBuffer(GL_ARRAY_BUFFER, gfx.particleVBO.vbo);
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
@@ -214,44 +187,30 @@ void shipParticle::draw(const mat3 &projection) {
 
 
    //DRAW PARTICLE!
+    glDrawElementsInstanced(GL_TRIANGLES,6,GL_UNSIGNED_SHORT, nullptr, pos_buf.size());
 
-
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP,0,6,pos_buf.size());
 
 
     glDisableVertexAttribArray(in_position_loc);
     glDisableVertexAttribArray(in_texcoord_loc);
+    glDisableVertexAttribArray(in_wrldposition_loc);
 
-    // Drawing!
+    gl_has_errors();
+
 }
 
 void shipParticle::update(float ms) {
 
     pos_buf.clear();
 
+    int ParticlesCount = 0;
 
-   // for(auto &p : ParticlesContainer){
-    for(int i=0; i<MaxParticles; i++){
-        Particle& p = ParticlesContainer[i]; // shortcut
-
+    for (auto& p : ParticlesContainer)
         if (p.life > 0.0f) {
             p.life -= 20;
-
-            if(p.life > 0) {
-
-                /*if (i%2 == 0) {*/
-                    p.speed.x += 1.f * ms;
-                    p.speed.y += -0.21f * ms;
-                    p.pos.x += p.speed.x * 0.25f * (ms / 500);
-                    p.pos.y += p.speed.y * 0.25f * (ms / 500);
-                /*} else if (i%2 != 0){
-                    p.speed.x -= 1.f * ms;
-                    p.speed.y -= -0.21f * ms;
-                    p.pos.x -= p.speed.x * 0.25f * (ms / 500);
-                    p.pos.y -= p.speed.y * 0.25f * (ms / 500);
-                }
-*/
-
+            if (p.life > 0.0f) {
+                p.pos.x += p.speed.x * 10;
+                p.pos.y += p.speed.y * 10;
 
                 m_position = p.pos;
 
@@ -261,52 +220,15 @@ void shipParticle::update(float ms) {
             }
             ParticlesCount++;
         }
-    }
-
-
-
 
 
     glBindBuffer(GL_ARRAY_BUFFER, gfx.particleVBO.vbo);
-    //glBufferData(GL_ARRAY_BUFFER, MaxParticles * sizeof(GLfloat) * 4,NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 2, pos_buf.data());
-
+    glBufferData(GL_ARRAY_BUFFER, MaxParticles * sizeof(GLfloat) * 2,NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 2, pos_buf.data() );
 
 }
 
 
-
-
-
-// Finds a Particle in ParticlesContainer which isn't used yet.
-// (i.e. life < 0);
-int shipParticle::FindUnusedParticle() {
-
-    for(int i=LastUsedParticle; i<MaxParticles; i++){
-        if (ParticlesContainer[i].life < 0){
-            LastUsedParticle = i;
-            return i;
-        }
-    }
-
-    for(int i=0; i<LastUsedParticle; i++){
-        if (ParticlesContainer[i].life < 0){
-            LastUsedParticle = i;
-            return i;
-        }
-    }
-
-    return 0;
-}
-
-/*void shipParticle::particleGenerator() {
-// Generate 10 new particule each millisecond,
-// but limit this to 16 ms (60 fps), or if you have 1 long frame (1sec),
-// newparticles will be huge and the next frame even longer.
-    int newparticles = (int)(delta * 10000.0);
-    if (newparticles > (int)(0.016f*10000.0))
-        newparticles = (int)(0.016f*10000.0);
-}*/
 
 
 

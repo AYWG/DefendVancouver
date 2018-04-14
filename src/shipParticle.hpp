@@ -7,26 +7,18 @@
 #include "common.hpp"
 #include "entities/entity.hpp"
 
+
+
 class shipParticle : public Entity, public Renderable  {
 
 
 public:
 
     std::vector<vec2> pos_buf;
-    int FindUnusedParticle();
-    int LastUsedParticle = 0;
-    int newParticles;
-
-    vec2 rndmDir;
-
-
-    void particleGenerator();
 
     static bool initGraphics();
 
-    void SortParticles();
-
-    bool isDead();
+    static std::shared_ptr<shipParticle> spawn(World &world);
 
     shipParticle(World &world);
 
@@ -50,13 +42,6 @@ private:
     static Graphics gfx;
     vec2 m_position;
     vec2 m_scale;
-
-    ///////REQUIRED VARS//////////
-    float xPos;
-    float yPos;
-    float xVelocity = 30;
-    float  yVelocity;
-
 
 
 
