@@ -68,12 +68,16 @@ std::shared_ptr<NormalBomb> NormalBomb::spawn(World &world) {
 }
 
 bool NormalBomb::init() {
+    m_isHit = false;
+    frameCount = 0;
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
     frameNumber = 3;
     m_invulnerabilityCountdown = 1500;
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
+    m_initCountdown = 400.f;
+    m_explosionCountdown = 200.f;
 
     return true;
 }
@@ -143,13 +147,26 @@ void NormalBomb::draw(const mat3 &projection) {
 }
 
 void NormalBomb::update(float ms) {
+    if(m_initCountdown > 0.f){
+        m_initCountdown -= ms;
+    }
+
+    if(!m_isHit && m_initCountdown < 0.f){
+        frameCount = 1;
+    }
+
     if (m_invulnerabilityCountdown > 0) {
         m_invulnerabilityCountdown -= ms;
     }
-    if(!m_isHit){
-        frameCount = 1;
-    } else {
-        m_scale = {0.75, 0.75};
+
+    if(m_isHit){
+//       m_scale = {0.75, 0.75};
+        m_explosionCountdown -= ms;
+        frameCount++;
+    }
+
+    if(m_explosionCountdown < 0.f){
+        m_explosionCountdown = 200.f;
         frameCount++;
     }
 

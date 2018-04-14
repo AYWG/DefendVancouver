@@ -24,6 +24,8 @@ protected:
 protected:
     bool m_isHit;
     float m_invulnerabilityCountdown;
+    float m_explosionCountdown;
+    float m_initCountdown;
 
 
 };

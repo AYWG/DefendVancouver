@@ -69,13 +69,17 @@ std::shared_ptr<BomberBomb> BomberBomb::spawn(World &world) {
 
 
 bool BomberBomb::init() {
+    m_isHit = false;
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
     frameNumber = 3;
     frameCount = 0;
-    countdown = 1500.f;
+    countdown = 2000.f;
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
+    m_initCountdown = 400.f;
+    m_explosionCountdown = 200.f;
+    m_invulnerabilityCountdown = 1500;
 
     return true;
 
@@ -145,6 +149,19 @@ void BomberBomb::draw(const mat3 &projection) {
 }
 
 void BomberBomb::update(float ms) {
+    if(m_initCountdown > 0.f){
+        m_initCountdown -= ms;
+    }
+
+    if(!m_isHit && m_initCountdown < 0.f){
+        frameCount = 1;
+    }
+
+    if(m_initCountdown > 0.f){
+        m_initCountdown -= ms;
+    } else {
+        frameCount = 1;
+    }
     if (m_invulnerabilityCountdown > 0) {
         m_invulnerabilityCountdown -= ms;
     }
@@ -154,12 +171,17 @@ void BomberBomb::update(float ms) {
         explode();
     }
 
-    if(!m_isHit){
-        frameCount = 1;
-    } else {
-        m_scale = {0.75, 0.75};
+    if(m_isHit){
+//       m_scale = {0.75, 0.75};
+        m_explosionCountdown -= ms;
         frameCount++;
     }
+
+    if(m_explosionCountdown < 0.f){
+        m_explosionCountdown = 200.f;
+        frameCount++;
+    }
+
 
     if (frameCount == 9) {
         die();
