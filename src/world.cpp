@@ -186,14 +186,19 @@ void World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
 
+    // Resetting game
+    if (getPlayer().get()->m_lives < 1) {
+        state = 3;
+    }
+
     // Setting wave spawn conditions
     if (totalEnemies <= 0) {
         waveNo++;
-        if (waveNo % 3 == 1) {
+        if (waveNo % 2 == 1) {
             MAX_SHOOTERS++;
         }
 
-        if (waveNo % 2 == 1) {
+        if (waveNo % 3 == 1) {
             MAX_CHASER++;
             MAX_BOMBER++;
             MAX_BOMBERBOMBS++;
@@ -207,8 +212,8 @@ void World::update(float elapsed_ms) {
         totalEnemies = shooters + chasers;
     }
 
-    for (auto &state: m_states){
-        if (state->getName() == "background"){
+    for (auto &state: m_states) {
+        if (state->getName() == "background") {
             continue;
         } else {
             state->setPosition(
@@ -684,14 +689,39 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
-    // Resetting game
-    if (getPlayer()->isDead()) {
-        int w, h;
-        glfwGetWindowSize(m_window, &w, &h);
-        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
-        waveNo = 1;
+    if (key == GLFW_KEY_P && state == 3) {
+        state = 1;
 
+        waveNo = 1;
+        initTextures();
+        totalEnemies = shooters + chasers;
+        m_entities.clear();
+        auto bg = std::make_shared<background>(*this);
+        bg->init();
+        addEntity(bg);
+        auto player = std::make_shared<Player>(*this);
+        player->init();
+        addEntity(player);
+        width = m_size.x / COL;
+        height = m_size.y / ROW;
+        grid[ROW][COL];
+
+        if (!isGraphCreated) {
+            for (int p = 0; p < ROW; p++) {
+                for (int h = 0; h < COL; h++) {
+                    grid[p][h] = 1;
+                }
+            }
+            isGraphCreated = true;
+        }
+    } else if (key == GLFW_KEY_P) {
+        if (action == GLFW_PRESS) {
+            std::cout << "pressed P" << std::endl;
+            state = 1;
+            std::cout << state << std::endl;
+        }
     }
+
 
 }
 
