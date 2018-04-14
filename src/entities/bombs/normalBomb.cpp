@@ -77,7 +77,7 @@ bool NormalBomb::init() {
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
     m_initCountdown = 400.f;
-    m_explosionCountdown = 200.f;
+    m_explosionCountdown = 50.f;
 
     return true;
 }
@@ -162,11 +162,10 @@ void NormalBomb::update(float ms) {
     if(m_isHit){
 //       m_scale = {0.75, 0.75};
         m_explosionCountdown -= ms;
-        frameCount++;
     }
 
     if(m_explosionCountdown < 0.f){
-        m_explosionCountdown = 200.f;
+        m_explosionCountdown = 50.f;
         frameCount++;
     }
 
