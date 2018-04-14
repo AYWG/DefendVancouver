@@ -4,27 +4,20 @@
 
 #include "information.hpp"
 
-Texture Info::info_texture;
+Graphics Info::gfx;
 
-bool Info::initTexture() {
+bool Info::initGraphics() {
     //load texture
-    if (!info_texture.is_valid()) {
-        if (!info_texture.load_from_file(textures_path("InfoScreen.png"))) {
+    if (!gfx.texture.is_valid()) {
+        if (!gfx.texture.load_from_file(textures_path("InfoScreen.png"))) {
             fprintf(stderr, "Failed to load background texture!");
             return false;
         }
     }
-    return true;
-}
 
-Info::Info(World &world) : State(world) {
-
-}
-
-bool Info::init() {
     // The position corresponds to the center of the texture
-    float wr = info_texture.width * 0.5f;
-    float hr = info_texture.height * 0.5f;
+    float wr = gfx.texture.width * 0.5f;
+    float hr = gfx.texture.height * 0.5f;
 
     TexturedVertex vertices[4];
     vertices[0].position = {-wr, +hr, -0.01f};
@@ -41,28 +34,28 @@ bool Info::init() {
     gl_flush_errors();
 
     // Vertex Buffer creation
-    glGenBuffers(1, &mesh.vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    glGenBuffers(1, &gfx.mesh.vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, gfx.mesh.vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
 
     // Index Buffer creation
-    glGenBuffers(1, &mesh.ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+    glGenBuffers(1, &gfx.mesh.ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfx.mesh.ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
 
     // Vertex Array (Container for Vertex + Index buffer)
-    glGenVertexArrays(1, &mesh.vao);
+    glGenVertexArrays(1, &gfx.mesh.vao);
     if (gl_has_errors())
         return false;
 
     // Loading shaders
-    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-        return false;
-    m_scale.x = 1.0f;
-    m_scale.y = 1.0f;
-
-    return true;
+    return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 }
+
+Info::Info(World &world) : State(world) {
+
+}
+
 
 void Info::update(float ms) {
 
@@ -103,7 +96,7 @@ void Info::draw(const mat3 &projection) {
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, info_texture.id);
+    glBindTexture(GL_TEXTURE_2D, gfx.texture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);

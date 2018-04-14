@@ -21,7 +21,18 @@ public:
 
     ~State();
 
+    bool init() override;
+
     void setPosition(vec2 pos);
+
+    void onCollision(Entity &other) override;
+
+    void takeDamage() override ;
+
+    bool isDamageable() const override;
+
+    FACTION getFaction() const override;
+
 
 };
 

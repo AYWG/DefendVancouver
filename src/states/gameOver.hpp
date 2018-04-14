@@ -10,13 +10,10 @@
 
 class GameOver: public State {
 public:
-    static Texture over_texture;
 
-    static bool initTexture();
+    static bool initGraphics();
 
     GameOver(World &world);
-
-    bool init() override;
 
     void update(float ms) override;
 
@@ -28,6 +25,9 @@ public:
 
     std::string getName() const override;
 
+private:
+
+    static Graphics gfx;
 
 };
 

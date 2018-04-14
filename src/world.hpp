@@ -18,6 +18,8 @@
 #include "entities/powerups/shield.hpp"
 #include "ui/UI.hpp"
 #include "states/startScreen.hpp"
+#include "states/information.hpp"
+#include "states/gameOver.hpp"
 
 // stlib
 #include <vector>

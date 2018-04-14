@@ -4,27 +4,20 @@
 
 #include "gameOver.hpp"
 
-Texture GameOver::over_texture;
+Graphics GameOver::gfx;
 
-bool GameOver::initTexture() {
+bool GameOver::initGraphics() {
     //load texture
-    if (!over_texture.is_valid()) {
-        if (!over_texture.load_from_file(textures_path("OverScreen.png"))) {
+    if (!gfx.texture.is_valid()) {
+        if (!gfx.texture.load_from_file(textures_path("OverScreen.png"))) {
             fprintf(stderr, "Failed to load background texture!");
             return false;
         }
     }
-    return true;
-}
 
-GameOver::GameOver(World &world) : State(world) {
-
-}
-
-bool GameOver::init() {
     // The position corresponds to the center of the texture
-    float wr = over_texture.width * 0.5f;
-    float hr = over_texture.height * 0.5f;
+    float wr = gfx.texture.width * 0.5f;
+    float hr = gfx.texture.height * 0.5f;
 
     TexturedVertex vertices[4];
     vertices[0].position = {-wr, +hr, -0.01f};
@@ -41,27 +34,26 @@ bool GameOver::init() {
     gl_flush_errors();
 
     // Vertex Buffer creation
-    glGenBuffers(1, &mesh.vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    glGenBuffers(1, &gfx.mesh.vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, gfx.mesh.vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
 
     // Index Buffer creation
-    glGenBuffers(1, &mesh.ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+    glGenBuffers(1, &gfx.mesh.ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfx.mesh.ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
 
     // Vertex Array (Container for Vertex + Index buffer)
-    glGenVertexArrays(1, &mesh.vao);
+    glGenVertexArrays(1, &gfx.mesh.vao);
     if (gl_has_errors())
         return false;
 
     // Loading shaders
-    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-        return false;
-    m_scale.x = 1.0f;
-    m_scale.y = 1.0f;
+    return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+}
 
-    return true;
+GameOver::GameOver(World &world) : State(world) {
+
 }
 
 void GameOver::update(float ms) {
@@ -76,7 +68,7 @@ void GameOver::draw(const mat3 &projection) {
     transform_translate(m_position);
     transform_scale(m_scale);
     transform_end();
-    glUseProgram(effect.program);
+    glUseProgram(gfx.effect.program);
 
     // Enabling alpha channel for textures
     glEnable(GL_BLEND);
@@ -84,18 +76,18 @@ void GameOver::draw(const mat3 &projection) {
     glDisable(GL_DEPTH_TEST);
 
     // Getting uniform locations for glUniform* calls
-    GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-    GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-    GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+    GLint transform_uloc = glGetUniformLocation(gfx.effect.program, "transform");
+    GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
+    GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
 
     // Setting vertices and indices
-    glBindVertexArray(mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+    glBindVertexArray(gfx.mesh.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, gfx.mesh.vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfx.mesh.ibo);
 
     // Input data location as in the vertex buffer
-    GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-    GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+    GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
+    GLint in_texcoord_loc = glGetAttribLocation(gfx.effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
     glEnableVertexAttribArray(in_texcoord_loc);
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
@@ -103,7 +95,7 @@ void GameOver::draw(const mat3 &projection) {
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, over_texture.id);
+    glBindTexture(GL_TEXTURE_2D, gfx.texture.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
@@ -125,5 +117,5 @@ Region GameOver::getBoundingBox() const {
 }
 
 std::string GameOver::getName() const {
-    return std::__cxx11::string();
+    return "Game Over";
 }
