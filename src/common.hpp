@@ -24,6 +24,7 @@
 #define textures_path(name) "../data/textures/" name // string literal
 #define audio_path(name) data_path "/audio/" name
 #define mesh_path(name) "../data/meshes/" name
+#define scores_path(name) "../data/scores/" name
 
 std::string getTexturesPath(std::string &fileName);
 
