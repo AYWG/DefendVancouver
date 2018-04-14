@@ -39,6 +39,7 @@ private:
     static Graphics gfx;
 
     int frameCount;
+    int frameNumber;
     float countdown;
     float frameWidth;
     float frameHeight;
