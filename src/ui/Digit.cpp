@@ -1,25 +1,27 @@
 //
-// Created by Anun Ganbat on 2018-02-09.
+// Created by Shrey Swades Nayak on 2018-04-13.
 //
-#include <vector>
-#include <iostream>
-#include <cmath>
-#include "background.hpp"
 
-Graphics background::gfx;
+#include "Digit.hpp"
 
-background::background(World &world) : Entity(world) {}
+Graphics Digit::gfx;
 
-bool background::initGraphics() {
-    //load texture
+Digit::Digit(UI &ui) : UIobject(ui) {}
+
+Digit::~Digit() {
+    destroy();
+}
+
+bool Digit::initGraphics() {
+//load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("skyline.png"))) {
-            fprintf(stderr, "Failed to load background texture!");
+        if (!gfx.texture.load_from_file(textures_path("digits.png"))) {
+            fprintf(stderr, "Failed to load spritesheet!");
             return false;
         }
     }
 
-    // The position corresponds to the center of the texture
+    // The position corresponds to the center of the bomb
     float wr = gfx.texture.width * 0.5f;
     float hr = gfx.texture.height * 0.5f;
 
@@ -27,9 +29,9 @@ bool background::initGraphics() {
     vertices[0].position = {-wr, +hr, -0.01f};
     vertices[0].texcoord = {0.f, 1.f};
     vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {1.f, 1.f,};
+    vertices[1].texcoord = {1.f/10, 1.f};
     vertices[2].position = {+wr, -hr, -0.01f};
-    vertices[2].texcoord = {1.f, 0.f};
+    vertices[2].texcoord = {1.f/10, 0.f};
     vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
@@ -53,28 +55,29 @@ bool background::initGraphics() {
         return false;
 
     // Loading shaders
-    return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    return gfx.effect.load_from_file(shader_path("spritesheet.vs.glsl"), shader_path("spritesheet.fs.glsl"));
 }
 
-bool background::init() {
-    m_scale.x = 1.0f;
-    m_scale.y = 1.0f;
-    m_position.x = 2100; // visually looks better but ideally should be worldWidth/2
-    m_position.y = 1259;
-    m_health = 1000;
+bool Digit::init() {
+    frameWidth = 1.f/10;
+    frameCount = 0;
+    frameNumber = 10;
+    m_scale.x = 0.05f;
+    m_scale.y = 0.5f;
 
     return true;
-}
-
-void background::update(float ms) {
 
 }
 
-void background::destroy() {
+void Digit::destroy() {
+    glDeleteBuffers(1, &gfx.mesh.vbo);
+    glDeleteBuffers(1, &gfx.mesh.ibo);
+    glDeleteVertexArrays(1, &gfx.mesh.vao);
 
+    gfx.effect.release();
 }
 
-void background::draw(const mat3 &projection) {
+void Digit::draw(const mat3 &projection) {
     // Transformation code, see Rendering and Transformation in the template specification for more info
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
@@ -93,6 +96,9 @@ void background::draw(const mat3 &projection) {
     GLint transform_uloc = glGetUniformLocation(gfx.effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
+    GLint frameCount_uloc = glGetUniformLocation(gfx.effect.program, "frameCount");
+    GLint frameNumber_uloc = glGetUniformLocation(gfx.effect.program, "frameNumber");
+    GLint frameWidth_uloc = glGetUniformLocation(gfx.effect.program, "frameWidth");
 
     // Setting vertices and indices
     glBindVertexArray(gfx.mesh.vao);
@@ -116,46 +122,18 @@ void background::draw(const mat3 &projection) {
     float color[] = {1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
+    glUniform1iv(frameCount_uloc, 1, &frameCount);
+    glUniform1iv(frameNumber_uloc, 1, &frameNumber);
+    glUniform1fv(frameWidth_uloc, 1, &frameWidth);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-int background::getHealth() {
-    return m_health;
+void Digit::update(float ms) {
+
 }
 
-void background::addHealth() {
-    m_health = m_health + 5;
-}
-
-void background::decreaseHealth() {
-    m_health--;
-}
-
-Region background::getBoundingBox() const {
-    vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width, std::fabs(m_scale.y) * gfx.texture.height};
-    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
-
-    return {boxOrigin, boxSize};
-}
-
-std::string background::getName() const {
-    return "background";
-}
-
-void background::onCollision(Entity &other) {
-    // do nothing
-}
-
-void background::takeDamage() {
-    decreaseHealth();
-}
-
-bool background::isDamageable() const {
-    return true;
-}
-
-background::FACTION background::getFaction() const {
-    return FACTION::HUMAN;
+void Digit::setDigit(int digit) {
+    frameCount = digit;
 }

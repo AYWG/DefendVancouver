@@ -9,6 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
+#include <GL/gl3w.h>
 
 typedef pair<int, int> Pair;
 
@@ -47,9 +48,11 @@ World::World() :
         m_next_nbomb_spawn(0.f),
         m_next_bbomb_spawn(0.f),
         m_next_oneup_spawn(0.f),
+        m_next_cityup_spawn(0.f),
         m_next_shield_spawn(0.f),
         m_camera({}, {}),
-        m_quad(0, {}) {
+        m_ui({}, *this),
+        m_quad(0, {}){
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
 }
@@ -106,18 +109,21 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
     int width, height;
-    stbi_uc* data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
+    stbi_uc *data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
     GLFWimage image;
     image.width = width;
     image.height = height;
     image.pixels = data;
 
-    GLFWcursor* cursor = glfwCreateCursor(&image, 0, 0);
+    GLFWcursor *cursor = glfwCreateCursor(&image, 0, 0);
     glfwSetCursor(m_window, cursor);
 
+    m_invincibility = false;
     waveNo = 1;
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
+    m_ui = UI(screenSize, *this);
+    m_ui.init();
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initGraphics();
     totalEnemies = shooters + chasers;
@@ -189,6 +195,7 @@ void World::update(float elapsed_ms) {
     }
 
     m_camera.update(elapsed_ms, getPlayerPosition());
+    m_ui.update(elapsed_ms);
 
     // once everything is inserted, go through each entity and get vector of nearby entities
     // that could possibly collide with that entity
@@ -236,8 +243,7 @@ void World::update(float elapsed_ms) {
             if (player->isShooting()) {
                 player->shoot();
             }
-        }
-        else if (typeid(*entity) == typeid(Shooter)) {
+        } else if (typeid(*entity) == typeid(Shooter)) {
             std::dynamic_pointer_cast<Shooter>(entity)->shoot();
         }
     }
@@ -294,12 +300,29 @@ void World::update(float elapsed_ms) {
         m_next_oneup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
     }
 
+    // spawn cityups
+    m_next_cityup_spawn -= elapsed_ms;
+    if (MAX_POWERUP != 0 && m_next_cityup_spawn < 0.f) {
+        auto newCityUp = CityUp::spawn(*this);
+        newCityUp->setPosition({m_dist(m_rng) * m_size.x, -200.f});
+        m_next_cityup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+    }
+
     // spawn shield
     m_next_shield_spawn -= elapsed_ms;
     if (MAX_POWERUP != 0 && m_next_shield_spawn < 0.f) {
         auto newShield = Shield::spawn(*this);
         newShield->setPosition({m_dist(m_rng) * m_size.x, -200.f});
         m_next_shield_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+    }
+
+    // Invincibility
+    if(m_invincibility){
+        m_invincibility_countdown =- elapsed_ms;
+    }
+
+    if(m_invincibility_countdown <= 0.f){
+        m_invincibility = false;
     }
 }
 
@@ -315,7 +338,8 @@ void World::draw() {
 
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << m_points << " Lives: " << getPlayer()->getLives() << " City: " << getBackground()->getHealth()
+    title_ss << "Points: " << m_points << " Lives: " << getPlayer()->getLives() << " City: "
+             << getBackground()->getHealth()
              << " s: " << shooters << " c: " << chasers
              << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
@@ -328,7 +352,7 @@ void World::draw() {
     glClearDepth(1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Fake projection matrix, scales with respect to window coordinates
+    // Fake projection matrix
     // PS: 1.f / w in [1][1] is correct.. do you know why ? (:
     float left = m_camera.getLeftBoundary();
     float top = m_camera.getTopBoundary();
@@ -345,6 +369,18 @@ void World::draw() {
 
     for (auto &entity: m_entities) entity->draw(projection_2D);
 
+    // Fake projection matrix for UI with respect to window coordinates
+    float lUI = 0.f;// *-0.5;
+    float tUI = 0.f;// (float)h * -0.5;
+    float rUI = (float)w;// *0.5;
+    float bUI = (float)h;// *0.5;
+    float sX = 2.f / (rUI - lUI);
+    float sY = 2.f / (tUI - bUI);
+    float tX = -(rUI + lUI) / (rUI - lUI);
+    float tY = -(tUI + bUI) / (tUI - bUI);
+    mat3 projection_UI{ { sX, 0.f, 0.f },{ 0.f, sY, 0.f },{ tX, tY, 1.f } };
+    m_ui.draw(projection_UI);
+
     // Presenting
     glfwSwapBuffers(m_window);
 }
@@ -356,6 +392,13 @@ bool World::is_over() const {
 
 vec2 World::getPlayerPosition() const {
     return (*m_entities.at(1)).getPosition();
+}
+
+vec2 World::getPlayerScreenPosition() const {
+    return {
+            getPlayerPosition().x - m_camera.getLeftBoundary(),
+            getPlayerPosition().y - m_camera.getTopBoundary()
+    };
 }
 
 std::vector<vec2> World::getBombPositions() const {
@@ -400,12 +443,78 @@ void World::decrementTotalEnemies() {
     totalEnemies--;
 }
 
+vec2 World::getNearestEnemyPosToPlayer() const {
+    // Default position to return if there are currently no enemies in the world
+    vec2 nearestPos = {-1.f, -1.f};
+    float closestDistSq = dot(m_size, m_size);
+
+    for (auto &entity : m_entities) {
+        // Filter by enemies
+        if (entity->getFaction() == Entity::FACTION::ALIEN && entity->isDamageable()) {
+            float diffX = entity->getPosition().x - getPlayer()->getPosition().x;
+            float diffY = entity->getPosition().y - getPlayer()->getPosition().y;
+            vec2 diff = {diffX, diffY};
+            float distSq = dot(diff, diff);
+
+            if (distSq < closestDistSq) {
+                closestDistSq = distSq;
+                nearestPos = entity->getPosition();
+            }
+        }
+    }
+
+    return nearestPos;
+}
+
+bool World::isOffScreenEnemyPresentAndNoEnemiesVisible() const {
+    bool isAtLeastOneEnemyAlive = false;
+    bool noEnemyVisible = true;
+
+    for (auto &entity : m_entities) {
+        if (entity->getFaction() == Entity::FACTION::ALIEN && entity->isDamageable()) {
+            isAtLeastOneEnemyAlive = true;
+
+            if (m_camera.isEntityInView(*entity)) {
+                noEnemyVisible = false;
+            }
+        }
+    }
+
+    return isAtLeastOneEnemyAlive && noEnemyVisible;
+}
+
+int World::getPlayerLives() const {
+    return getPlayer()->getLives();
+}
+
+int World::getWorldHealth() const {
+    return getBackground()->getHealth();
+}
+
+int World::getWave() const {
+    return waveNo;
+}
+
+int World::getScore() const {
+    return m_points;
+}
+
+bool World::getInvincibility() {
+    return m_invincibility;
+}
+
+void World::makeInvincible() {
+    m_invincibility = true;
+    m_invincibility_countdown = 2000.f;
+}
+
 // Private
 
 bool World::initGraphics() {
     return BomberBomb::initGraphics() &&
            NormalBomb::initGraphics() &&
            OneUp::initGraphics() &&
+           CityUp::initGraphics() &&
            Shield::initGraphics() &&
            Shooter::initGraphics() &&
            Chaser::initGraphics() &&
@@ -475,15 +584,15 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
     // Resetting game
     if (getPlayer().get()->m_lives < 1) {
-            int w, h;
-            glfwGetWindowSize(m_window, &w, &h);
-            totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
-            waveNo = 1;
+        int w, h;
+        glfwGetWindowSize(m_window, &w, &h);
+        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
+        waveNo = 1;
 
-            getBackground()->init();
+        getBackground()->init();
 
-            getPlayer()->init();
-            m_points = 0;
+        getPlayer()->init();
+        m_points = 0;
 
     }
 
@@ -491,10 +600,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
 
 void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {
-    vec2 playerScreenPos = {
-            getPlayer()->getPosition().x - m_camera.getLeftBoundary(),
-            getPlayer()->getPosition().y - m_camera.getTopBoundary()
-    };
+    vec2 playerScreenPos = getPlayerScreenPosition();
     auto playerMouseXDist = float(xpos - playerScreenPos.x);
     auto playerMouseYDist = float(ypos - playerScreenPos.y);
     float newOrientation = -1.f * atan((playerMouseXDist / playerMouseYDist));

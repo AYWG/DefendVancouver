@@ -146,8 +146,7 @@ std::string Shield::getName() const {
 
 void Shield::onCollision(Entity &other) {
     if (!m_isDead && typeid(other) == typeid(Player)) {
-        //TODO: replace with actual shield behaviour
-        m_world->increaseCityHealth();
+        m_world->makeInvincible();
         die();
     }
 }

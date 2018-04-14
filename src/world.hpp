@@ -14,7 +14,9 @@
 #include "explosion.hpp"
 #include "collisions/quadTreeNode.hpp"
 #include "entities/powerups/oneUp.hpp"
+#include "entities/powerups/cityUp.hpp"
 #include "entities/powerups/shield.hpp"
+#include "ui/UI.hpp"
 
 // stlib
 #include <vector>
@@ -46,6 +48,8 @@ public:
 
     vec2 getPlayerPosition() const;
 
+    vec2 getPlayerScreenPosition() const;
+
     std::vector<vec2> getBombPositions() const;
 
     vec2 getCityPosition() const;
@@ -63,6 +67,23 @@ public:
     void increaseCityHealth();
 
     void decrementTotalEnemies();
+    
+    vec2 getNearestEnemyPosToPlayer() const;
+
+    bool isOffScreenEnemyPresentAndNoEnemiesVisible() const;
+
+    int getPlayerLives() const;
+
+    int getWorldHealth() const;
+
+    int getWave() const;
+
+    int getScore() const;
+
+    bool getInvincibility();
+
+    void makeInvincible();
+
 
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
@@ -108,6 +129,7 @@ private:
     float m_next_nbomb_spawn;
     float m_next_bbomb_spawn;
     float m_next_oneup_spawn;
+    float m_next_cityup_spawn;
     float m_next_shield_spawn;
 
     // C++ rng
@@ -118,10 +140,14 @@ private:
     // World size
     vec2 m_size;
     Camera m_camera;
+    UI m_ui;
 
     QuadTreeNode m_quad;
     
     int totalEnemies;
     int waveNo;
+
+    bool m_invincibility;
+    float m_invincibility_countdown;
     
 };
