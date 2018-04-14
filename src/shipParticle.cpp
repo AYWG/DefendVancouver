@@ -18,11 +18,11 @@ shipParticle::shipParticle(World &world) : Entity(world) {};
 struct Particle{
     vec2 pos;
     vec2 speed ;
-    float life = 1000;
+    float life;
     float angle;
 
 };
-const int MaxParticles = 10000;
+const int MaxParticles = 200;
 Particle ParticlesContainer[MaxParticles];;
 int ParticlesCount = 0;
 
@@ -41,26 +41,26 @@ bool shipParticle::initGraphics() {
             return false;
         }
     }
-
+    if (gfx.effect.load_from_file(shader_path("particleTexture.vs.glsl"), shader_path("textured.fs.glsl"))) {
     // The position corresponds to the center of the texture
     float wr = gfx.texture.width * 0.5f;
     float hr = gfx.texture.height * 0.5f;
 
     TexturedVertex vertices[4];
-    vertices[0].position = {-wr, +hr, -0.01f};
+    vertices[0].position = {-wr, -hr, -0.01f};
     vertices[0].texcoord = {0.f, 1.f};
-    vertices[1].position = {+wr, +hr, -0.01f};
+    vertices[1].position = {+wr, -hr, -0.01f};
     vertices[1].texcoord = {1.f, 1.f,};
-    vertices[2].position = {+wr, -hr, -0.01f};
+    vertices[2].position = {+wr, +hr, -0.01f};
     vertices[2].texcoord = {1.f, 0.f};
-    vertices[3].position = {-wr, -hr, -0.01f};
+    vertices[3].position = {-wr, +hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
-    uint16_t indices[] = {0, 3, 1, 1, 3, 2};
+    uint16_t indices[] = {2, 3, 1, 1, 3, 0};
     // Clearing errors
     gl_flush_errors();
 
-    if (gfx.effect.load_from_file(shader_path("particleTexture.vs.glsl"), shader_path("textured.fs.glsl"))) {
+
 
         // GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
         GLint in_wrldposition_loc = glGetAttribLocation(gfx.effect.program, "in_world_pos");
@@ -87,18 +87,15 @@ bool shipParticle::initGraphics() {
         //DYNAMIC Vertex Buffer creation
         glGenBuffers(1, &gfx.particleVBO.vbo);
         glBindBuffer(GL_ARRAY_BUFFER, gfx.particleVBO.vbo);
-        //glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 2, vertices, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(particleVertex) * 2, vertices, GL_DYNAMIC_DRAW);
 
         glEnableVertexAttribArray(in_wrldposition_loc);
-        glEnableVertexAttribArray(in_texcoord_loc);
-        glVertexAttribPointer(in_wrldposition_loc, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
+        //glEnableVertexAttribArray(in_texcoord_loc);
+        glVertexAttribPointer(in_wrldposition_loc, 4, GL_FLOAT, GL_FALSE, sizeof(particleVertex), (void *) 0);
         //glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
         gl_flush_errors();
     }
-// These functions are specific to glDrawArrays*Instanced*.
 
-
-    // Loading shaders
 
     return true;
 
@@ -107,20 +104,12 @@ bool shipParticle::initGraphics() {
 
 bool shipParticle::init() {
 
-   /* m_position.x = m_world->getPlayerPosition().x;
-    m_position.y = m_world->getPlayerPosition().y;*/
-    setPosition(m_position);
-
-   /* m_position.x = 200;
-    m_position.y = 400;*/
-
-
-
     for (auto& p : ParticlesContainer){
-        //Particle& p = ParticlesContainer[i]; // shortcut
-        p.pos = m_position;
+        p.pos.x = m_position.x;
+        p.pos.y = m_position.y;
 
-        plife = p.life;
+        p.life = 5000;
+
 
 
         float vel = (rand() % 1500 - 750) / 10000.0f;//((float)rand() / RAND_MAX);
@@ -129,11 +118,13 @@ bool shipParticle::init() {
         p.speed.x = vel ;
         p.speed.y = vel2;
 
+
         normalize(p.speed);
 
-    /*    p.speed.x = cos(vel);
-        p.speed.y = sin(vel2);*/
     }
+
+    std::cout<<ParticlesContainer[0].speed.x<<" ,"<<ParticlesContainer[0].speed.y;
+
 
 
     alphaBlend = true;
@@ -148,7 +139,7 @@ void shipParticle::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
     transform_begin();
-    //transform_translate(m_position);
+    transform_translate(m_position);
     transform_scale(m_scale);
     transform_rotate(m_rotation);
     transform_end();
@@ -189,7 +180,7 @@ void shipParticle::draw(const mat3 &projection) {
     glEnableVertexAttribArray(in_texcoord_loc);
 
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
-    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
+    glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
 
     glVertexAttribDivisor(in_position_loc, 0); // particles vertices : always reuse the same 4 vertices -> 0
     glVertexAttribDivisor(in_texcoord_loc, 0);
@@ -203,7 +194,7 @@ void shipParticle::draw(const mat3 &projection) {
     glBindTexture(GL_TEXTURE_2D, gfx.texture.id);
 
     // Setting uniform values to the currently bound program
-    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
+    //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &transform);
     float color[] = {1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
@@ -211,7 +202,7 @@ void shipParticle::draw(const mat3 &projection) {
 
 
    //DRAW PARTICLE!
-    glDrawElementsInstanced(GL_TRIANGLES,6,GL_UNSIGNED_SHORT, nullptr, pos_buf.size());
+    glDrawElementsInstanced(GL_TRIANGLES ,6,GL_UNSIGNED_SHORT, nullptr, pos_buf.size());
 
 
 
@@ -227,11 +218,6 @@ void shipParticle::draw(const mat3 &projection) {
 
 void shipParticle::update(float ms) {
 
-    setPosition(m_position);
-
-
-
-
     pos_buf.clear();
 
     int ParticlesCount = 0;
@@ -239,22 +225,23 @@ void shipParticle::update(float ms) {
 
 
     for (auto& p : ParticlesContainer) {
-        p.life = plife;
+
         if (p.life > 0.0f) {
-            p.life -= 20;
+            p.life -= 50;
             if (p.life > 0.0f) {
-                p.pos.x += p.speed.x * 30;
-                p.pos.y += p.speed.y * 30;
-                p.angle = m_rotation;
+                p.pos.x += p.speed.x * 40  ;
+                p.pos.y += p.speed.y * 40;
+                //p.angle = m_rotation;
 
                 m_position = p.pos;
 
                 pos_buf.push_back(p.pos);
-                rot_buf.push_back(p.angle);
 
+                p.life = 5000;
 
             }
             ParticlesCount++;
+
         }
     }
 

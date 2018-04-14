@@ -257,6 +257,7 @@ void World::update(float elapsed_ms) {
         while (entityIt != m_entities.end()) {
 
             if ((*entityIt)->isDead()) {
+
             if ((entityIt->get()->getName() == "Shooter")||
                 (entityIt->get()->getName() == "Chaser") ||
                 (entityIt->get()->getName() == "Bomber") ||
@@ -674,7 +675,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     }
 
     // Resetting game
-    if (getPlayer().get()->m_lives < 1) {
+    if (getPlayer()->isDead()) {
         int w, h;
         glfwGetWindowSize(m_window, &w, &h);
         totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;

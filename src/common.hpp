@@ -68,6 +68,11 @@ struct TexturedVertex {
     vec2 texcoord;
 };
 
+
+struct particleVertex {
+    vec3 position;
+};
+
 // Texture wrapper
 struct Texture {
     Texture();

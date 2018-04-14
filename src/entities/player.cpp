@@ -83,6 +83,10 @@ bool Player::init() {
     m_maxSpeed = 500.f;
     m_isShootingEnabled = false;
     m_timeSinceLastBulletShot = 1000.f;
+    m_isHit = 0;
+    transparency = 1.f;
+    countdown = 0.f;
+    m_dead = false;
     for (int i = 0; i < NUM_DIRECTIONS; i++) m_isFlying[i] = false;
     m_rng = std::default_random_engine(std::random_device()());
     return true;
@@ -131,6 +135,26 @@ void Player::update(float ms) {
 
     m_nextBulletSpawn = std::max(0.f, m_nextBulletSpawn - ms);
     m_timeSinceLastBulletShot = std::min(1000.f, m_timeSinceLastBulletShot + ms);
+
+    if (countdown > 0.f)
+    {
+        countdown -= ms;
+    } else {
+        m_isHit = 0;
+    }
+
+    if(m_isHit == 1 && m_lives > 0){
+        transparency = sin(ms*1000);
+    } else if(m_isHit == 1 && m_lives <= 0){
+        transparency = countdown/1500;
+    } else {
+        transparency = 1.f;
+    }
+
+    if(m_lives <= 0 & countdown < 0.f){
+        m_dead = true;
+    }
+
 }
 
 
@@ -155,7 +179,7 @@ void Player::draw(const mat3 &projection) {
     GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-    GLint light_up_uloc = glGetUniformLocation(effect.program, "light_up");
+    GLint transparency_uloc = glGetUniformLocation(effect.program, "transparency");
 
     // Setting vertices and indices
     glBindVertexArray(mesh.vao);
@@ -178,10 +202,8 @@ void Player::draw(const mat3 &projection) {
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *) &projection);
 
-    int light_up = 0;
 
-    light_up = 0;
-    glUniform1iv(light_up_uloc, 1, &light_up);
+    glUniform1fv(transparency_uloc, 1, &transparency);
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, (GLsizei) m_num_indices, GL_UNSIGNED_SHORT, nullptr);
@@ -255,6 +277,10 @@ void Player::addLife() {
     m_lives++;
 }
 
+bool Player::isDead() const {
+    return m_dead;
+}
+
 Region Player::getBoundingBox() const {
     Vertex min = vertices.front();
     Vertex max = vertices.front();
@@ -283,7 +309,11 @@ void Player::onCollision(Entity &entity) {
 }
 
 void Player::takeDamage() {
-    m_lives--;
+    if(m_isHit == 0){
+        m_isHit = 1;
+        countdown = 1500.f;
+        m_lives--;
+    }
 }
 
 bool Player::isDamageable() const {
