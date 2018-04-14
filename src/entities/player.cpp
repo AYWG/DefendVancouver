@@ -78,7 +78,7 @@ bool Player::init() {
     m_scale.y = 200.f;
     m_num_indices = indices.size();
     m_lives = 5;
-    m_position = {700.f, 500.f};
+    m_position = {1500.f, 1000.f};
     m_rotation = 0.f;
     m_maxSpeed = 500.f;
     m_isShootingEnabled = false;

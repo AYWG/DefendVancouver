@@ -263,8 +263,7 @@ void World::update(float elapsed_ms) {
     m_next_bomber_spawn -= elapsed_ms;
     if (m_next_bomber_spawn < 0.f && bombers != 0) {
         auto newBomber = Bomber::spawn(*this);
-        // Setting initial position on top
-        newBomber->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
+        newBomber->setPosition({ -100, m_dist(m_rng) * 1000});
         // Next spawn
         m_next_bomber_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
         bombers--;

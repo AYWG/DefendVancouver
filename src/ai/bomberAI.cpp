@@ -5,7 +5,7 @@
 #include "bomberAI.hpp"
 
 void BomberAI::doNextAction(Enemy *enemy, float ms) {
-    const float SPEED = 100.f;
+    const float SPEED = 200.f;
     float step = SPEED * (ms / 1000);
     enemy->setPosition({enemy->getPosition().x + step, enemy->getPosition().y});
 }
