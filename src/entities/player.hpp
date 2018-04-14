@@ -27,7 +27,7 @@ public:
 
     Player(World &world);
 
-    int m_lives;
+
 
     //init ship
     bool init() override;
@@ -69,7 +69,10 @@ public:
 
     FACTION getFaction() const override;
 
+    bool isDead() const;
+
 private:
+    int m_lives;
     vec2 m_velocity;
     bool m_isFlying[NUM_DIRECTIONS];
     float m_maxSpeed;
@@ -79,6 +82,11 @@ private:
     bool m_isShootingEnabled;
     float m_nextBulletSpawn;
     float m_timeSinceLastBulletShot;
+
+    int m_isHit;
+    float transparency;
+    float countdown;
+    bool m_dead;
 
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist{-1.f, 1.f};

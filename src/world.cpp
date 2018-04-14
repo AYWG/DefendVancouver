@@ -583,7 +583,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     }
 
     // Resetting game
-    if (getPlayer().get()->m_lives < 1) {
+    if (getPlayer()->isDead()) {
         int w, h;
         glfwGetWindowSize(m_window, &w, &h);
         totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
