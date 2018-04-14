@@ -64,8 +64,6 @@ bool Digit::init() {
     frameNumber = 10;
     m_scale.x = 0.075f;
     m_scale.y = 0.75f;
-    countdown = 1500.f;
-    start = false;
 
     return true;
 
@@ -133,19 +131,9 @@ void Digit::draw(const mat3 &projection) {
 }
 
 void Digit::update(float ms) {
-    if(countdown > 0.f) {
-        countdown -= ms;
-    } else{
-        start = true;
-    }
-    if(start){
-        countdown = 1500;
-        start = false;
-        frameCount++;
-    }
 
-    if(frameCount>10){
-        frameCount = 0;
-    }
+}
 
+void Digit::setDigit(int digit) {
+    frameCount = digit;
 }

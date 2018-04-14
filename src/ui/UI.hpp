@@ -13,7 +13,8 @@
 #include "waveIcon.hpp"
 #include "enemyIndicator.hpp"
 #include "worldHealth.hpp"
-#include "Digit.hpp"
+#include "playerLives.hpp"
+#include "score.hpp"
 
 class World;
 
@@ -34,6 +35,10 @@ public:
     int getPlayerLives() const;
 
     int getWorldHealth() const;
+
+    int getWave() const;
+
+    int getScore() const;
 
     bool getInvincibility();
 

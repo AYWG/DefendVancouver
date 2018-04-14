@@ -4,7 +4,9 @@
 
 #pragma once
 
+#include <vector>
 #include "UIobject.hpp"
+#include "Digit.hpp"
 
 class waveIcon : public UIobject, public Renderable{
 
@@ -26,11 +28,16 @@ public:
 
 private:
     static Graphics gfx;
+
+    std::vector<std::shared_ptr<Digit>> m_digits;
+
     int frameCount;
     int frameNumber;
     float frameWidth;
     float countdown;
     bool start;
+
+    int waveCount;
 
 
 };

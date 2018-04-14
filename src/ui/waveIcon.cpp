@@ -3,6 +3,7 @@
 //
 
 #include "waveIcon.hpp"
+#include "UI.hpp"
 
 Graphics waveIcon::gfx;
 
@@ -67,6 +68,21 @@ bool waveIcon::init() {
     countdown = 1500.f;
     start = false;
 
+    vec2 lifeScale = {0.05f, 0.5f};
+    vec2 UIsize = m_ui->getScreenSize();
+    auto firstDigit = std::make_shared<Digit>(*m_ui);
+    if (firstDigit->init()) {
+        firstDigit->setPosition({UIsize.x-90.f,70.f});
+        firstDigit->setScale(lifeScale);
+        m_digits.emplace_back(firstDigit);
+    }
+    auto secondDigit = std::make_shared<Digit>(*m_ui);
+    if (secondDigit->init()) {
+        secondDigit->setPosition({firstDigit->getPosition().x+30.f, firstDigit->getPosition().y});
+        secondDigit->setScale(lifeScale);
+        m_digits.emplace_back(secondDigit);
+    }
+
     return true;
 
 }
@@ -130,9 +146,21 @@ void waveIcon::draw(const mat3 &projection) {
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+
+    for (auto &m_digit : m_digits) {
+        m_digit->draw(projection);
+    }
 }
 
 void waveIcon::update(float ms) {
+    waveCount = m_ui->getWave();
+
+    for(int i = 1; i>=0; i--){
+        m_digits[i]->setDigit(waveCount % 10);
+        waveCount /= 10;
+    }
+
+
     if(countdown > 0.f) {
         countdown -= ms;
     } else{
@@ -143,9 +171,9 @@ void waveIcon::update(float ms) {
         start = false;
         frameCount++;
     }
-
-    if(frameCount>2){
+    if(frameCount>2) {
         frameCount = 0;
     }
+
 
 }

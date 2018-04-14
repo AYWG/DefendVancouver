@@ -27,7 +27,6 @@ bool UI::init() {
         wavePos = wIcon->getPosition();
     }
 
-
     auto enemyIndicator = std::make_shared<EnemyIndicator>(*this);
     if (enemyIndicator->init()) {
         m_objects.emplace_back(enemyIndicator);
@@ -39,6 +38,15 @@ bool UI::init() {
         m_objects.emplace_back(healthBar);
     }
 
+    auto playerLifeBar = std::make_shared<playerLives>(*this);
+    if(playerLifeBar->init()){
+        m_objects.emplace_back(playerLifeBar);
+    }
+
+    auto scoreBar = std::make_shared<Score>(*this);
+    if(scoreBar->init()){
+        m_objects.emplace_back(scoreBar);
+    }
 
     return true;
 }
@@ -85,6 +93,14 @@ int UI::getWorldHealth() const {
     return m_world->getWorldHealth();
 }
 
+int UI::getWave() const {
+    return m_world->getWave();
+}
+
+int UI::getScore() const {
+    return m_world->getScore();
+}
+
 bool UI::getInvincibility(){
     return m_world->getInvincibility();
 }
@@ -93,6 +109,8 @@ bool UI::initGraphics() {
     return playerIcon::initGraphics() &&
            EnemyIndicator::initGraphics() &&
            worldHealth::initGraphics() &&
-           waveIcon::initGraphics();
+           waveIcon::initGraphics() &&
+           playerLives::initGraphics() &&
+           Score::initGraphics();
 }
 

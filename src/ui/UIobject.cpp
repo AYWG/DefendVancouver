@@ -13,3 +13,11 @@ vec2 UIobject::getPosition() const {
 void UIobject::setPosition(vec2 position) {
     m_position = position;
 }
+
+vec2 UIobject::getScale() const {
+    return m_scale;
+}
+
+void UIobject::setScale(vec2 scale) {
+    m_scale = scale;
+}

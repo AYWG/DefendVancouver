@@ -491,6 +491,14 @@ int World::getWorldHealth() const {
     return getBackground()->getHealth();
 }
 
+int World::getWave() const {
+    return waveNo;
+}
+
+int World::getScore() const {
+    return m_points;
+}
+
 bool World::getInvincibility() {
     return m_invincibility;
 }

@@ -76,6 +76,10 @@ public:
 
     int getWorldHealth() const;
 
+    int getWave() const;
+
+    int getScore() const;
+
     bool getInvincibility();
 
     void makeInvincible();

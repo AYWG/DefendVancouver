@@ -4,16 +4,19 @@
 
 #pragma once
 
+#include <vector>
+#include <memory>
 #include "UIobject.hpp"
+#include "Digit.hpp"
 
-class Digit : public UIobject, public Renderable{
+class playerLives : public UIobject, public Renderable{
 public:
 
     static bool initGraphics();
 
-    Digit(UI &ui);
+    playerLives(UI &ui);
 
-    ~Digit() override;
+    ~playerLives() override;
 
     bool init() override;
 
@@ -23,13 +26,9 @@ public:
 
     void destroy() override;
 
-    void setDigit(int digit);
-
 private:
-    static Graphics gfx;
-    int frameCount;
-    int frameNumber;
-    float frameWidth;
 
+    std::vector<std::shared_ptr<Digit>> m_digits;
 
+    int lives;
 };

@@ -25,6 +25,10 @@ public:
 
     void setPosition(vec2 position);
 
+    vec2 getScale() const;
+
+    void setScale(vec2 scale);
+
     virtual void destroy() = 0;
 
 protected:
