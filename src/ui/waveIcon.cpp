@@ -68,17 +68,17 @@ bool waveIcon::init() {
     countdown = 1500.f;
     start = false;
 
-    vec2 lifeScale = {0.05f, 0.5f};
+    vec2 lifeScale = {0.035f, 0.35f};
     vec2 UIsize = m_ui->getScreenSize();
     auto firstDigit = std::make_shared<Digit>(*m_ui);
     if (firstDigit->init()) {
-        firstDigit->setPosition({UIsize.x-90.f,70.f});
+        firstDigit->setPosition({UIsize.x-85.f,80.f});
         firstDigit->setScale(lifeScale);
         m_digits.emplace_back(firstDigit);
     }
     auto secondDigit = std::make_shared<Digit>(*m_ui);
     if (secondDigit->init()) {
-        secondDigit->setPosition({firstDigit->getPosition().x+30.f, firstDigit->getPosition().y});
+        secondDigit->setPosition({firstDigit->getPosition().x+20.f, firstDigit->getPosition().y});
         secondDigit->setScale(lifeScale);
         m_digits.emplace_back(secondDigit);
     }

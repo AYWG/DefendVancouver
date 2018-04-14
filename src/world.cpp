@@ -318,7 +318,7 @@ void World::update(float elapsed_ms) {
 
     // Invincibility
     if(m_invincibility){
-//        m_invincibility_countdown =- elapsed_ms;
+        m_invincibility_countdown =- elapsed_ms;
     }
 
     if(m_invincibility_countdown <= 0.f){
@@ -504,8 +504,8 @@ bool World::getInvincibility() {
 }
 
 void World::makeInvincible() {
-    //m_invincibility_countdown = 2000.f;
     m_invincibility = true;
+    m_invincibility_countdown = 2000.f;
 }
 
 // Private

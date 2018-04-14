@@ -62,8 +62,8 @@ bool Digit::init() {
     frameWidth = 1.f/10;
     frameCount = 0;
     frameNumber = 10;
-    m_scale.x = 0.075f;
-    m_scale.y = 0.75f;
+    m_scale.x = 0.05f;
+    m_scale.y = 0.5f;
 
     return true;
 

@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include "UIobject.hpp"
 #include "Digit.hpp"
 

@@ -16,17 +16,14 @@ bool playerLives::initGraphics() {
 }
 
 bool playerLives::init() {
-    vec2 lifeScale = {0.05f, 0.5f};
     auto firstDigit = std::make_shared<Digit>(*m_ui);
     if (firstDigit->init()) {
         firstDigit->setPosition({135.f, 70.f});
-        firstDigit->setScale(lifeScale);
         m_digits.emplace_back(firstDigit);
     }
     auto secondDigit = std::make_shared<Digit>(*m_ui);
     if (secondDigit->init()) {
         secondDigit->setPosition({firstDigit->getPosition().x+30.f, firstDigit->getPosition().y});
-        secondDigit->setScale(lifeScale);
         m_digits.emplace_back(secondDigit);
     }
 
