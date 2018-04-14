@@ -71,6 +71,7 @@ bool NormalBomb::init() {
     frameWidth = 1.f/3;
     frameHeight = 1.f/3;
     frameNumber = 3;
+    m_invulnerabilityCountdown = 1500;
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
 
@@ -142,10 +143,13 @@ void NormalBomb::draw(const mat3 &projection) {
 }
 
 void NormalBomb::update(float ms) {
-
+    if (m_invulnerabilityCountdown > 0) {
+        m_invulnerabilityCountdown -= ms;
+    }
     if(!m_isHit){
         frameCount = 1;
     } else {
+        m_scale = {0.75, 0.75};
         frameCount++;
     }
 
@@ -161,14 +165,21 @@ Region NormalBomb::getBoundingBox() const {
     return {boxOrigin, boxSize};
 }
 
-void NormalBomb::explode() {
-    m_isHit = true;
-}
-
 std::string NormalBomb::getName() const {
     return "NormalBomb";
 }
 
 NormalBomb::FACTION NormalBomb::getFaction() const {
     return FACTION::NONE;
+}
+
+void NormalBomb::onCollision(Entity &other) {
+    if (!isInvulnerable() && other.isDamageable()) {
+        other.takeDamage();
+        explode();
+    }
+}
+
+bool NormalBomb::isDamageable() const {
+    return !isInvulnerable();
 }

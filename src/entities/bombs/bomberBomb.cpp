@@ -145,28 +145,26 @@ void BomberBomb::draw(const mat3 &projection) {
 }
 
 void BomberBomb::update(float ms) {
+    if (m_invulnerabilityCountdown > 0) {
+        m_invulnerabilityCountdown -= ms;
+    }
     if(countdown > 0.f){
         countdown -= ms;
     } else {
-        m_isHit = true;
+        explode();
     }
 
     if(!m_isHit){
         frameCount = 1;
     } else {
+        m_scale = {0.75, 0.75};
         frameCount++;
     }
 
     if (frameCount == 9) {
-        m_isDead = true;
+        die();
     }
 }
-
-// Returns the local bounding coordinates scaled by the current size of the bomb
-//vec2 BomberBomb::getBoundingBox() const {
-    // fabs is to avoid negative scale due to the facing direction
-//    return {std::fabs(m_scale.x) * (gfx.texture.width / 3), std::fabs(m_scale.y) * (gfx.texture.height / 3)};
-//}
 
 Region BomberBomb::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width, std::fabs(m_scale.y) * gfx.texture.height};
@@ -175,15 +173,17 @@ Region BomberBomb::getBoundingBox() const {
     return {boxOrigin, boxSize};
 }
 
-
-bool BomberBomb::isBlasting() {
-    return m_isHit;
-}
-
 std::string BomberBomb::getName() const {
     return "BomberBomb";
 }
 
 BomberBomb::FACTION BomberBomb::getFaction() const {
     return FACTION::ALIEN;
+}
+
+void BomberBomb::onCollision(Entity &other) {
+    if (other.isDamageable() && other.getFaction() != getFaction()) {
+        other.takeDamage();
+        explode();
+    }
 }

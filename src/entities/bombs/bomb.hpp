@@ -11,14 +11,20 @@ class Bomb : public Entity {
 public:
     Bomb(World &world);
 
-    void onCollision(Entity &other) override;
-
     void takeDamage() override;
 
     bool isDamageable() const override;
 
 protected:
+    void explode();
+
+    bool isInvulnerable() const;
+
+
+protected:
     bool m_isHit;
+    float m_invulnerabilityCountdown;
+
 
 };
 

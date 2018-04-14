@@ -16,7 +16,7 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    size_t MAX_BOMBS = 0;
+    size_t MAX_BOMBS = 10;
     size_t MAX_BOMBERBOMBS = 0;
     size_t MAX_SHOOTERS = 1;
     size_t MAX_CHASER = 0;
@@ -583,18 +583,18 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     }
 
     // Resetting game
-    if (getPlayer().get()->m_lives < 1) {
-        int w, h;
-        glfwGetWindowSize(m_window, &w, &h);
-        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
-        waveNo = 1;
-
-        getBackground()->init();
-
-        getPlayer()->init();
-        m_points = 0;
-
-    }
+//    if (getPlayer().get()->m_lives < 1) {
+//        int w, h;
+//        glfwGetWindowSize(m_window, &w, &h);
+//        totalEnemies = MAX_BOMBS + MAX_SHOOTERS + MAX_CHASER;
+//        waveNo = 1;
+//
+//        getBackground()->init();
+//
+//        getPlayer()->init();
+//        m_points = 0;
+//
+//    }
 
 }
 
