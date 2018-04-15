@@ -182,7 +182,7 @@ private:
     
     int m_remainingEnemiesInWave;
     int m_waveNo;
-    int state;
+    int m_state;
 
     bool m_invincibility;
     float m_invincibility_countdown;

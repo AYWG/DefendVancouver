@@ -132,7 +132,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     GLFWcursor *cursor = glfwCreateCursor(&image, 0, 0);
     glfwSetCursor(m_window, cursor);
 
-    state = 0;
+    m_state = 0;
 
     if (!initScore()) return false;
 
@@ -149,9 +149,6 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     auto bg = std::make_shared<background>(*this);
     bg->init();
     addEntity(bg);
-
-
-
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
@@ -219,7 +216,13 @@ void World::update(float elapsed_ms) {
 
     // Resetting game
     if (getPlayer().get()->gameOver) {
-        state = 3;
+        if (m_points > m_bestScore) {
+            m_bestScore = m_points;
+            m_scoreFile = fopen(scores_path("score.txt"), "w+");
+            fprintf(m_scoreFile, "%d", m_bestScore);
+            fclose(m_scoreFile);
+        }
+        m_state = 3;
         m_ui.destroy();
     }
     if (m_remainingEnemiesInWave <= 0) {
@@ -418,7 +421,6 @@ void World::draw() {
                        {tx,  ty,  1.f}};
 
     m_stars.draw(projection_2D);
-    for (auto &entity: m_entities) entity->draw(projection_2D);
 
     // Fake projection matrix for UI with respect to window coordinates
     float lUI = 0.f;// *-0.5;
@@ -433,20 +435,12 @@ void World::draw() {
                        {0.f, sY,  0.f},
                        {tX,  tY,  1.f}};
 
-    if (state == 1) {
-        // Updating window title with points
-        std::stringstream title_ss;
-        title_ss << "Points: " << m_points << " Lives: " << getPlayer()->getLives() << " City: "
-                 << getBackground()->getHealth()
-                 << " s: " << shooters << " c: " << chasers
-                 << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
-        glfwSetWindowTitle(m_window, title_ss.str().c_str());
-
+    if (m_state == 1) {
         for (auto &entity: m_entities) entity->draw(projection_2D);
         m_ui.draw(projection_UI);
 
     } else {
-        m_states[state]->draw(projection_2D);
+        m_states[m_state]->draw(projection_2D);
     }
 
     // Presenting
@@ -747,30 +741,30 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
     if (key == GLFW_KEY_I) {
         if (action == GLFW_PRESS) {
-            state = 2;
+            m_state = 2;
         }
     }
 
-    if (key == GLFW_KEY_B && (state == 2 || state == 4)) {
+    if (key == GLFW_KEY_B && (m_state == 2 || m_state == 4)) {
         if (action == GLFW_PRESS) {
-            state = 0;
+            m_state = 0;
         }
     }
 
-    if (key == GLFW_KEY_H && state == 0) {
+    if (key == GLFW_KEY_H && m_state == 0) {
         if (action == GLFW_PRESS) {
-            state = 4;
+            m_state = 4;
         }
     }
 
-    if (key == GLFW_KEY_P && state == 3) {
+    if (key == GLFW_KEY_P && m_state == 3) {
         if (action == GLFW_PRESS) {
-            state = 1;
+            m_state = 1;
             reset();
         }
     } else if (key == GLFW_KEY_P) {
         if (action == GLFW_PRESS) {
-            state = 1;
+            m_state = 1;
         }
     }
 
@@ -800,7 +794,7 @@ void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
 }
 
 int World::getState() {
-    return state;
+    return m_state;
 }
 
 void World::addState(std::shared_ptr<Entity> entity) {
@@ -809,20 +803,19 @@ void World::addState(std::shared_ptr<Entity> entity) {
 
 void World::reset() {
     m_entities.clear();
-    MAX_BOMBS = 0;
     MAX_BOMBERBOMBS = 0;
-    MAX_SHOOTERS = 1;
+    MAX_BOMBS = 0;
+    MAX_SHOOTERS = 20;
     MAX_CHASER = 0;
     MAX_BOMBER = 0;
-    MAX_POWERUP = 1;
-    bombs = MAX_BOMBS;
-    bBombs = MAX_BOMBERBOMBS;
-    shooters = MAX_SHOOTERS;
-    chasers = MAX_CHASER;
-    bombers = MAX_BOMBER;
+    remainingNormalBombsToSpawn = MAX_BOMBS;
+    remainingShootersToSpawn = MAX_SHOOTERS;
+    remainingChasersToSpawn = MAX_CHASER;
+    remainingBombersToSpawn = MAX_BOMBER;
     m_invincibility = false;
-    totalEnemies = shooters + chasers;
-    waveNo = 1;
+    m_remainingEnemiesInWave = remainingShootersToSpawn + remainingChasersToSpawn + remainingBombersToSpawn;
+    m_points = 0;
+    m_waveNo = 1;
     m_ui.init();
     initGraphics();
     auto bg = std::make_shared<background>(*this);
