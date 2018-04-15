@@ -26,11 +26,11 @@ bool NormalBomb::initGraphics() {
 
     TexturedVertex vertices[4];
     vertices[0].position = {-wr, +hr, -0.01f};
-    vertices[0].texcoord = {0.f, 1.f/3};
+    vertices[0].texcoord = {0.f, 1.f / 3};
     vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {1.f/3, 1.f/3};
+    vertices[1].texcoord = {1.f / 3, 1.f / 3};
     vertices[2].position = {+wr, -hr, -0.01f};
-    vertices[2].texcoord = {1.f/3, 0.f};
+    vertices[2].texcoord = {1.f / 3, 0.f};
     vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
@@ -70,8 +70,8 @@ std::shared_ptr<NormalBomb> NormalBomb::spawn(World &world) {
 bool NormalBomb::init() {
     m_isHit = false;
     frameCount = 0;
-    frameWidth = 1.f/3;
-    frameHeight = 1.f/3;
+    frameWidth = 1.f / 3;
+    frameHeight = 1.f / 3;
     frameNumber = 3;
     m_invulnerabilityCountdown = 1500;
     m_scale.x = 0.25f;
@@ -147,11 +147,11 @@ void NormalBomb::draw(const mat3 &projection) {
 }
 
 void NormalBomb::update(float ms) {
-    if(m_initCountdown > 0.f){
+    if (m_initCountdown > 0.f) {
         m_initCountdown -= ms;
     }
 
-    if(!m_isHit && m_initCountdown < 0.f){
+    if (!m_isHit && m_initCountdown < 0.f) {
         frameCount = 1;
     }
 
@@ -159,12 +159,12 @@ void NormalBomb::update(float ms) {
         m_invulnerabilityCountdown -= ms;
     }
 
-    if(m_isHit){
-//       m_scale = {0.75, 0.75};
+    if (m_isHit) {
+        m_scale = {0.75, 0.75};
         m_explosionCountdown -= ms;
     }
 
-    if(m_explosionCountdown < 0.f){
+    if (m_explosionCountdown < 0.f) {
         m_explosionCountdown = 50.f;
         frameCount++;
     }
@@ -176,7 +176,7 @@ void NormalBomb::update(float ms) {
 
 Region NormalBomb::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width, std::fabs(m_scale.y) * gfx.texture.height};
-    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
 }

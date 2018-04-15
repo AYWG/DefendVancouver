@@ -26,11 +26,11 @@ bool BomberBomb::initGraphics() {
 
     TexturedVertex vertices[4];
     vertices[0].position = {-wr, +hr, -0.01f};
-    vertices[0].texcoord = {0.f, 1.f/3};
+    vertices[0].texcoord = {0.f, 1.f / 3};
     vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {1.f/3, 1.f/3};
+    vertices[1].texcoord = {1.f / 3, 1.f / 3};
     vertices[2].position = {+wr, -hr, -0.01f};
-    vertices[2].texcoord = {1.f/3, 0.f};
+    vertices[2].texcoord = {1.f / 3, 0.f};
     vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
@@ -70,8 +70,8 @@ std::shared_ptr<BomberBomb> BomberBomb::spawn(World &world) {
 
 bool BomberBomb::init() {
     m_isHit = false;
-    frameWidth = 1.f/3;
-    frameHeight = 1.f/3;
+    frameWidth = 1.f / 3;
+    frameHeight = 1.f / 3;
     frameNumber = 3;
     frameCount = 0;
     countdown = 2000.f;
@@ -149,35 +149,30 @@ void BomberBomb::draw(const mat3 &projection) {
 }
 
 void BomberBomb::update(float ms) {
-    if(m_initCountdown > 0.f){
+    if (m_initCountdown > 0.f) {
         m_initCountdown -= ms;
     }
 
-    if(!m_isHit && m_initCountdown < 0.f){
+    if (!m_isHit && m_initCountdown < 0.f) {
         frameCount = 1;
     }
-
-    if(m_initCountdown > 0.f){
-        m_initCountdown -= ms;
-    } else {
-        frameCount = 1;
-    }
+    
     if (m_invulnerabilityCountdown > 0) {
         m_invulnerabilityCountdown -= ms;
     }
-    if(countdown > 0.f){
+    if (countdown > 0.f) {
         countdown -= ms;
     } else {
         explode();
     }
 
-    if(m_isHit){
-//       m_scale = {0.75, 0.75};
+    if (m_isHit) {
+        m_scale = {0.75, 0.75};
         m_explosionCountdown -= ms;
     }
 
-    if(m_explosionCountdown < 0.f){
-        m_explosionCountdown = 200.f;
+    if (m_explosionCountdown < 0.f) {
+        m_explosionCountdown = 50.f;
         frameCount++;
     }
 
@@ -189,7 +184,7 @@ void BomberBomb::update(float ms) {
 
 Region BomberBomb::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width, std::fabs(m_scale.y) * gfx.texture.height};
-    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
 }
