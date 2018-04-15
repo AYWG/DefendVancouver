@@ -2,9 +2,7 @@
 // Created by Tanwin Nun on 2018-04-11.
 //
 
-#ifndef DEFENDVANCOUVER_STARTSCREEN_HPP
-#define DEFENDVANCOUVER_STARTSCREEN_HPP
-
+#pragma once
 
 #include "state.hpp"
 
@@ -14,8 +12,6 @@ public:
     static bool initGraphics();
 
     StartScreen(World &world);
-
-    bool init() override;
 
     void update(float ms) override;
 
@@ -33,5 +29,3 @@ private:
 
 };
 
-
-#endif //DEFENDVANCOUVER_STARTSCREEN_HPP
