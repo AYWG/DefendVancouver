@@ -15,7 +15,6 @@ bool StartScreen::initGraphics() {
             return false;
         }
     }
-    std::cout << "loaded texture" << std::endl;
 
     // The position corresponds to the center of the texture
     float wr = gfx.texture.width * 0.5f;
@@ -54,6 +53,10 @@ bool StartScreen::initGraphics() {
     return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 }
 
+StartScreen::StartScreen(World &world) : State(world) {
+
+}
+
 void StartScreen::update(float ms) {
 
 }
@@ -66,7 +69,7 @@ void StartScreen::draw(const mat3 &projection) {
     transform_translate(m_position);
     transform_scale(m_scale);
     transform_end();
-    glUseProgram(effect.program);
+    glUseProgram(gfx.effect.program);
 
     // Enabling alpha channel for textures
     glEnable(GL_BLEND);
@@ -74,18 +77,18 @@ void StartScreen::draw(const mat3 &projection) {
     glDisable(GL_DEPTH_TEST);
 
     // Getting uniform locations for glUniform* calls
-    GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-    GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-    GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+    GLint transform_uloc = glGetUniformLocation(gfx.effect.program, "transform");
+    GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
+    GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
 
     // Setting vertices and indices
-    glBindVertexArray(mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+    glBindVertexArray(gfx.mesh.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, gfx.mesh.vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfx.mesh.ibo);
 
     // Input data location as in the vertex buffer
-    GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-    GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+    GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
+    GLint in_texcoord_loc = glGetAttribLocation(gfx.effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
     glEnableVertexAttribArray(in_texcoord_loc);
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
@@ -115,16 +118,7 @@ Region StartScreen::getBoundingBox() const {
 }
 
 std::string StartScreen::getName() const {
-    return std::__cxx11::string();
+    return "Start Screen";
 }
 
-StartScreen::StartScreen(World &world) : State(world) {
-
-}
-
-bool StartScreen::init() {
-    m_scale.x = 10.0f;
-    m_scale.y = 10.0f;
-    return true;
-}
 

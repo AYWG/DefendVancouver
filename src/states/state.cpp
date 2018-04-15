@@ -4,7 +4,7 @@
 
 #include "state.hpp"
 
-bool State::initTexture() {
+bool State::initGraphics() {
     return false;
 }
 

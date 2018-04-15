@@ -109,6 +109,23 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
+    initGraphics();
+    auto bg = std::make_shared<background>(*this);
+    bg->init();
+    addEntity(bg);
+    auto start = std::make_shared<StartScreen>(*this);
+    start->setPosition(m_camera.getFocusPoint());
+    start->init();
+    addState(start);
+    addState(bg);
+    auto info = std::make_shared<Info>(*this);
+    info->setPosition(m_camera.getFocusPoint());
+    info->init();
+    addState(info);
+    auto over = std::make_shared<GameOver>(*this);
+    over->init();
+    addState(over);
+
     int width, height;
     stbi_uc *data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
     GLFWimage image;
@@ -132,23 +149,9 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initGraphics();
     totalEnemies = shooters + chasers;
-    auto bg = std::make_shared<background>(*this);
-    bg->init();
-    addEntity(bg);
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
-    auto start = std::make_shared<StartScreen>(*this);
-    start->setPosition(m_camera.getFocusPoint());
-    start->init();
-    addState(start);
-    addState(bg);
-    auto info = std::make_shared<Info>(*this);
-    info->init();
-    addState(info);
-    auto over = std::make_shared<GameOver>(*this);
-    over->init();
-    addState(over);
 
     width = m_size.x / COL;
     height = m_size.y / ROW;
@@ -173,7 +176,6 @@ void World::destroy() {
         entity->destroy();
     }
     fclose(m_scoreFile);
-    glfwDestroyWindow(m_window);
 }
 
 // Update our game world
@@ -391,14 +393,17 @@ void World::draw() {
     mat3 projection_2D{{sx,  0.f, 0.f},
                        {0.f, sy,  0.f},
                        {tx,  ty,  1.f}};
-    for (auto &state: m_states){
-        if (state->getName() == "background") {
-            continue;
-        } else {
-            state->setPosition(m_camera.getFocusPoint());
-        }
-    }
 
+    // Fake projection matrix for UI with respect to window coordinates
+    float lUI = 0.f;// *-0.5;
+    float tUI = 0.f;// (float)h * -0.5;
+    float rUI = (float)w;// *0.5;
+    float bUI = (float)h;// *0.5;
+    float sX = 2.f / (rUI - lUI);
+    float sY = 2.f / (tUI - bUI);
+    float tX = -(rUI + lUI) / (rUI - lUI);
+    float tY = -(tUI + bUI) / (tUI - bUI);
+    mat3 projection_UI{ { sX, 0.f, 0.f },{ 0.f, sY, 0.f },{ tX, tY, 1.f } };
 
     if (state == 1) {
         // Updating window title with points
@@ -410,21 +415,10 @@ void World::draw() {
         glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
         for (auto &entity: m_entities) entity->draw(projection_2D);
-
-        // Fake projection matrix for UI with respect to window coordinates
-        float lUI = 0.f;// *-0.5;
-        float tUI = 0.f;// (float)h * -0.5;
-        float rUI = (float)w;// *0.5;
-        float bUI = (float)h;// *0.5;
-        float sX = 2.f / (rUI - lUI);
-        float sY = 2.f / (tUI - bUI);
-        float tX = -(rUI + lUI) / (rUI - lUI);
-        float tY = -(tUI + bUI) / (tUI - bUI);
-        mat3 projection_UI{ { sX, 0.f, 0.f },{ 0.f, sY, 0.f },{ tX, tY, 1.f } };
         m_ui.draw(projection_UI);
 
     } else {
-        m_states[0]->draw(projection_2D);
+        m_states[state]->draw(projection_2D);
     }
 
     // Presenting
@@ -697,6 +691,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
     if (key == GLFW_KEY_P && state == 3) {
         if (action == GLFW_PRESS) {
+            state = 1;
             MAX_BOMBS = 0;
             MAX_BOMBERBOMBS = 0;
             MAX_SHOOTERS = 1;
@@ -708,11 +703,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
             shooters = MAX_SHOOTERS;
             chasers = MAX_CHASER;
             bombers = MAX_BOMBER;
-            for(auto &entity : m_entities){
-                entity->destroy();
-            }
             m_entities.clear();
-            state = 1;
             m_invincibility = false;
             totalEnemies = shooters + chasers;
             waveNo = 1;

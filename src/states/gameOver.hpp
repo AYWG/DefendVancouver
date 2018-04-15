@@ -2,9 +2,8 @@
 // Created by Tanwin Nun on 2018-04-11.
 //
 
-#ifndef DEFENDVANCOUVER_GAMEOVER_HPP
-#define DEFENDVANCOUVER_GAMEOVER_HPP
 
+#pragma once
 
 #include "state.hpp"
 
@@ -30,5 +29,3 @@ private:
     static Graphics gfx;
 
 };
-
-#endif //DEFENDVANCOUVER_GAMEOVER_HPP

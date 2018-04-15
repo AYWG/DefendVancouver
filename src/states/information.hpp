@@ -2,9 +2,7 @@
 // Created by Tanwin Nun on 2018-04-12.
 //
 
-#ifndef DEFENDVANCOUVER_INFORMATION_HPP
-#define DEFENDVANCOUVER_INFORMATION_HPP
-
+#pragma once
 
 #include "state.hpp"
 
@@ -31,5 +29,3 @@ private:
 
 };
 
-
-#endif //DEFENDVANCOUVER_INFORMATION_HPP
