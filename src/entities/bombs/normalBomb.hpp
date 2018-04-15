@@ -26,13 +26,15 @@ public:
 
     void update(float ms) override;
 
-    void explode();
-
     Region getBoundingBox() const override;
 
     std::string getName() const override;
 
     FACTION getFaction() const override;
+
+    void onCollision(Entity &other) override;
+
+    bool isDamageable() const override;
 
 private:
     static Graphics gfx;

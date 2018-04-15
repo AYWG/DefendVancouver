@@ -26,11 +26,11 @@ bool BomberBomb::initGraphics() {
 
     TexturedVertex vertices[4];
     vertices[0].position = {-wr, +hr, -0.01f};
-    vertices[0].texcoord = {0.f, 1.f/3};
+    vertices[0].texcoord = {0.f, 1.f / 3};
     vertices[1].position = {+wr, +hr, -0.01f};
-    vertices[1].texcoord = {1.f/3, 1.f/3};
+    vertices[1].texcoord = {1.f / 3, 1.f / 3};
     vertices[2].position = {+wr, -hr, -0.01f};
-    vertices[2].texcoord = {1.f/3, 0.f};
+    vertices[2].texcoord = {1.f / 3, 0.f};
     vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
@@ -69,13 +69,17 @@ std::shared_ptr<BomberBomb> BomberBomb::spawn(World &world) {
 
 
 bool BomberBomb::init() {
-    frameWidth = 1.f/3;
-    frameHeight = 1.f/3;
+    m_isHit = false;
+    frameWidth = 1.f / 3;
+    frameHeight = 1.f / 3;
     frameNumber = 3;
     frameCount = 0;
-    countdown = 1500.f;
+    countdown = 2000.f;
     m_scale.x = 0.25f;
     m_scale.y = 0.25f;
+    m_initCountdown = 400.f;
+    m_explosionCountdown = 50.f;
+    m_invulnerabilityCountdown = 1500;
 
     return true;
 
@@ -145,39 +149,44 @@ void BomberBomb::draw(const mat3 &projection) {
 }
 
 void BomberBomb::update(float ms) {
-    if(countdown > 0.f){
-        countdown -= ms;
-    } else {
-        m_isHit = true;
+    if (m_initCountdown > 0.f) {
+        m_initCountdown -= ms;
     }
 
-    if(!m_isHit){
+    if (!m_isHit && m_initCountdown < 0.f) {
         frameCount = 1;
+    }
+    
+    if (m_invulnerabilityCountdown > 0) {
+        m_invulnerabilityCountdown -= ms;
+    }
+    if (countdown > 0.f) {
+        countdown -= ms;
     } else {
+        explode();
+    }
+
+    if (m_isHit) {
+        m_scale = {0.75, 0.75};
+        m_explosionCountdown -= ms;
+    }
+
+    if (m_explosionCountdown < 0.f) {
+        m_explosionCountdown = 50.f;
         frameCount++;
     }
 
+
     if (frameCount == 9) {
-        m_isDead = true;
+        die();
     }
 }
 
-// Returns the local bounding coordinates scaled by the current size of the bomb
-//vec2 BomberBomb::getBoundingBox() const {
-    // fabs is to avoid negative scale due to the facing direction
-//    return {std::fabs(m_scale.x) * (gfx.texture.width / 3), std::fabs(m_scale.y) * (gfx.texture.height / 3)};
-//}
-
 Region BomberBomb::getBoundingBox() const {
     vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width, std::fabs(m_scale.y) * gfx.texture.height};
-    vec2 boxOrigin = { m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
+    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
 
     return {boxOrigin, boxSize};
-}
-
-
-bool BomberBomb::isBlasting() {
-    return m_isHit;
 }
 
 std::string BomberBomb::getName() const {
@@ -186,4 +195,11 @@ std::string BomberBomb::getName() const {
 
 BomberBomb::FACTION BomberBomb::getFaction() const {
     return FACTION::ALIEN;
+}
+
+void BomberBomb::onCollision(Entity &other) {
+    if (other.isDamageable() && other.getFaction() != getFaction() && !isInvulnerable()) {
+        other.takeDamage();
+        explode();
+    }
 }

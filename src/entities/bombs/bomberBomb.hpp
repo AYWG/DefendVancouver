@@ -26,14 +26,13 @@ public:
 
     void update(float ms) override;
 
-    bool isBlasting();
-
     Region getBoundingBox() const override;
 
     std::string getName() const override;
 
     FACTION getFaction() const override;
 
+    void onCollision(Entity &other) override;
 
 private:
     static Graphics gfx;

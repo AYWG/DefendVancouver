@@ -6,14 +6,18 @@
 
 Bomb::Bomb(World &world) : Entity(world), m_isHit(false) {}
 
-void Bomb::onCollision(Entity &other) {
-
-}
-
 void Bomb::takeDamage() {
-    m_isHit = true;
+    explode();
 }
 
 bool Bomb::isDamageable() const {
     return true;
+}
+
+void Bomb::explode() {
+    m_isHit = true;
+}
+
+bool Bomb::isInvulnerable() const {
+    return m_invulnerabilityCountdown >= 0;
 }
