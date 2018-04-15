@@ -16,7 +16,7 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    size_t MAX_BOMBS = 0;
+    size_t MAX_BOMBS = 10;
     size_t MAX_BOMBERBOMBS = 0;
     size_t MAX_SHOOTERS = 1;
     size_t MAX_CHASER = 0;
