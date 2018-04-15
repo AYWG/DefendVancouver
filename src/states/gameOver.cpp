@@ -9,7 +9,7 @@ Graphics GameOver::gfx;
 bool GameOver::initGraphics() {
     //load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("OverScreen.png"))) {
+        if (!gfx.texture.load_from_file(textures_path("GameOverScreen.png"))) {
             fprintf(stderr, "Failed to load background texture!");
             return false;
         }

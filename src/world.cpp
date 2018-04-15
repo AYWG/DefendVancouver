@@ -206,6 +206,15 @@ void World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
 
+    if (m_state == 3){
+        gameOver = true;
+    } else
+        gameOver = false;
+
+    if (gameOver){
+        m_ui.init();
+        gameOver == false;
+    }
     // Resetting game
     if (getPlayer().get()->gameOver) {
         if (m_points > m_bestScore) {
@@ -216,6 +225,7 @@ void World::update(float elapsed_ms) {
         }
         m_state = 3;
         m_ui.destroy();
+
     }
     if (m_remainingEnemiesInWave <= 0) {
         advanceWave();

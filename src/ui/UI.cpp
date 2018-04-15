@@ -55,10 +55,10 @@ bool UI::init() {
             m_objects.emplace_back(scoreBar);
         }
     } else if(getWorldState() == 3){
-        auto scoreBar = std::make_shared<GameOverUI>(*this);
-        if(scoreBar->init()){
-            m_objects.emplace_back(scoreBar);
-        }
+//        auto scoreBar = std::make_shared<GameOverUI>(*this);
+//        if(scoreBar->init()){
+//            m_objects.emplace_back(scoreBar);
+//        }
     }
 
 
