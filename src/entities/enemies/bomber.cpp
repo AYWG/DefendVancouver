@@ -9,7 +9,7 @@ Graphics Bomber::gfx;
 
 int Bomber::bombDelayMS = 3000;
 
-Bomber::Bomber(World &world, BomberAI &ai) : Enemy(world, ai) {}
+Bomber::Bomber(World &world, BomberAI &ai) : Enemy(world, ai), m_nextBombSpawn(0.f) {}
 
 bool Bomber::initGraphics() {
     if (!gfx.texture.is_valid()) {
