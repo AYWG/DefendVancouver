@@ -27,8 +27,6 @@ class Chaser : public Enemy, public Renderable {
 public:
     static bool initGraphics();
 
-
-
     static std::shared_ptr<Chaser> spawn(World &world);
 
     Chaser(World &world, ChaserAI &ai);
@@ -40,6 +38,8 @@ public:
         //f = g+h
         double f, g, h;
     };
+
+
 
     bool init() override;
 
@@ -78,4 +78,6 @@ public:
 
 private:
     static Graphics gfx;
+    float countdown;
+    float afterCd;
 };

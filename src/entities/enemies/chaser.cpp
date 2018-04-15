@@ -7,6 +7,7 @@
 #include <stack>
 #include <cfloat>
 #include <set>
+#include <iostream>
 
 using std::stack;
 using std::make_pair;
@@ -76,6 +77,8 @@ std::shared_ptr<Chaser> Chaser::spawn(World &world) {
 bool Chaser::init() {
     m_scale.x = 0.4f;
     m_scale.y = 0.4f;
+    countdown = 100.f;
+    afterCd = 100.f;
 
     return true;
 }
@@ -90,13 +93,28 @@ void Chaser::destroy() {
 
 
 void Chaser::update(float ms){
-    float velcity = 30;
-    float x_step = velcity * (ms/1000);
-    float  y_step = velcity * (ms/1000);
 
-    move({x_step, y_step});
+    if (countdown > 0.f) {
+        countdown -= ms;
+        afterCd = 20000.f;
 
-    aStarGridPlacement();
+    } else{
+        afterCd -= ms;
+        if (afterCd > 0.f) {
+            float velcity = 20;
+            float x_step = velcity * (ms / 1000);
+            float y_step = velcity * (ms / 1000);
+
+            move({x_step, y_step});
+
+            aStarGridPlacement();
+
+        } else {
+            countdown = 100.f;
+        }
+    }
+
+
 }
 
 void Chaser::draw(const mat3 &projection) {
@@ -277,7 +295,7 @@ void Chaser::aStarSearch(int grid[][COL], Pair src, Pair dest) {
 
     if (isValid(src.first, src.second) == false){
         printf("source is invalid");
-        move({0, 10});
+        afterCd = 0.f;
 
         return;
     }
@@ -831,43 +849,44 @@ void Chaser::aStarGridPlacement(){
     //ASTAR
 
 
-/*    for (auto &m_bomb : m_bomberBombs){
+    for (auto &m_bomb : m_world->getBombPositions()){
         int j = 0;
         int l = 0;
-        for (float k = 50.f*//*0.f*//*; k <= 5000.f *//*1200.f*//*; k += width) {
-            for (float i = *//*0*//*50.f; i <= 1000.f; i += height) {
-                if (m_bomb.getPosition().y >= 50.f && m_bomb.getPosition().y < height
-                    && m_bomb.getPosition().x >= 50.f && m_bomb.getPosition().x < width) {
+
+        for (float k = 50.f ; k <= 3000.f ; k += width) {
+            for (float i = 50.f; i <= 1500.f; i += height) {
+                if (m_bomb.y >= 50.f && m_bomb.y < height
+                    && m_bomb.x >= 50.f && m_bomb.x < width) {
                     //  Pair src = make_pair(0, 0);
                     j = 0;
                     l = 0;
-                    grid[j][l] = 0;
-                    grid[j+2][l] = 0;
-                    grid[j-2][l] = 0;
-                    grid[j][l+2] = 0;
-                    grid[j][l+2] = 0;
-                    grid[j+2][l+2] = 0;
-                    grid[j-2][l+2] = 0;
-                    grid[j+2][l-2] = 0;
-                    grid[j+2][l-2] = 0;
+                    m_world->grid[j][l] = 0;
+                    m_world->grid[j+2][l] = 0;
+                    m_world->grid[j-2][l] = 0;
+                    m_world->grid[j][l+2] = 0;
+                    m_world->grid[j][l+2] = 0;
+                    m_world->grid[j+2][l+2] = 0;
+                    m_world->grid[j-2][l+2] = 0;
+                    m_world->grid[j+2][l-2] = 0;
+                    m_world->grid[j+2][l-2] = 0;
 
-                   // printf("FOUND!");
+                    // printf("FOUND!");
 
 
-                } else if ((m_bomb->getPosition().y >= (i) && m_bomb->getPosition().y < (i + height))
-                           && (m_bomb->getPosition().x >= (k) && m_bomb->getPosition().x < (k + width))) {
+                } else if ((m_bomb.y >= (i) && m_bomb.y < (i + height))
+                           && (m_bomb.x >= (k) && m_bomb.x < (k + width))) {
                     // Pair src = make_pair(j,l);
-                    grid[j][l] = 0;
-                    grid[j+2][l] = 0;
-                    grid[j-2][l] = 0;
-                    grid[j][l+2] = 0;
-                    grid[j][l+2] = 0;
-                    grid[j+2][l+2] = 0;
-                    grid[j-2][l+2] = 0;
-                    grid[j+2][l-2] = 0;
-                    grid[j+2][l-2] = 0;
+                    m_world->grid[j][l] = 0;
+                    m_world->grid[j+2][l] = 0;
+                    m_world->grid[j-2][l] = 0;
+                    m_world->grid[j][l+2] = 0;
+                    m_world->grid[j][l+2] = 0;
+                    m_world->grid[j+2][l+2] = 0;
+                    m_world->grid[j-2][l+2] = 0;
+                    m_world->grid[j+2][l-2] = 0;
+                    m_world->grid[j+2][l-2] = 0;
 
-                   // printf("FOUND!");
+                    // printf("FOUND!");
                 }
                 j++;
             }
@@ -875,7 +894,7 @@ void Chaser::aStarGridPlacement(){
             l++;
             j = 0;
         }
-    } */
+    }
 
 
 
@@ -884,6 +903,4 @@ void Chaser::aStarGridPlacement(){
         Pair dest = std::make_pair(a, b);
         aStarSearch(m_world->grid, src, dest);
     }
-
-
 }
