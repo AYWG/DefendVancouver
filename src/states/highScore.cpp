@@ -9,7 +9,7 @@ Graphics HighScore::gfx;
 bool HighScore::initGraphics() {
     //load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("InfoScreen.png"))) {
+        if (!gfx.texture.load_from_file(textures_path("ScoreScreen.png"))) {
             fprintf(stderr, "Failed to load background texture!");
             return false;
         }
