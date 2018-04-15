@@ -109,26 +109,6 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
-    initGraphics();
-    auto bg = std::make_shared<background>(*this);
-    bg->init();
-    addEntity(bg);
-    auto start = std::make_shared<StartScreen>(*this);
-    start->setPosition(m_camera.getFocusPoint());
-    start->init();
-    addState(start);
-    addState(bg);
-    auto info = std::make_shared<Info>(*this);
-    info->setPosition(m_camera.getFocusPoint());
-    info->init();
-    addState(info);
-    auto over = std::make_shared<GameOver>(*this);
-    over->init();
-    addState(over);
-    auto high = std::make_shared<HighScore>(*this);
-    high->init();
-    addState(high);
-
     int width, height;
     stbi_uc *data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
     GLFWimage image;
@@ -152,10 +132,29 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initGraphics();
     totalEnemies = shooters + chasers;
+    m_stars = stars();
     m_stars.init();
+    auto bg = std::make_shared<background>(*this);
+    bg->init();
+    addEntity(bg);
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
+    auto start = std::make_shared<StartScreen>(*this);
+    start->setPosition(m_camera.getFocusPoint());
+    start->init();
+    auto info = std::make_shared<Info>(*this);
+    info->setPosition(m_camera.getFocusPoint());
+    info->init();
+    auto over = std::make_shared<GameOver>(*this);
+    over->init();
+    auto high = std::make_shared<HighScore>(*this);
+    high->init();
+    addState(start);
+    addState(bg);
+    addState(info);
+    addState(over);
+    addState(high);
 
     width = m_size.x / COL;
     height = m_size.y / ROW;
@@ -584,7 +583,7 @@ bool World::initGraphics() {
            StartScreen::initGraphics() &&
            Info::initGraphics() &&
            GameOver::initGraphics() &&
-           HighScore::initGraphics();
+           HighScore::initGraphics() &&
            stars::initGraphics();
 }
 
