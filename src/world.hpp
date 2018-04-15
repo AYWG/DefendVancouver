@@ -18,6 +18,7 @@
 #include "entities/powerups/cityUp.hpp"
 #include "entities/powerups/shield.hpp"
 #include "ui/UI.hpp"
+#include "stars.hpp"
 
 
 // stlib
@@ -168,6 +169,7 @@ private:
     Camera m_camera;
 
     UI m_ui;
+    stars m_stars;
 
 
     QuadTreeNode m_quad;

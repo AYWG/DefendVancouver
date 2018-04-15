@@ -146,6 +146,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initGraphics();
     totalEnemies = shooters + chasers;
+    m_stars.init();
     auto bg = std::make_shared<background>(*this);
     bg->init();
     addEntity(bg);
@@ -436,6 +437,7 @@ void World::draw() {
                        {0.f, sy,  0.f},
                        {tx,  ty,  1.f}};
 
+    m_stars.draw(projection_2D);
     for (auto &entity: m_entities) entity->draw(projection_2D);
 
     // Fake projection matrix for UI with respect to window coordinates
@@ -613,7 +615,9 @@ bool World::initGraphics() {
            PlayerBullet::initGraphics() &&
            ShooterBullet::initGraphics() &&
            background::initGraphics() &&
-           shipParticle::initGraphics();
+           shipParticle::initGraphics() &&
+           stars::initGraphics();
+
 }
 
 std::shared_ptr<Player> World::getPlayer() const {

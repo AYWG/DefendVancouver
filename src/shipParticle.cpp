@@ -64,7 +64,7 @@ bool shipParticle::initGraphics() {
 
         // GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
         GLint in_wrldposition_loc = glGetAttribLocation(gfx.effect.program, "in_world_pos");
-        GLint in_texcoord_loc = glGetAttribLocation(gfx.effect.program, "in_texcoord");
+
 
 
 
@@ -111,7 +111,6 @@ bool shipParticle::init() {
         p.life = 5000;
 
 
-
         float vel = (rand() % 1500 - 750) / 10000.0f;//((float)rand() / RAND_MAX);
         float vel2 = (rand() % 1500 - 750) / 10000.0f;//((float)rand() / RAND_MAX);
 
@@ -138,7 +137,7 @@ void shipParticle::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // Setting shaders
     transform_begin();
-    transform_translate(m_position);
+    //transform_translate(m_position);
     transform_scale(m_scale);
     transform_rotate(m_rotation);
     transform_end();
@@ -174,6 +173,7 @@ void shipParticle::draw(const mat3 &projection) {
     GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
     GLint in_wrldposition_loc = glGetAttribLocation(gfx.effect.program, "in_world_pos");
     GLint in_texcoord_loc = glGetAttribLocation(gfx.effect.program, "in_texcoord");
+
     glEnableVertexAttribArray(in_position_loc);
     glEnableVertexAttribArray(in_wrldposition_loc);
     glEnableVertexAttribArray(in_texcoord_loc);
@@ -181,11 +181,11 @@ void shipParticle::draw(const mat3 &projection) {
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
     glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
 
-    glVertexAttribDivisor(in_position_loc, 0); // particles vertices : always reuse the same 4 vertices -> 0
+  //  glVertexAttribDivisor(in_position_loc, 0); // particles vertices : always reuse the same 4 vertices -> 0
     glVertexAttribDivisor(in_texcoord_loc, 0);
 
     glVertexAttribDivisor(in_wrldposition_loc, 1); // particles vertices : always reuse the same 4 vertices -> 0
-   // glVertexAttribDivisor(in_texcoord_loc, 1); // positions : one per quad (its center) -> 1
+    //glVertexAttribDivisor(in_texcoord_loc, 1); // positions : one per quad (its center) -> 1
     glBindBuffer(GL_ARRAY_BUFFER, gfx.particleVBO.vbo);
 
     // Enabling and binding texture to slot 0
