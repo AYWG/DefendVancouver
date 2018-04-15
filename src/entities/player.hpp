@@ -16,10 +16,6 @@
 
 class Player : public Entity, public Movable, public Renderable {
 
-    static int bulletDelayMS;
-
-    FILE *mesh_file;
-
 public:
     typedef enum {
         LEFT, FORWARD, RIGHT, BACKWARD
@@ -69,9 +65,20 @@ public:
 
     FACTION getFaction() const override;
 
-    bool isDead() const;
+    void setInvincibility(bool isInvincible);
+
+    bool isCritical() const;
 
 private:
+    float getMovementOrientation(DIRECTION dir);
+
+    vec2 getNewVelocity(vec2 oldVelocity, vec2 delta);
+
+private:
+    static int bulletDelayMS;
+
+    FILE *mesh_file;
+
     int m_lives;
     vec2 m_velocity;
     bool m_isFlying[NUM_DIRECTIONS];
@@ -83,15 +90,12 @@ private:
     float m_nextBulletSpawn;
     float m_timeSinceLastBulletShot;
 
-    int m_isHit;
+    bool m_isHit;
     float transparency;
     float countdown;
-    bool m_dead;
 
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist{-1.f, 1.f};
 
-    float getMovementOrientation(DIRECTION dir);
-
-    vec2 getNewVelocity(vec2 oldVelocity, vec2 delta);
+    bool m_isInvincible;
 };

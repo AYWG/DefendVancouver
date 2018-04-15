@@ -62,6 +62,7 @@ bool background::init() {
     m_position.x = 2100; // visually looks better but ideally should be worldWidth/2
     m_position.y = 1259;
     m_health = 1000;
+    m_isInvincible = false;
 
     return true;
 }
@@ -126,7 +127,7 @@ int background::getHealth() {
 }
 
 void background::addHealth() {
-    m_health = m_health + 5;
+    m_health += 5;
 }
 
 void background::decreaseHealth() {
@@ -153,9 +154,13 @@ void background::takeDamage() {
 }
 
 bool background::isDamageable() const {
-    return true;
+    return !m_isInvincible;
 }
 
 background::FACTION background::getFaction() const {
     return FACTION::HUMAN;
+}
+
+void background::setInvincibility(bool isInvincible) {
+    m_isInvincible = isInvincible;
 }

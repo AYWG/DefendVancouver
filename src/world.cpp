@@ -16,7 +16,7 @@ typedef pair<int, int> Pair;
 // Same as static in c, local to compilation unit
 namespace {
 
-    size_t MAX_BOMBS = 0;
+    size_t MAX_BOMBS = 10;
     size_t MAX_BOMBERBOMBS = 0;
     size_t MAX_SHOOTERS = 1;
     size_t MAX_CHASER = 0;
@@ -118,6 +118,8 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     GLFWcursor *cursor = glfwCreateCursor(&image, 0, 0);
     glfwSetCursor(m_window, cursor);
 
+    if (!initScore()) return false;
+
     m_invincibility = false;
     waveNo = 1;
     m_size = worldSize;
@@ -156,6 +158,7 @@ void World::destroy() {
     for (auto &entity : m_entities) {
         entity->destroy();
     }
+    fclose(m_scoreFile);
     glfwDestroyWindow(m_window);
 }
 
@@ -318,11 +321,13 @@ void World::update(float elapsed_ms) {
 
     // Invincibility
     if(m_invincibility){
-        m_invincibility_countdown =- elapsed_ms;
+        m_invincibility_countdown -= elapsed_ms;
     }
 
     if(m_invincibility_countdown <= 0.f){
         m_invincibility = false;
+        getPlayer()->setInvincibility(m_invincibility);
+        getBackground()->setInvincibility(m_invincibility);
     }
 }
 
@@ -499,13 +504,23 @@ int World::getScore() const {
     return m_points;
 }
 
+int World::getBestScore() const {
+    return m_bestScore;
+}
+
 bool World::getInvincibility() {
     return m_invincibility;
 }
 
 void World::makeInvincible() {
     m_invincibility = true;
-    m_invincibility_countdown = 2000.f;
+    getPlayer()->setInvincibility(m_invincibility);
+    getBackground()->setInvincibility(m_invincibility);
+    m_invincibility_countdown = 5000.f;
+}
+
+bool World::isPlayerCritical() const {
+    return getPlayer()->isCritical();
 }
 
 // Private
@@ -548,6 +563,19 @@ void World::playerBounce(const NormalBomb &bomb) {
     }
 }
 
+bool World::initScore() {
+    m_scoreFile = fopen(scores_path("score.txt"), "r");
+    if (m_scoreFile == nullptr) {
+        std::cout << "score file not loaded";
+        return false;
+    }
+    fscanf(m_scoreFile, "%d", &m_bestScore);
+
+    fclose(m_scoreFile);
+
+    return true;
+}
+
 // On key callback
 void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     if (key == GLFW_KEY_W) {
@@ -579,6 +607,20 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, true);
         } else if (action == GLFW_RELEASE) {
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, false);
+        }
+    }
+
+    // TODO: integrate with game over
+    if (key == GLFW_KEY_C) {
+        if (action == GLFW_RELEASE) {
+            // Update the best score if possible - run this code when
+            // we reach game over screen
+            if (m_points > m_bestScore) {
+                m_bestScore = m_points;
+                m_scoreFile = fopen(scores_path("score.txt"), "w+");
+                fprintf(m_scoreFile, "%d", m_bestScore);
+                fclose(m_scoreFile);
+            }
         }
     }
 

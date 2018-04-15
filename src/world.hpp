@@ -80,9 +80,13 @@ public:
 
     int getScore() const;
 
+    int getBestScore() const;
+
     bool getInvincibility();
 
     void makeInvincible();
+
+    bool isPlayerCritical() const;
 
 
     float bulletAngleRelativeToPlayer;
@@ -101,6 +105,8 @@ private:
 
     void playerBounce(const NormalBomb &bomb);
 
+    bool initScore();
+
     // !!! INPUT CALLBACK FUNCTIONS
     void onKey(GLFWwindow *, int key, int, int action, int mod);
 
@@ -113,6 +119,10 @@ private:
 private:
     // Window handle
     GLFWwindow *m_window;
+
+    FILE *m_scoreFile;
+
+    int m_bestScore;
 
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int m_points;
