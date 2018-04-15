@@ -10,8 +10,14 @@
 #include <algorithm>
 #include <math.h>
 #include <GL/gl3w.h>
+#include <typeinfo>
+
 
 typedef pair<int, int> Pair;
+
+
+
+
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -32,12 +38,14 @@ namespace {
     const size_t CHASER_DELAY_MS = 10000;
     const size_t POWERUP_DELAY_MS = 2000;
 
-
     namespace {
         void glfw_err_cb(int error, const char *desc) {
-            fprintf(stderr, "%d: %s", error, desc);
+//            fprintf(stderr, "%d: %s", error, desc);
         }
     }
+
+
+
 }
 
 World::World() :
@@ -61,6 +69,10 @@ World::~World() {
 
 }
 
+
+
+
+
 // World initialization
 bool World::init(vec2 screenSize, vec2 worldSize) {
     //-------------------------------------------------------------------------
@@ -69,14 +81,19 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetErrorCallback(glfw_err_cb);
 
     if (!glfwInit()) {
-        fprintf(stderr, "Failed to initialize GLFW");
+//        fprintf(stderr, "Failed to initialize GLFW");
         return false;
     }
+
+    typeEnemy = typeid(Enemy).name();
+
+
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -133,9 +150,15 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     auto bg = std::make_shared<background>(*this);
     bg->init();
     addEntity(bg);
+
+
+
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
+
+
+
 
     width = m_size.x / COL;
     height = m_size.y / ROW;
@@ -149,6 +172,17 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
         }
         isGraphCreated = true;
     }
+
+
+
+    // Enable the debug callback
+  /*  glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openglCallbackFunction, nullptr);
+    glDebugMessageControl(
+            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true
+    );*/
+
 
     return true;
 }
@@ -165,6 +199,7 @@ void World::destroy() {
 
 // Update our game world
 void World::update(float elapsed_ms) {
+
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
@@ -190,6 +225,10 @@ void World::update(float elapsed_ms) {
         totalEnemies = shooters + chasers;
     }
 
+    auto particle = std::make_shared<shipParticle>(*this);
+
+
+
     //////COLLISION DETECTION/////
     m_quad.clear();
 
@@ -207,23 +246,46 @@ void World::update(float elapsed_ms) {
         auto nearbyEntities = m_quad.getNearbyEntities(entity);
         for (auto &nearbyEntity: nearbyEntities) {
             // run collision detection between entities
+
             if (entity->isCollidingWith(*nearbyEntity)) {
                 entity->onCollision(*nearbyEntity);
                 nearbyEntity->onCollision(*entity);
+
             }
         }
     }
-
+    //is_shot = false;
     //// CLEANUP ////
 
     auto entityIt = m_entities.begin();
     while (entityIt != m_entities.end()) {
+
         if ((*entityIt)->isDead()) {
+
+            if ((entityIt->get()->getName() == "Shooter") ||
+                (entityIt->get()->getName() == "Chaser") ||
+                (entityIt->get()->getName() == "Bomber") ||
+                (entityIt->get()->getName() == "BomberBomb") ||
+                (entityIt->get()->getName() == "NormalBomb")) {
+                particle->setPosition(entityIt->get()->getPosition());
+                is_shot = true;
+            }
+
             entityIt = m_entities.erase(entityIt);
+
             continue;
         }
+
         ++entityIt;
     }
+
+    if (isShot()) {
+        particle->init();
+        addEntity(particle);
+        is_shot = false;
+
+    }
+
 
     //// SPAWNING ////
 
@@ -320,12 +382,13 @@ void World::update(float elapsed_ms) {
         m_next_shield_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
     }
 
+
     // Invincibility
-    if(m_invincibility){
+    if (m_invincibility) {
         m_invincibility_countdown -= elapsed_ms;
     }
 
-    if(m_invincibility_countdown <= 0.f){
+    if (m_invincibility_countdown <= 0.f) {
         m_invincibility = false;
         getPlayer()->setInvincibility(m_invincibility);
         getBackground()->setInvincibility(m_invincibility);
@@ -348,6 +411,7 @@ void World::draw() {
              << getBackground()->getHealth()
              << " s: " << shooters << " c: " << chasers
              << " b: " << bombers << " Wave: " << waveNo << " t: " << totalEnemies;
+    glfwSetWindowTitle(m_window, title_ss.str().c_str());
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
     // Clearing backbuffer
@@ -401,12 +465,14 @@ vec2 World::getPlayerPosition() const {
     return (*m_entities.at(1)).getPosition();
 }
 
+
 vec2 World::getPlayerScreenPosition() const {
     return {
             getPlayerPosition().x - m_camera.getLeftBoundary(),
             getPlayerPosition().y - m_camera.getTopBoundary()
     };
 }
+
 
 std::vector<vec2> World::getBombPositions() const {
     auto positions = std::vector<vec2>();
@@ -433,6 +499,15 @@ vec2 World::getSize() const {
 bool World::isEntityInView(const Entity &entity) const {
     return m_camera.isEntityInView(entity);
 }
+
+bool World::isMoving() const {
+    return  playerMoving;
+}
+
+bool World::isShot() const {
+    return  is_shot;
+}
+
 
 void World::addPoints(int points) {
     m_points += points;
@@ -525,6 +600,7 @@ bool World::isPlayerCritical() const {
     return getPlayer()->isCritical();
 }
 
+
 // Private
 
 bool World::initGraphics() {
@@ -539,7 +615,9 @@ bool World::initGraphics() {
            PlayerBullet::initGraphics() &&
            ShooterBullet::initGraphics() &&
            background::initGraphics() &&
+           shipParticle::initGraphics() &&
            stars::initGraphics();
+
 }
 
 std::shared_ptr<Player> World::getPlayer() const {
@@ -548,6 +626,10 @@ std::shared_ptr<Player> World::getPlayer() const {
 
 std::shared_ptr<background> World::getBackground() const {
     return std::dynamic_pointer_cast<background>(m_entities.front());
+}
+
+std::shared_ptr<shipParticle> World::getParticle() const {
+    return std::dynamic_pointer_cast<shipParticle>(m_entities.front());
 }
 
 void World::playerBounce(const NormalBomb &bomb) {
@@ -582,35 +664,47 @@ bool World::initScore() {
 // On key callback
 void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     if (key == GLFW_KEY_W) {
+        playerMoving = true;
         if (action == GLFW_PRESS) {
+
             getPlayer()->setFlying(Player::DIRECTION::FORWARD, true);
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::FORWARD, false);
         }
     }
 
     if (key == GLFW_KEY_S) {
         if (action == GLFW_PRESS) {
+            playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::BACKWARD, true);
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::BACKWARD, false);
         }
     }
 
     if (key == GLFW_KEY_A) {
         if (action == GLFW_PRESS) {
+            playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::LEFT, true);
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::LEFT, false);
         }
     }
 
     if (key == GLFW_KEY_D) {
         if (action == GLFW_PRESS) {
+            playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, true);
+            std::cout<<getPlayerPosition().x<<" ,"<<getPlayerPosition().y;
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, false);
         }
+
+
     }
 
     // TODO: integrate with game over
@@ -642,6 +736,8 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     }
 
 }
+
+
 
 
 void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {
