@@ -60,7 +60,7 @@ bool shipParticle::initGraphics() {
     // Clearing errors
     gl_flush_errors();
 
-        // GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
+         GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
         GLint in_wrldposition_loc = glGetAttribLocation(gfx.effect.program, "in_world_pos");
 
 
@@ -88,9 +88,8 @@ bool shipParticle::initGraphics() {
         glBufferData(GL_ARRAY_BUFFER, sizeof(particleVertex) * 2, vertices, GL_DYNAMIC_DRAW);
 
         glEnableVertexAttribArray(in_wrldposition_loc);
-        //glEnableVertexAttribArray(in_texcoord_loc);
         glVertexAttribPointer(in_wrldposition_loc, 4, GL_FLOAT, GL_FALSE, sizeof(particleVertex), (void *) 0);
-        //glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
+
         gl_flush_errors();
     }
 
@@ -142,9 +141,6 @@ void shipParticle::draw(const mat3 &projection) {
     glUseProgram(gfx.effect.program);
 
     // Enabling alpha channel for textures
-
-
-
     glEnable(GL_BLEND);
    // glBlendFunc(GL_ONE, GL_ONE);
 
@@ -153,7 +149,6 @@ void shipParticle::draw(const mat3 &projection) {
     glDisable(GL_DEPTH_TEST);
 
     // Getting uniform locations for glUniform* calls
-    GLint transform_uloc = glGetUniformLocation(gfx.effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(gfx.effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(gfx.effect.program, "projection");
 
@@ -161,9 +156,6 @@ void shipParticle::draw(const mat3 &projection) {
     glBindVertexArray(gfx.mesh.vao);
     glBindBuffer(GL_ARRAY_BUFFER, gfx.mesh.vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gfx.mesh.ibo);
-
-
-
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
@@ -177,7 +169,7 @@ void shipParticle::draw(const mat3 &projection) {
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);
     glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) sizeof(vec3));
 
-  //  glVertexAttribDivisor(in_position_loc, 0); // particles vertices : always reuse the same 4 vertices -> 0
+    glVertexAttribDivisor(in_position_loc, 0); // particles vertices : always reuse the same 4 vertices -> 0
     glVertexAttribDivisor(in_texcoord_loc, 0);
 
     glVertexAttribDivisor(in_wrldposition_loc, 1); // particles vertices : always reuse the same 4 vertices -> 0
