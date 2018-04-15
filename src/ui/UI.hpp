@@ -15,6 +15,8 @@
 #include "worldHealth.hpp"
 #include "playerLives.hpp"
 #include "score.hpp"
+#include "HighScoreUI.hpp"
+#include "GameOverUI.hpp"
 
 class World;
 
@@ -51,6 +53,10 @@ public:
     bool isOffScreenEnemyPresentAndNoEnemiesVisible() const;
 
     vec2 getScreenSize() const;
+
+    int getWorldState();
+
+    int getBestScore() const;
 
 private:
 
