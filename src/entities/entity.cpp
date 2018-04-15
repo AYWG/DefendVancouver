@@ -30,13 +30,13 @@ vec2 Entity::getPlayerPosition() const {
 
 
 bool Entity::isCollidingWith(Entity &other) const {
-    auto dx = m_position.x - other.getPosition().x;
-    auto dy = m_position.y - other.getPosition().y;
-    auto d_sq = dx * dx + dy * dy;
-    auto myDiameter = std::max(getBoundingBox().size.x, getBoundingBox().size.y);
-    auto otherDiameter = std::max(other.getBoundingBox().size.x, other.getBoundingBox().size.y);
-    auto combinedRadii = (myDiameter + otherDiameter) / 2;
-    return d_sq < combinedRadii * combinedRadii;
+    Region myBox = getBoundingBox();
+    Region otherBox = other.getBoundingBox();
+
+    return (myBox.origin.x < otherBox.origin.x + otherBox.size.x &&
+            myBox.origin.x + myBox.size.x > otherBox.origin.x &&
+            myBox.origin.y < otherBox.origin.y + otherBox.size.y &&
+            myBox.origin.y + myBox.size.y > otherBox.origin.y);
 }
 
 void Entity::die() {

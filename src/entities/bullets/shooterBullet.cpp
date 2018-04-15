@@ -133,11 +133,6 @@ void ShooterBullet::update(float ms) {
     float y_step = m_velocity.y * (ms / 1000);
 
     m_position = {m_position.x + x_step, m_position.y + y_step};
-
-    // TODO: remove
-    if (m_position.y > m_world->getSize().y) {
-        m_isDead = true;
-    }
 }
 
 Region ShooterBullet::getBoundingBox() const {
