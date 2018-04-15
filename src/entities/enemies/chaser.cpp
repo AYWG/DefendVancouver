@@ -860,15 +860,17 @@ void Chaser::aStarGridPlacement(){
                     //  Pair src = make_pair(0, 0);
                     j = 0;
                     l = 0;
-                    m_world->grid[j][l] = 0;
-                    m_world->grid[j+2][l] = 0;
-                    m_world->grid[j-2][l] = 0;
-                    m_world->grid[j][l+2] = 0;
-                    m_world->grid[j][l+2] = 0;
-                    m_world->grid[j+2][l+2] = 0;
-                    m_world->grid[j-2][l+2] = 0;
-                    m_world->grid[j+2][l-2] = 0;
-                    m_world->grid[j+2][l-2] = 0;
+                    if (j>2 && l>2) {
+                        m_world->grid[j][l] = 0;
+                        m_world->grid[j + 2][l] = 0;
+                        m_world->grid[j - 2][l] = 0;
+                        m_world->grid[j][l + 2] = 0;
+                        m_world->grid[j][l + 2] = 0;
+                        m_world->grid[j + 2][l + 2] = 0;
+                        m_world->grid[j - 2][l + 2] = 0;
+                        m_world->grid[j + 2][l - 2] = 0;
+                        m_world->grid[j + 2][l - 2] = 0;
+                    }
 
                     // printf("FOUND!");
 
@@ -876,15 +878,17 @@ void Chaser::aStarGridPlacement(){
                 } else if ((m_bomb.y >= (i) && m_bomb.y < (i + height))
                            && (m_bomb.x >= (k) && m_bomb.x < (k + width))) {
                     // Pair src = make_pair(j,l);
-                    m_world->grid[j][l] = 0;
-                    m_world->grid[j+2][l] = 0;
-                    m_world->grid[j-2][l] = 0;
-                    m_world->grid[j][l+2] = 0;
-                    m_world->grid[j][l+2] = 0;
-                    m_world->grid[j+2][l+2] = 0;
-                    m_world->grid[j-2][l+2] = 0;
-                    m_world->grid[j+2][l-2] = 0;
-                    m_world->grid[j+2][l-2] = 0;
+                    if (j>2 && l>2) {
+                        m_world->grid[j][l] = 0;
+                        m_world->grid[j + 2][l] = 0;
+                        m_world->grid[j - 2][l] = 0;
+                        m_world->grid[j][l + 2] = 0;
+                        m_world->grid[j][l + 2] = 0;
+                        m_world->grid[j + 2][l + 2] = 0;
+                        m_world->grid[j - 2][l + 2] = 0;
+                        m_world->grid[j + 2][l - 2] = 0;
+                        m_world->grid[j + 2][l - 2] = 0;
+                    }
 
                     // printf("FOUND!");
                 }
