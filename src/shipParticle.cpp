@@ -60,8 +60,6 @@ bool shipParticle::initGraphics() {
     // Clearing errors
     gl_flush_errors();
 
-
-
         // GLint in_position_loc = glGetAttribLocation(gfx.effect.program, "in_position");
         GLint in_wrldposition_loc = glGetAttribLocation(gfx.effect.program, "in_world_pos");
 
@@ -148,7 +146,7 @@ void shipParticle::draw(const mat3 &projection) {
 
 
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE);
+   // glBlendFunc(GL_ONE, GL_ONE);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -243,7 +241,8 @@ void shipParticle::update(float ms) {
     }
 
 
-
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
     glBindBuffer(GL_ARRAY_BUFFER, gfx.particleVBO.vbo);
     glBufferData(GL_ARRAY_BUFFER, MaxParticles * sizeof(GLfloat) * 2,NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 2, pos_buf.data());
