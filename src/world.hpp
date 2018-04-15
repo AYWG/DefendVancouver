@@ -20,7 +20,7 @@
 #include "states/startScreen.hpp"
 #include "states/information.hpp"
 #include "states/gameOver.hpp"
-
+#include "states/highScore.hpp"
 // stlib
 #include <vector>
 #include <random>
@@ -65,7 +65,6 @@ public:
 
     int getState();
     void addPoints(int points);
-    int getState();
 
     void addState(std::shared_ptr<Entity> entity);
 

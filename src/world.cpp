@@ -52,7 +52,7 @@ World::World() :
         m_next_shield_spawn(0.f),
         m_camera({}, {}),
         m_ui({}, *this),
-        m_quad(0, {}){
+        m_quad(0, {}) {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
 }
@@ -125,6 +125,9 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     auto over = std::make_shared<GameOver>(*this);
     over->init();
     addState(over);
+    auto high = std::make_shared<HighScore>(*this);
+    high->init();
+    addState(high);
 
     int width, height;
     stbi_uc *data = stbi_load(textures_path("crosshair.png"), &width, &height, NULL, 4);
@@ -350,11 +353,11 @@ void World::update(float elapsed_ms) {
     }
 
     // Invincibility
-    if(m_invincibility){
+    if (m_invincibility) {
         m_invincibility_countdown -= elapsed_ms;
     }
 
-    if(m_invincibility_countdown <= 0.f){
+    if (m_invincibility_countdown <= 0.f) {
         m_invincibility = false;
         getPlayer()->setInvincibility(m_invincibility);
         getBackground()->setInvincibility(m_invincibility);
@@ -397,13 +400,15 @@ void World::draw() {
     // Fake projection matrix for UI with respect to window coordinates
     float lUI = 0.f;// *-0.5;
     float tUI = 0.f;// (float)h * -0.5;
-    float rUI = (float)w;// *0.5;
-    float bUI = (float)h;// *0.5;
+    float rUI = (float) w;// *0.5;
+    float bUI = (float) h;// *0.5;
     float sX = 2.f / (rUI - lUI);
     float sY = 2.f / (tUI - bUI);
     float tX = -(rUI + lUI) / (rUI - lUI);
     float tY = -(tUI + bUI) / (tUI - bUI);
-    mat3 projection_UI{ { sX, 0.f, 0.f },{ 0.f, sY, 0.f },{ tX, tY, 1.f } };
+    mat3 projection_UI{{sX,  0.f, 0.f},
+                       {0.f, sY,  0.f},
+                       {tX,  tY,  1.f}};
 
     if (state == 1) {
         // Updating window title with points
@@ -574,7 +579,8 @@ bool World::initGraphics() {
            background::initGraphics() &&
            StartScreen::initGraphics() &&
            Info::initGraphics() &&
-           GameOver::initGraphics();
+           GameOver::initGraphics() &&
+           HighScore::initGraphics();
 }
 
 std::shared_ptr<Player> World::getPlayer() const {
@@ -662,14 +668,6 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
-    if (key == GLFW_KEY_P ) {
-        if (action == GLFW_PRESS) {
-            std::cout << "pressed P" << std::endl;
-            state = 1;
-            std::cout << state << std::endl;
-        }
-    }
-
     if (key == GLFW_KEY_ESCAPE) {
         if (action == GLFW_PRESS) {
             glfwSetWindowShouldClose(m_window, 1);
@@ -683,15 +681,22 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
-    if (key == GLFW_KEY_B && state == 2) {
+    if (key == GLFW_KEY_B && (state == 2 || state == 4)) {
         if (action == GLFW_PRESS) {
             state = 0;
+        }
+    }
+
+    if (key == GLFW_KEY_H && state == 0){
+        if (action == GLFW_PRESS){
+            state = 4;
         }
     }
 
     if (key == GLFW_KEY_P && state == 3) {
         if (action == GLFW_PRESS) {
             state = 1;
+            m_entities.clear();
             MAX_BOMBS = 0;
             MAX_BOMBERBOMBS = 0;
             MAX_SHOOTERS = 1;
@@ -703,7 +708,6 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
             shooters = MAX_SHOOTERS;
             chasers = MAX_CHASER;
             bombers = MAX_BOMBER;
-            m_entities.clear();
             m_invincibility = false;
             totalEnemies = shooters + chasers;
             waveNo = 1;
