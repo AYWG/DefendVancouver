@@ -122,8 +122,7 @@ bool shipParticle::init() {
         normalize(p.speed);
 
     }
-
-    std::cout<<ParticlesContainer[0].speed.x<<" ,"<<ParticlesContainer[0].speed.y;
+    
 
 
 
