@@ -9,31 +9,64 @@ Project for CPSC 436D
 * Shrey Nayak (v0z9a)
 * Anun Ganbat (e5e0b)
 
-## Basic Graphics milestone features:
-* Created all assets for the game
-  * Player mesh
-  * All basic enemies
-  * Background
-  * Bullet animation graphics
-  * NormalBomb animation graphics
-* Implemented basic player movement
-  * Player can move with W, A, S, D arrow keys
-  * Player faces the cursor on the screen
-* Implemented side scrolling
-  * The camera tracks the player as they move around the world
-* Implemented basic enemy movement
-  * Enemies descend from top of the screen to bottom
-  
-## Game Logic and AI milestone features:
-* Created Shooter AI
-* Used A* to create Player Chasing AI
-* Implemented player lives and health
-* Created powerups
-* Implemented bomb blasts in the game
+## FINAL MILESTONE
 
-## Physics milestone features:
-* Created collision detection for Shooter AI
-* Created collision detection for Chaser AI
-* Created collision detection for NormalBomb
-* Added recoil effect
-* Added pushback effect for bomb explosion
+Gowtham Mohan
+
+- Implemented Particle System
+	- With OpenGL Instantiation
+	- Occurs when hitting an enemy, or whe bomb explodes
+	- Used ALPHA blending as well
+- Implemented updated delay on Chaser
+	- Update happens less regurarily, to allow time for path recalculation
+	- Updated the 0s in the A Star Grid placement, whenever bomb is spawned
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+Tanwin Nun 
+
+- Implemented UI Screens (State switching)
+	- Game Over Screen
+	- Start Screen
+	- Highscore Screen 
+	- State changes are tracked by using stack manipulation
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+Shrey Nayak
+
+- In Game UI
+	- Player Icon
+	- Player Health
+	- Score sprite rendering 
+	- Wave sprite rendering 
+- Bomb sprite sheet animation fix
+- Player death affect
+- Rendering score on all UI screens (Game Over and High Score)
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+Anun Ganbat
+
+- Implemented sound affect (In local repository, due to SDL)
+	- Runs locally
+	- BG Music
+	- Explosion Music
+	- Shooting Music
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+Andy Wong
+
+- Implemented Highscore storing system
+- Fixed entity spawn rates and tuned the Wave System
+- Implement Bombs to be able to damage multiple Entities
+- Player invulnerability and shield code implementation
+- Clean Up collision logic in World
+- Implementation of indicator arrows
+- Crosshair Implementation for cursor
+- Create vbo/vao/ibo only once per Entity type
+ 
+
+
+
+
