@@ -43,6 +43,8 @@ Shrey Nayak
 - Player death affect
 - Rendering score on all UI screens (Game Over and High Score)
 
+NOTE: For the gameover screen there was a last minute bug that Shrey could not fix.
+
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 Anun Ganbat
