@@ -30,6 +30,8 @@ int main(int argc, char *argv[]) {
 
     auto t = Clock::now();
 
+    int state = world.getState();
+
     // variable timestep loop.. can be improved (:
     while (!world.is_over()) {
         // Processes system messages, if this wasn't present the window would become unresponsive
@@ -40,8 +42,15 @@ int main(int argc, char *argv[]) {
         float elapsed_sec = (float) (std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
         t = now;
 
-        world.update(elapsed_sec);
-        world.draw();
+        if (state == 1){
+            world.update(elapsed_sec);
+            world.draw();
+        } else {
+            world.draw();
+        }
+
+        state = world.getState();
+
     }
 
     world.destroy();

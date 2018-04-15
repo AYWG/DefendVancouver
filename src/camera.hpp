@@ -23,6 +23,8 @@ public:
 
     bool isEntityInView(const Entity &entity) const;
 
+    vec2 getFocusPoint();
+
 private:
     // The dimensions of the camera - should be the same as the window
     // x : width, y : height

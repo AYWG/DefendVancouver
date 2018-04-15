@@ -14,14 +14,10 @@
 
 
 typedef pair<int, int> Pair;
-
-
-
-
-
 // Same as static in c, local to compilation unit
 namespace {
 
+    size_t MAX_BOMBERBOMBS = 0;
     size_t MAX_BOMBS = 0;
     size_t MAX_SHOOTERS = 20;
     size_t MAX_CHASER = 0;
@@ -55,7 +51,7 @@ World::World() :
         m_next_powerup_spawn(0.f),
         m_camera({}, {}),
         m_ui({}, *this),
-        m_quad(0, {}){
+        m_quad(0, {}) {
     // Seeding rng with random device
     m_rng = std::default_random_engine(std::random_device()());
 }
@@ -63,10 +59,6 @@ World::World() :
 World::~World() {
 
 }
-
-
-
-
 
 // World initialization
 bool World::init(vec2 screenSize, vec2 worldSize) {
@@ -93,7 +85,8 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
     glfwWindowHint(GLFW_RESIZABLE, 0);
-    m_window = glfwCreateWindow((int) screenSize.x, (int) screenSize.y, "DefendVancouver", nullptr, nullptr);
+    m_window = glfwCreateWindow((int) screenSize.x, (int) screenSize.y, "DefendVancouver", nullptr,
+                                nullptr);
     if (m_window == nullptr)
         return false;
 
@@ -130,6 +123,9 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     GLFWcursor *cursor = glfwCreateCursor(&image, 0, 0);
     glfwSetCursor(m_window, cursor);
 
+    m_state = 0;
+    m_prevState = m_state - 1;
+
     if (!initScore()) return false;
 
     m_invincibility = false;
@@ -145,12 +141,24 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     auto bg = std::make_shared<background>(*this);
     bg->init();
     addEntity(bg);
-
-
-
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
+    auto start = std::make_shared<StartScreen>(*this);
+    start->setPosition(m_camera.getFocusPoint());
+    start->init();
+    auto info = std::make_shared<Info>(*this);
+    info->setPosition(m_camera.getFocusPoint());
+    info->init();
+    auto over = std::make_shared<GameOver>(*this);
+    over->init();
+    auto high = std::make_shared<HighScore>(*this);
+    high->init();
+    addState(start);
+    addState(bg);
+    addState(info);
+    addState(over);
+    addState(high);
 
 
 
@@ -189,7 +197,6 @@ void World::destroy() {
         entity->destroy();
     }
     fclose(m_scoreFile);
-    glfwDestroyWindow(m_window);
 }
 
 // Update our game world
@@ -199,14 +206,30 @@ void World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
 
+    // Resetting game
+    if (getPlayer().get()->gameOver) {
+        if (m_points > m_bestScore) {
+            m_bestScore = m_points;
+            m_scoreFile = fopen(scores_path("score.txt"), "w+");
+            fprintf(m_scoreFile, "%d", m_bestScore);
+            fclose(m_scoreFile);
+        }
+        m_state = 3;
+        m_ui.destroy();
+    }
     if (m_remainingEnemiesInWave <= 0) {
         advanceWave();
     }
 
+    for (auto &state: m_states) {
+        if (state->getName() == "background") {
+            continue;
+        } else {
+            state->setPosition(m_camera.getFocusPoint());
+        }
+    }
+
     auto particle = std::make_shared<shipParticle>(*this);
-
-
-
     //////COLLISION DETECTION/////
     m_quad.clear();
 
@@ -366,12 +389,6 @@ void World::draw() {
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
 
-    // Updating window title with points
-    std::stringstream title_ss;
-    title_ss << "Defend Vancouver";
-    glfwSetWindowTitle(m_window, title_ss.str().c_str());
-    glfwSetWindowTitle(m_window, title_ss.str().c_str());
-
     // Clearing backbuffer
     glViewport(0, 0, w, h);
     glDepthRange(0.00001, 10);
@@ -396,19 +413,27 @@ void World::draw() {
                        {tx,  ty,  1.f}};
 
     m_stars.draw(projection_2D);
-    for (auto &entity: m_entities) entity->draw(projection_2D);
 
     // Fake projection matrix for UI with respect to window coordinates
     float lUI = 0.f;// *-0.5;
     float tUI = 0.f;// (float)h * -0.5;
-    float rUI = (float)w;// *0.5;
-    float bUI = (float)h;// *0.5;
+    float rUI = (float) w;// *0.5;
+    float bUI = (float) h;// *0.5;
     float sX = 2.f / (rUI - lUI);
     float sY = 2.f / (tUI - bUI);
     float tX = -(rUI + lUI) / (rUI - lUI);
     float tY = -(tUI + bUI) / (tUI - bUI);
-    mat3 projection_UI{ { sX, 0.f, 0.f },{ 0.f, sY, 0.f },{ tX, tY, 1.f } };
-    m_ui.draw(projection_UI);
+    mat3 projection_UI{{sX,  0.f, 0.f},
+                       {0.f, sY,  0.f},
+                       {tX,  tY,  1.f}};
+
+    if (m_state == 1) {
+        for (auto &entity: m_entities) entity->draw(projection_2D);
+        m_ui.draw(projection_UI);
+
+    } else {
+        m_states[m_state]->draw(projection_2D);
+    }
 
     // Presenting
     glfwSwapBuffers(m_window);
@@ -573,6 +598,10 @@ bool World::initGraphics() {
            PlayerBullet::initGraphics() &&
            ShooterBullet::initGraphics() &&
            background::initGraphics() &&
+           StartScreen::initGraphics() &&
+           Info::initGraphics() &&
+           GameOver::initGraphics() &&
+           HighScore::initGraphics() &&
            shipParticle::initGraphics() &&
            stars::initGraphics();
 
@@ -672,7 +701,6 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         if (action == GLFW_PRESS) {
             playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, true);
-            std::cout<<getPlayerPosition().x<<" ,"<<getPlayerPosition().y;
         } else if (action == GLFW_RELEASE) {
             playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, false);
@@ -695,19 +723,44 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
-    // Resetting game
-    if (getPlayer()->isDead()) {
-        int w, h;
-        glfwGetWindowSize(m_window, &w, &h);
-        m_remainingEnemiesInWave = MAX_SHOOTERS + MAX_CHASER + MAX_BOMBER;
-        m_waveNo = 1;
-
-        getBackground()->init();
-
-        getPlayer()->init();
-        m_points = 0;
-
+    if (key == GLFW_KEY_ESCAPE) {
+        if (action == GLFW_PRESS) {
+            glfwSetWindowShouldClose(m_window, 1);
+            is_over();
+        }
     }
+
+    if (key == GLFW_KEY_I) {
+        if (action == GLFW_PRESS) {
+            stateStack.push(m_state);
+            m_state = 2;
+        }
+    }
+
+    if (key == GLFW_KEY_B && (m_state == 2  || m_state == 4)) {
+        if (action == GLFW_PRESS) {
+            m_state = stateStack.top();
+        }
+    }
+
+    if (key == GLFW_KEY_H && m_state == 0) {
+        if (action == GLFW_PRESS) {
+            stateStack.push(m_state);
+            m_state = 4;
+        }
+    }
+
+    if (key == GLFW_KEY_P && m_state == 3) {
+        if (action == GLFW_PRESS) {
+            m_state = 1;
+            reset();
+        }
+    } else if (key == GLFW_KEY_P) {
+        if (action == GLFW_PRESS) {
+            m_state = 1;
+        }
+    }
+
 
 }
 
@@ -732,4 +785,52 @@ void World::onMouseClick(GLFWwindow *window, int button, int action, int mod) {
         }
     }
 }
+
+int World::getState() {
+    return m_state;
+}
+
+void World::addState(std::shared_ptr<Entity> entity) {
+    m_states.emplace_back(entity);
+}
+
+void World::reset() {
+    m_entities.clear();
+    MAX_BOMBERBOMBS = 0;
+    MAX_BOMBS = 0;
+    MAX_SHOOTERS = 20;
+    MAX_CHASER = 0;
+    MAX_BOMBER = 0;
+    remainingNormalBombsToSpawn = MAX_BOMBS;
+    remainingShootersToSpawn = MAX_SHOOTERS;
+    remainingChasersToSpawn = MAX_CHASER;
+    remainingBombersToSpawn = MAX_BOMBER;
+    m_invincibility = false;
+    m_remainingEnemiesInWave = remainingShootersToSpawn + remainingChasersToSpawn + remainingBombersToSpawn;
+    m_points = 0;
+    m_waveNo = 1;
+    m_ui.init();
+    initGraphics();
+    auto bg = std::make_shared<background>(*this);
+    bg->init();
+    addEntity(bg);
+    auto player = std::make_shared<Player>(*this);
+    player->init();
+    addEntity(player);
+
+    width = m_size.x / COL;
+    height = m_size.y / ROW;
+    grid[ROW][COL];
+
+    if (!isGraphCreated) {
+        for (int p = 0; p < ROW; p++) {
+            for (int h = 0; h < COL; h++) {
+                grid[p][h] = 1;
+            }
+        }
+        isGraphCreated = true;
+    }
+}
+
+
 

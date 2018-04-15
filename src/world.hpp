@@ -18,12 +18,15 @@
 #include "entities/powerups/cityUp.hpp"
 #include "entities/powerups/shield.hpp"
 #include "ui/UI.hpp"
+#include "states/startScreen.hpp"
+#include "states/information.hpp"
+#include "states/gameOver.hpp"
+#include "states/highScore.hpp"
 #include "stars.hpp"
-
-
 // stlib
 #include <vector>
 #include <random>
+#include <stack>
 
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -67,11 +70,15 @@ public:
 
     bool isEntityInView(const Entity &entity) const;
 
+    int getState();
 
     bool isMoving() const;
     bool isShot() const;
 
     void addPoints(int points);
+
+    void addState(std::shared_ptr<Entity> entity);
+
 
     void addPlayerLife();
 
@@ -133,7 +140,7 @@ private:
 
     void onMouseClick(GLFWwindow *window, int button, int action, int mod);
 
-
+    void reset();
 
 private:
     // Window handle
@@ -150,6 +157,7 @@ private:
      * All entities in the world. The background will always be the first entity, followed by the player.
      */
     std::vector<std::shared_ptr<Entity>> m_entities;
+    std::vector<std::shared_ptr<Entity>> m_states;
 
 
     float m_next_shooter_spawn;
@@ -175,6 +183,9 @@ private:
     
     int m_remainingEnemiesInWave;
     int m_waveNo;
+    int m_prevState;
+    int m_state;
+    std::stack<int> stateStack;
 
     bool m_invincibility;
     float m_invincibility_countdown;

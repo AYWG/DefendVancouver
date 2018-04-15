@@ -118,3 +118,9 @@ bool UI::initGraphics() {
            Score::initGraphics();
 }
 
+void UI::destroy() {
+    for (auto &obj : m_objects) {
+        obj->destroy();
+    }
+}
+
