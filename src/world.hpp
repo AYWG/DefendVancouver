@@ -65,7 +65,6 @@ public:
 
     int getState();
     void addPoints(int points);
-    int getState();
 
     void addState(std::shared_ptr<Entity> entity);
 

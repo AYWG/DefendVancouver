@@ -23,7 +23,7 @@ public:
 
     Player(World &world);
 
-
+    bool gameOver;
 
     //init ship
     bool init() override;

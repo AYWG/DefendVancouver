@@ -84,6 +84,7 @@ bool Player::init() {
     m_isShootingEnabled = false;
     m_timeSinceLastBulletShot = 1000.f;
     m_isHit = false;
+    gameOver = false;
     transparency = 1.f;
     countdown = 0.f;
     for (int i = 0; i < NUM_DIRECTIONS; i++) m_isFlying[i] = false;
@@ -150,7 +151,7 @@ void Player::update(float ms) {
     }
 
     if (m_lives <= 0 & countdown < 0.f) {
-        die();
+        gameOver = true;
     }
 
 }

@@ -188,7 +188,7 @@ void World::update(float elapsed_ms) {
     vec2 screen = {(float) w, (float) h};
 
     // Resetting game
-    if (getPlayerLives() < 1) {
+    if (getPlayer().get()->gameOver) {
         state = 3;
         m_ui.destroy();
     }
