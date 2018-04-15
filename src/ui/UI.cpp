@@ -145,8 +145,6 @@ bool UI::initGraphics() {
 }
 
 void UI::destroy() {
-    for (auto &obj : m_objects) {
-        obj->destroy();
-    }
+    m_objects.clear();
 }
 

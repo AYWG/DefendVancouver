@@ -46,13 +46,13 @@ bool GameOverUI::init() {
         m_score.emplace_back(seventhDigitS);
     }
 
-    firstDigitS->setPosition({(UIsize.x/2)-90.f, (UIsize.y/2)});
-    secondDigitS->setPosition({(UIsize.x/2)-60.f, (UIsize.y/2)});
-    thirdDigitS->setPosition({(UIsize.x/2)-30.f, (UIsize.y/2)});
-    fourthDigitS->setPosition({(UIsize.x/2), (UIsize.y/2)});
-    fifthDigitS->setPosition({(UIsize.x/2)+30.f, (UIsize.y/2)});
-    sixthDigitS->setPosition({(UIsize.x/2)+60.f, (UIsize.y/2)});
-    seventhDigitS->setPosition({(UIsize.x/2)+90.f, (UIsize.y/2)});
+    firstDigitS->setPosition({(UIsize.x/2)-90.f, 350.f});
+    secondDigitS->setPosition({(UIsize.x/2)-60.f, 350.f});
+    thirdDigitS->setPosition({(UIsize.x/2)-30.f, 350.f});
+    fourthDigitS->setPosition({(UIsize.x/2), 350.f});
+    fifthDigitS->setPosition({(UIsize.x/2)+30.f, 350.f});
+    sixthDigitS->setPosition({(UIsize.x/2)+60.f, 350.f});
+    seventhDigitS->setPosition({(UIsize.x/2)+90.f, 350.f});
 
     auto firstDigitH = std::make_shared<Digit>(*m_ui);
     if (firstDigitH->init()) {

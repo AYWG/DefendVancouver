@@ -46,13 +46,13 @@ bool HighScoreUI::init() {
         m_digits.emplace_back(seventhDigit);
     }
 
-    firstDigit->setPosition({(UIsize.x/2)-90.f, 70.f});
-    secondDigit->setPosition({(UIsize.x/2)-60.f, 70.f});
-    thirdDigit->setPosition({(UIsize.x/2)-30.f, 70.f});
-    fourthDigit->setPosition({(UIsize.x/2), 70.f});
-    fifthDigit->setPosition({(UIsize.x/2)+30.f, 70.f});
-    sixthDigit->setPosition({(UIsize.x/2)+60.f, 70.f});
-    seventhDigit->setPosition({(UIsize.x/2)+90.f, 70.f});
+    firstDigit->setPosition({(UIsize.x/2)-90.f, 350.f});
+    secondDigit->setPosition({(UIsize.x/2)-60.f, 350.f});
+    thirdDigit->setPosition({(UIsize.x/2)-30.f, 350.f});
+    fourthDigit->setPosition({(UIsize.x/2), 350.f});
+    fifthDigit->setPosition({(UIsize.x/2)+30.f, 350.f});
+    sixthDigit->setPosition({(UIsize.x/2)+60.f, 350.f});
+    seventhDigit->setPosition({(UIsize.x/2)+90.f, 350.f});
 
     return true;
 }

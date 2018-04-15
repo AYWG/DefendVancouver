@@ -46,6 +46,7 @@ int main(int argc, char *argv[]) {
             world.update(elapsed_sec);
             world.draw();
         } else {
+            world.update(elapsed_sec);
             world.draw();
         }
 

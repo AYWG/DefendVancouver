@@ -742,8 +742,8 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
     if (key == GLFW_KEY_B && (m_state == 2  || m_state == 4)) {
         if (action == GLFW_PRESS) {
-            m_state = stateStack.top();
             m_ui.destroy();
+            m_state = stateStack.top();
             m_ui.init();
         }
     }
