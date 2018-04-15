@@ -122,7 +122,7 @@ private:
 
     void onMouseClick(GLFWwindow *window, int button, int action, int mod);
 
-
+    void reset();
 
 private:
     // Window handle

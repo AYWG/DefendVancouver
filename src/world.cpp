@@ -691,8 +691,8 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         }
     }
 
-    if (key == GLFW_KEY_H && state == 0){
-        if (action == GLFW_PRESS){
+    if (key == GLFW_KEY_H && state == 0) {
+        if (action == GLFW_PRESS) {
             state = 4;
         }
     }
@@ -700,42 +700,7 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     if (key == GLFW_KEY_P && state == 3) {
         if (action == GLFW_PRESS) {
             state = 1;
-            m_entities.clear();
-            MAX_BOMBS = 0;
-            MAX_BOMBERBOMBS = 0;
-            MAX_SHOOTERS = 1;
-            MAX_CHASER = 0;
-            MAX_BOMBER = 0;
-            MAX_POWERUP = 1;
-            bombs = MAX_BOMBS;
-            bBombs = MAX_BOMBERBOMBS;
-            shooters = MAX_SHOOTERS;
-            chasers = MAX_CHASER;
-            bombers = MAX_BOMBER;
-            m_invincibility = false;
-            totalEnemies = shooters + chasers;
-            waveNo = 1;
-            m_ui.init();
-            initGraphics();
-            auto bg = std::make_shared<background>(*this);
-            bg->init();
-            addEntity(bg);
-            auto player = std::make_shared<Player>(*this);
-            player->init();
-            addEntity(player);
-
-            width = m_size.x / COL;
-            height = m_size.y / ROW;
-            grid[ROW][COL];
-
-            if (!isGraphCreated) {
-                for (int p = 0; p < ROW; p++) {
-                    for (int h = 0; h < COL; h++) {
-                        grid[p][h] = 1;
-                    }
-                }
-                isGraphCreated = true;
-            }
+            reset();
         }
     } else if (key == GLFW_KEY_P) {
         if (action == GLFW_PRESS) {
@@ -772,6 +737,45 @@ int World::getState() {
 
 void World::addState(std::shared_ptr<Entity> entity) {
     m_states.emplace_back(entity);
+}
+
+void World::reset() {
+    m_entities.clear();
+    MAX_BOMBS = 0;
+    MAX_BOMBERBOMBS = 0;
+    MAX_SHOOTERS = 1;
+    MAX_CHASER = 0;
+    MAX_BOMBER = 0;
+    MAX_POWERUP = 1;
+    bombs = MAX_BOMBS;
+    bBombs = MAX_BOMBERBOMBS;
+    shooters = MAX_SHOOTERS;
+    chasers = MAX_CHASER;
+    bombers = MAX_BOMBER;
+    m_invincibility = false;
+    totalEnemies = shooters + chasers;
+    waveNo = 1;
+    m_ui.init();
+    initGraphics();
+    auto bg = std::make_shared<background>(*this);
+    bg->init();
+    addEntity(bg);
+    auto player = std::make_shared<Player>(*this);
+    player->init();
+    addEntity(player);
+
+    width = m_size.x / COL;
+    height = m_size.y / ROW;
+    grid[ROW][COL];
+
+    if (!isGraphCreated) {
+        for (int p = 0; p < ROW; p++) {
+            for (int h = 0; h < COL; h++) {
+                grid[p][h] = 1;
+            }
+        }
+        isGraphCreated = true;
+    }
 }
 
 
