@@ -33,6 +33,8 @@ public:
 
     vec2 getCityPosition() const;
 
+    bool isInView() const;
+
     /**
      * Every enemy has a different attack.
      */

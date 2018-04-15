@@ -30,10 +30,14 @@ public:
 
     void attack(float ms) override;
 
+    void plantBomb();
+
     int getPoints() const override;
 
     std::string getName() const override;
 
 private:
     static Graphics gfx;
+    static int bombDelayMS;
+    float m_nextBombSpawn;
 };

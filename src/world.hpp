@@ -66,7 +66,7 @@ public:
 
     void increaseCityHealth();
 
-    void decrementTotalEnemies();
+    void decrementRemainingEnemies();
     
     vec2 getNearestEnemyPosToPlayer() const;
 
@@ -107,6 +107,8 @@ private:
 
     bool initScore();
 
+    void advanceWave();
+
     // !!! INPUT CALLBACK FUNCTIONS
     void onKey(GLFWwindow *, int key, int, int action, int mod);
 
@@ -136,11 +138,8 @@ private:
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;
     float m_next_bomber_spawn;
-    float m_next_nbomb_spawn;
-    float m_next_bbomb_spawn;
-    float m_next_oneup_spawn;
-    float m_next_cityup_spawn;
-    float m_next_shield_spawn;
+    float m_next_normal_bomb_spawn;
+    float m_next_powerup_spawn;
 
     // C++ rng
     std::default_random_engine m_rng;
@@ -154,8 +153,8 @@ private:
 
     QuadTreeNode m_quad;
     
-    int totalEnemies;
-    int waveNo;
+    int m_remainingEnemiesInWave;
+    int m_waveNo;
 
     bool m_invincibility;
     float m_invincibility_countdown;

@@ -159,7 +159,7 @@ void Shooter::shoot() {
         vec2 bulletVelocity = {cosf(bulletAngle) * 325.0f, sinf(bulletAngle) * 325.0f};
         newShooterBullet->setVelocity(bulletVelocity);
         newShooterBullet->setRotation(atanf(bulletVelocity.y / bulletVelocity.x) + 3.1415f / 2);
-        m_nextBulletSpawn = Shooter::bulletDelayMS;
+        m_nextBulletSpawn = bulletDelayMS;
     }
 }
 

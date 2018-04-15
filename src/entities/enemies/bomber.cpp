@@ -7,6 +7,8 @@
 
 Graphics Bomber::gfx;
 
+int Bomber::bombDelayMS = 3000;
+
 Bomber::Bomber(World &world, BomberAI &ai) : Enemy(world, ai) {}
 
 bool Bomber::initGraphics() {
@@ -86,6 +88,12 @@ void Bomber::destroy() {
 
 void Bomber::update(float ms) {
     m_ai->doNextAction(this, ms);
+
+    // Die once it reaches the other side of the world
+    if (m_position.x > m_world->getSize().x + 100) {
+        die();
+        m_world->decrementRemainingEnemies();
+    }
 }
 
 void Bomber::draw(const mat3 &projection) {
@@ -148,7 +156,15 @@ unsigned int Bomber::getMass() const {
 }
 
 void Bomber::attack(float ms) {
+    m_nextBombSpawn -= ms;
+}
 
+void Bomber::plantBomb() {
+    if (m_nextBombSpawn < 0.f) {
+        auto newBomberBomb = BomberBomb::spawn(*m_world);
+        newBomberBomb->setPosition(m_world->getPlayerPosition());
+        m_nextBombSpawn = bombDelayMS;
+    }
 }
 
 int Bomber::getPoints() const {
