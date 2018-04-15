@@ -148,10 +148,8 @@ void shipParticle::draw(const mat3 &projection) {
 
 
     glEnable(GL_BLEND);
-    if (alphaBlend) {
-        glBlendFunc(GL_ONE, GL_ONE);
-        alphaBlend = false;
-    }
+    glBlendFunc(GL_ONE, GL_ONE);
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glDisable(GL_DEPTH_TEST);
