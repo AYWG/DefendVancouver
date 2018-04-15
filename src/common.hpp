@@ -69,6 +69,11 @@ struct TexturedVertex {
     vec2 texcoord;
 };
 
+
+struct particleVertex {
+    vec3 position;
+};
+
 // Texture wrapper
 struct Texture {
     Texture();
@@ -94,6 +99,11 @@ struct Mesh {
     GLuint ibo;
 };
 
+struct particleVBO {
+    GLuint vbo;
+
+};
+
 // Container for Vertex and Fragment shader, which are then put(linked) together in a
 // single program that is then bound to the pipeline.
 struct Effect {
@@ -111,7 +121,9 @@ struct Effect {
 struct Renderable {
     Mesh mesh;
     Effect effect;
+    particleVBO particleVBO;
     mat3 transform;
+
 
     // projection contains the orthographic projection matrix. As every Renderable::draw()
     // renders itself it needs it to correctly bind it to its shader.
@@ -136,6 +148,7 @@ struct Graphics {
     Effect effect;
     Mesh mesh;
     Texture texture;
+    particleVBO particleVBO;
 };
 
 

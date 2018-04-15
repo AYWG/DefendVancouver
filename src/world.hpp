@@ -7,6 +7,7 @@
 #include "entities/enemies/bomber.hpp"
 #include "entities/enemies/chaser.hpp"
 #include "background.hpp"
+#include "shipParticle.hpp"
 #include "camera.hpp"
 #include "entities/bombs/normalBomb.hpp"
 #include "entities/bombs/bomberBomb.hpp"
@@ -17,6 +18,8 @@
 #include "entities/powerups/cityUp.hpp"
 #include "entities/powerups/shield.hpp"
 #include "ui/UI.hpp"
+#include "stars.hpp"
+
 
 // stlib
 #include <vector>
@@ -48,17 +51,25 @@ public:
 
     vec2 getPlayerPosition() const;
 
+
     vec2 getPlayerScreenPosition() const;
+
 
     std::vector<vec2> getBombPositions() const;
 
+
     vec2 getCityPosition() const;
+
 
     void addEntity(std::shared_ptr<Entity> entity);
 
     vec2 getSize() const;
 
     bool isEntityInView(const Entity &entity) const;
+
+
+    bool isMoving() const;
+    bool isShot() const;
 
     void addPoints(int points);
 
@@ -89,18 +100,24 @@ public:
     bool isPlayerCritical() const;
 
 
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;
     int grid[ROW][COL];
     float  width;
     float  height;
+    bool playerMoving = false;
+    bool is_shot = false;
 
+    std::string typeEnemy;
 private:
     bool initGraphics();
 
+
     std::shared_ptr<Player> getPlayer() const;
     std::shared_ptr<background> getBackground() const;
+    std::shared_ptr<shipParticle> getParticle() const;
 
 
     void playerBounce(const NormalBomb &bomb);
@@ -149,7 +166,10 @@ private:
     // World size
     vec2 m_size;
     Camera m_camera;
+
     UI m_ui;
+    stars m_stars;
+
 
     QuadTreeNode m_quad;
     

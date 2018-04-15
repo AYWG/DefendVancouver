@@ -1,39 +1,40 @@
 //
-// Created by gowth on 2018-02-09.
+// Created by Shrey Swades Nayak on 2018-04-14.
 //
-#include "playerBullet.hpp"
-#include "../../world.hpp"
 
+#include <vector>
+#include <iostream>
+#include <cmath>
+#include "stars.hpp"
 
-Graphics PlayerBullet::gfx;
+Graphics stars::gfx;
 
-PlayerBullet::PlayerBullet(World &world) : Bullet(world) {}
+stars::stars() {}
 
-bool PlayerBullet::initGraphics() {
+bool stars::initGraphics() {
+    //load texture
     if (!gfx.texture.is_valid()) {
-        if (!gfx.texture.load_from_file(textures_path("playerBullet.png"))) {
-            fprintf(stderr, "Failed to load player bullet texture!");
+        if (!gfx.texture.load_from_file(textures_path("stars.png"))) {
+            fprintf(stderr, "Failed to load stars texture!");
             return false;
         }
     }
 
-    //center of texture
-    float width = gfx.texture.width * 0.5f;
-    float height = gfx.texture.height * 0.5f;
+    // The position corresponds to the center of the texture
+    float wr = gfx.texture.width * 0.5f;
+    float hr = gfx.texture.height * 0.5f;
 
     TexturedVertex vertices[4];
-    vertices[0].position = {-width, +height, -0.01f};
+    vertices[0].position = {-wr, +hr, -0.01f};
     vertices[0].texcoord = {0.f, 1.f};
-    vertices[1].position = {+width, +height, -0.01f};
-    vertices[1].texcoord = {1.f, 1.f};
-    vertices[2].position = {+width, -height, -0.01f};
+    vertices[1].position = {+wr, +hr, -0.01f};
+    vertices[1].texcoord = {1.f, 1.f,};
+    vertices[2].position = {+wr, -hr, -0.01f};
     vertices[2].texcoord = {1.f, 0.f};
-    vertices[3].position = {-width, -height, -0.01f};
+    vertices[3].position = {-wr, -hr, -0.01f};
     vertices[3].texcoord = {0.f, 0.f};
 
-    // counterclockwise as it's the default opengl front winding direction
     uint16_t indices[] = {0, 3, 1, 1, 3, 2};
-
     // Clearing errors
     gl_flush_errors();
 
@@ -49,7 +50,6 @@ bool PlayerBullet::initGraphics() {
 
     // Vertex Array (Container for Vertex + Index buffer)
     glGenVertexArrays(1, &gfx.mesh.vao);
-
     if (gl_has_errors())
         return false;
 
@@ -57,24 +57,16 @@ bool PlayerBullet::initGraphics() {
     return gfx.effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 }
 
-std::shared_ptr<PlayerBullet> PlayerBullet::spawn(World &world) {
-    auto playerBullet = std::make_shared<PlayerBullet>(world);
-    if (playerBullet->init()) {
-        world.addEntity(playerBullet);
-        return playerBullet;
-    }
-    fprintf(stderr, "Failed to spawn player bullet");
-    return nullptr;
-}
-
-bool PlayerBullet::init() {
-    m_scale.x = 0.2f;
-    m_scale.y = 0.4f;
+bool stars::init() {
+    m_scale.x = 1.0f;
+    m_scale.y = 1.0f;
+    m_position.x = 1600;
+    m_position.y = 700;
 
     return true;
 }
 
-void PlayerBullet::destroy() {
+void stars::destroy() {
     glDeleteBuffers(1, &gfx.mesh.vbo);
     glDeleteBuffers(1, &gfx.mesh.ibo);
     glDeleteVertexArrays(1, &gfx.mesh.vao);
@@ -82,32 +74,14 @@ void PlayerBullet::destroy() {
     gfx.effect.release();
 }
 
-vec2 PlayerBullet::getPosition() {
-    return m_position;
-}
-
-void PlayerBullet::update(float ms) {
-    float x_step = m_velocity.x * (ms / 1000);
-    float y_step = m_velocity.y * (ms / 1000);
-
-    m_position = {m_position.x + x_step, m_position.y + y_step};
-
-    if (!m_world->isEntityInView(*this)) {
-        m_isDead = true;
-    }
-}
-
-
-
-
-void PlayerBullet::draw(const mat3 &projection) {
+void stars::draw(const mat3 &projection) {
+    // Transformation code, see Rendering and Transformation in the template specification for more info
+    // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+    // Setting shaders
     transform_begin();
     transform_translate(m_position);
-    transform_rotate(m_rotation);
     transform_scale(m_scale);
     transform_end();
-
-    // Setting shaders
     glUseProgram(gfx.effect.program);
 
     // Enabling alpha channel for textures
@@ -145,24 +119,4 @@ void PlayerBullet::draw(const mat3 &projection) {
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-Region PlayerBullet::getBoundingBox() const {
-    vec2 boxSize = {std::fabs(m_scale.x) * gfx.texture.width,
-                    std::fabs(m_scale.y) * gfx.texture.height};
-    vec2 boxOrigin = {m_position.x - boxSize.x / 2, m_position.y - boxSize.y / 2};
-
-    return {boxOrigin, boxSize};
-}
-
-unsigned int PlayerBullet::getMass() const {
-    return 10;
-}
-
-std::string PlayerBullet::getName() const {
-    return "PlayerBullet";
-}
-
-PlayerBullet::FACTION PlayerBullet::getFaction() const {
-    return FACTION::HUMAN;
 }
