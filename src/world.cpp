@@ -14,11 +14,6 @@
 
 
 typedef pair<int, int> Pair;
-
-
-
-
-
 // Same as static in c, local to compilation unit
 namespace {
 
@@ -64,10 +59,6 @@ World::World() :
 World::~World() {
 
 }
-
-
-
-
 
 // World initialization
 bool World::init(vec2 screenSize, vec2 worldSize) {
@@ -133,6 +124,7 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetCursor(m_window, cursor);
 
     m_state = 0;
+    m_prevState = m_state - 1;
 
     if (!initScore()) return false;
 
@@ -709,7 +701,6 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         if (action == GLFW_PRESS) {
             playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, true);
-            std::cout<<getPlayerPosition().x<<" ,"<<getPlayerPosition().y;
         } else if (action == GLFW_RELEASE) {
             playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, false);
@@ -741,18 +732,20 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
     if (key == GLFW_KEY_I) {
         if (action == GLFW_PRESS) {
+            stateStack.push(m_state);
             m_state = 2;
         }
     }
 
-    if (key == GLFW_KEY_B && (m_state == 2 || m_state == 4)) {
+    if (key == GLFW_KEY_B && (m_state == 2  || m_state == 4)) {
         if (action == GLFW_PRESS) {
-            m_state = 0;
+            m_state = stateStack.top();
         }
     }
 
     if (key == GLFW_KEY_H && m_state == 0) {
         if (action == GLFW_PRESS) {
+            stateStack.push(m_state);
             m_state = 4;
         }
     }

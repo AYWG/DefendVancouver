@@ -26,6 +26,7 @@
 // stlib
 #include <vector>
 #include <random>
+#include <stack>
 
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -182,7 +183,9 @@ private:
     
     int m_remainingEnemiesInWave;
     int m_waveNo;
+    int m_prevState;
     int m_state;
+    std::stack<int> stateStack;
 
     bool m_invincibility;
     float m_invincibility_countdown;
