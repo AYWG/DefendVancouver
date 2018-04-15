@@ -21,6 +21,7 @@
 #include "states/information.hpp"
 #include "states/gameOver.hpp"
 #include "states/highScore.hpp"
+#include "stars.hpp"
 // stlib
 #include <vector>
 #include <random>
@@ -159,6 +160,7 @@ private:
     vec2 m_size;
     Camera m_camera;
     UI m_ui;
+    stars m_stars;
 
     QuadTreeNode m_quad;
     
