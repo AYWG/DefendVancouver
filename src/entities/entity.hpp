@@ -33,6 +33,8 @@ public:
 
     void setRotation(float radians);
 
+    vec2 getPlayerPosition() const;
+
     virtual void destroy() = 0;
 
     virtual Region getBoundingBox() const = 0;

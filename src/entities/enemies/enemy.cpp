@@ -36,6 +36,10 @@ vec2 Enemy::getCityPosition() const {
     return m_world->getCityPosition();
 }
 
+bool Enemy::isInView() const {
+    return m_world->isEntityInView(*this);
+}
+
 void Enemy::onCollision(Entity &other) {
     if (other.isDamageable() && typeid(other) == typeid(Player)) {
         other.takeDamage();
@@ -45,7 +49,7 @@ void Enemy::onCollision(Entity &other) {
 void Enemy::takeDamage() {
     // TODO: only add points if damage taken causes enemy health to go below 0
     m_world->addPoints(getPoints());
-    m_world->decrementTotalEnemies();
+    m_world->decrementRemainingEnemies();
     die();
 }
 

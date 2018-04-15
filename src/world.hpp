@@ -7,6 +7,7 @@
 #include "entities/enemies/bomber.hpp"
 #include "entities/enemies/chaser.hpp"
 #include "background.hpp"
+#include "shipParticle.hpp"
 #include "camera.hpp"
 #include "entities/bombs/normalBomb.hpp"
 #include "entities/bombs/bomberBomb.hpp"
@@ -52,11 +53,15 @@ public:
 
     vec2 getPlayerPosition() const;
 
+
     vec2 getPlayerScreenPosition() const;
+
 
     std::vector<vec2> getBombPositions() const;
 
+
     vec2 getCityPosition() const;
+
 
     void addEntity(std::shared_ptr<Entity> entity);
 
@@ -65,6 +70,10 @@ public:
     bool isEntityInView(const Entity &entity) const;
 
     int getState();
+
+    bool isMoving() const;
+    bool isShot() const;
+
     void addPoints(int points);
 
     void addState(std::shared_ptr<Entity> entity);
@@ -74,7 +83,7 @@ public:
 
     void increaseCityHealth();
 
-    void decrementTotalEnemies();
+    void decrementRemainingEnemies();
     
     vec2 getNearestEnemyPosToPlayer() const;
 
@@ -97,23 +106,31 @@ public:
     bool isPlayerCritical() const;
 
 
+
     float bulletAngleRelativeToPlayer;
     vec2 bulletDirectionRelativeToPlayer;
     bool isGraphCreated = false;
     int grid[ROW][COL];
     float  width;
     float  height;
+    bool playerMoving = false;
+    bool is_shot = false;
 
+    std::string typeEnemy;
 private:
     bool initGraphics();
 
+
     std::shared_ptr<Player> getPlayer() const;
     std::shared_ptr<background> getBackground() const;
+    std::shared_ptr<shipParticle> getParticle() const;
 
 
     void playerBounce(const NormalBomb &bomb);
 
     bool initScore();
+
+    void advanceWave();
 
     // !!! INPUT CALLBACK FUNCTIONS
     void onKey(GLFWwindow *, int key, int, int action, int mod);
@@ -145,11 +162,8 @@ private:
     float m_next_shooter_spawn;
     float m_next_chaser_spawn;
     float m_next_bomber_spawn;
-    float m_next_nbomb_spawn;
-    float m_next_bbomb_spawn;
-    float m_next_oneup_spawn;
-    float m_next_cityup_spawn;
-    float m_next_shield_spawn;
+    float m_next_normal_bomb_spawn;
+    float m_next_powerup_spawn;
 
     // C++ rng
     std::default_random_engine m_rng;
@@ -159,13 +173,15 @@ private:
     // World size
     vec2 m_size;
     Camera m_camera;
+
     UI m_ui;
     stars m_stars;
 
+
     QuadTreeNode m_quad;
     
-    int totalEnemies;
-    int waveNo;
+    int m_remainingEnemiesInWave;
+    int m_waveNo;
     int state;
 
     bool m_invincibility;

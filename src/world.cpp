@@ -10,34 +10,41 @@
 #include <algorithm>
 #include <math.h>
 #include <GL/gl3w.h>
+#include <typeinfo>
+
 
 typedef pair<int, int> Pair;
+
+
+
+
 
 // Same as static in c, local to compilation unit
 namespace {
 
-    size_t MAX_BOMBS = 10;
     size_t MAX_BOMBERBOMBS = 0;
-    size_t MAX_SHOOTERS = 3;
+    size_t MAX_BOMBS = 0;
+    size_t MAX_SHOOTERS = 20;
     size_t MAX_CHASER = 0;
     size_t MAX_BOMBER = 0;
-    size_t MAX_POWERUP = 1;
-    int bombs = MAX_BOMBS;
-    int bBombs = MAX_BOMBERBOMBS;
-    int shooters = MAX_SHOOTERS;
-    int chasers = MAX_CHASER;
-    int bombers = MAX_BOMBER;
+    int remainingNormalBombsToSpawn = MAX_BOMBS;
+    int remainingShootersToSpawn = MAX_SHOOTERS;
+    int remainingChasersToSpawn = MAX_CHASER;
+    int remainingBombersToSpawn = MAX_BOMBER;
     const size_t SHOOTER_DELAY_MS = 2000;
-    const size_t BOMB_DELAY_MS = 2000;
-    const size_t CHASER_DELAY_MS = 10000;
-    const size_t POWERUP_DELAY_MS = 2000;
-
+    const size_t BOMB_DELAY_MS = 4000;
+    const size_t CHASER_DELAY_MS = 5000;
+    size_t POWERUP_DELAY_MS = 10000;
+    const size_t MIN_POWERUP_DELAY_MS = 1000;
 
     namespace {
         void glfw_err_cb(int error, const char *desc) {
-            fprintf(stderr, "%d: %s", error, desc);
+//            fprintf(stderr, "%d: %s", error, desc);
         }
     }
+
+
+
 }
 
 World::World() :
@@ -45,11 +52,8 @@ World::World() :
         m_next_shooter_spawn(0.f),
         m_next_chaser_spawn(0.f),
         m_next_bomber_spawn(0.f),
-        m_next_nbomb_spawn(0.f),
-        m_next_bbomb_spawn(0.f),
-        m_next_oneup_spawn(0.f),
-        m_next_cityup_spawn(0.f),
-        m_next_shield_spawn(0.f),
+        m_next_normal_bomb_spawn(0.f),
+        m_next_powerup_spawn(0.f),
         m_camera({}, {}),
         m_ui({}, *this),
         m_quad(0, {}) {
@@ -61,6 +65,10 @@ World::~World() {
 
 }
 
+
+
+
+
 // World initialization
 bool World::init(vec2 screenSize, vec2 worldSize) {
     //-------------------------------------------------------------------------
@@ -69,14 +77,19 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     glfwSetErrorCallback(glfw_err_cb);
 
     if (!glfwInit()) {
-        fprintf(stderr, "Failed to initialize GLFW");
+//        fprintf(stderr, "Failed to initialize GLFW");
         return false;
     }
+
+    typeEnemy = typeid(Enemy).name();
+
+
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -124,19 +137,21 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     if (!initScore()) return false;
 
     m_invincibility = false;
-    waveNo = 1;
+    m_waveNo = 1;
     m_size = worldSize;
     m_camera = Camera(screenSize, worldSize);
     m_ui = UI(screenSize, *this);
     m_ui.init();
     m_quad = QuadTreeNode(0, {{0.f, 0.f}, worldSize});
     initGraphics();
-    totalEnemies = shooters + chasers;
-    m_stars = stars();
+    m_remainingEnemiesInWave = remainingShootersToSpawn + remainingChasersToSpawn + remainingBombersToSpawn;
     m_stars.init();
     auto bg = std::make_shared<background>(*this);
     bg->init();
     addEntity(bg);
+
+
+
     auto player = std::make_shared<Player>(*this);
     player->init();
     addEntity(player);
@@ -156,6 +171,9 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
     addState(over);
     addState(high);
 
+
+
+
     width = m_size.x / COL;
     height = m_size.y / ROW;
     grid[ROW][COL];
@@ -168,6 +186,17 @@ bool World::init(vec2 screenSize, vec2 worldSize) {
         }
         isGraphCreated = true;
     }
+
+
+
+    // Enable the debug callback
+  /*  glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openglCallbackFunction, nullptr);
+    glDebugMessageControl(
+            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true
+    );*/
+
 
     return true;
 }
@@ -183,6 +212,7 @@ void World::destroy() {
 
 // Update our game world
 void World::update(float elapsed_ms) {
+
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
@@ -192,26 +222,8 @@ void World::update(float elapsed_ms) {
         state = 3;
         m_ui.destroy();
     }
-
-    // Setting wave spawn conditions
-    if (totalEnemies <= 0) {
-        waveNo++;
-        if (waveNo % 2 == 1) {
-            MAX_SHOOTERS++;
-        }
-
-        if (waveNo % 3 == 1) {
-            MAX_CHASER++;
-            MAX_BOMBER++;
-            MAX_BOMBERBOMBS++;
-            MAX_BOMBS++;
-        }
-        shooters = MAX_SHOOTERS;
-        chasers = MAX_CHASER;
-        bombers = MAX_BOMBER;
-        bBombs = MAX_BOMBERBOMBS;
-        bombs = MAX_BOMBS;
-        totalEnemies = shooters + chasers;
+    if (m_remainingEnemiesInWave <= 0) {
+        advanceWave();
     }
 
     for (auto &state: m_states) {
@@ -222,6 +234,7 @@ void World::update(float elapsed_ms) {
         }
     }
 
+    auto particle = std::make_shared<shipParticle>(*this);
     //////COLLISION DETECTION/////
     m_quad.clear();
 
@@ -239,34 +252,57 @@ void World::update(float elapsed_ms) {
         auto nearbyEntities = m_quad.getNearbyEntities(entity);
         for (auto &nearbyEntity: nearbyEntities) {
             // run collision detection between entities
+
             if (entity->isCollidingWith(*nearbyEntity)) {
                 entity->onCollision(*nearbyEntity);
                 nearbyEntity->onCollision(*entity);
+
             }
         }
     }
-
+    //is_shot = false;
     //// CLEANUP ////
 
     auto entityIt = m_entities.begin();
     while (entityIt != m_entities.end()) {
+
         if ((*entityIt)->isDead()) {
+
+            if ((entityIt->get()->getName() == "Shooter") ||
+                (entityIt->get()->getName() == "Chaser") ||
+                (entityIt->get()->getName() == "Bomber") ||
+                (entityIt->get()->getName() == "BomberBomb") ||
+                (entityIt->get()->getName() == "NormalBomb")) {
+                particle->setPosition(entityIt->get()->getPosition());
+                is_shot = true;
+            }
+
             entityIt = m_entities.erase(entityIt);
+
             continue;
         }
+
         ++entityIt;
     }
+
+    if (isShot()) {
+        particle->init();
+        addEntity(particle);
+        is_shot = false;
+
+    }
+
 
     //// SPAWNING ////
 
     m_next_shooter_spawn -= elapsed_ms;
-    if (m_next_shooter_spawn < 0.f && shooters != 0) {
+    if (m_next_shooter_spawn < 0.f && remainingShootersToSpawn > 0) {
         auto newShooter = Shooter::spawn(*this);
         // Setting random initial position
         newShooter->setPosition({m_dist(m_rng) * m_size.x, -200.f});
         // Next spawn
         m_next_shooter_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
-        shooters--;
+        remainingShootersToSpawn--;
     }
 
     // bullet spawning
@@ -285,71 +321,55 @@ void World::update(float elapsed_ms) {
     }
 
     m_next_chaser_spawn -= elapsed_ms;
-    if (m_next_chaser_spawn < 0.f && chasers != 0) {
+    if (m_next_chaser_spawn < 0.f && remainingChasersToSpawn > 0) {
         auto newChaser = Chaser::spawn(*this);
         // Setting random initial position
         newChaser->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
         m_next_chaser_spawn = (CHASER_DELAY_MS / 2) + m_dist(m_rng) * (CHASER_DELAY_MS / 2);
-        chasers--;
+        remainingChasersToSpawn--;
     }
 
     m_next_bomber_spawn -= elapsed_ms;
-    if (m_next_bomber_spawn < 0.f && bombers != 0) {
+    if (m_next_bomber_spawn < 0.f && remainingBombersToSpawn > 0) {
         auto newBomber = Bomber::spawn(*this);
-        // Setting initial position on top
-        newBomber->setPosition({50 + m_dist(m_rng) * (screen.x), screen.y - 800});
+        newBomber->setPosition({ -100, m_dist(m_rng) * 1000});
         // Next spawn
         m_next_bomber_spawn = (SHOOTER_DELAY_MS / 2) + m_dist(m_rng) * (SHOOTER_DELAY_MS / 2);
-        bombers--;
+        remainingBombersToSpawn--;
     }
 
     // create copy vector which is not affected during iteration
     entities = m_entities;
     for (auto &entity : entities) {
         if (typeid(*entity) == typeid(Bomber)) {
-            if (m_camera.isEntityInView(*entity)) {
-                m_next_bbomb_spawn -= elapsed_ms;
-                if (m_next_bbomb_spawn < 0.f) {
-                    auto newBomb = BomberBomb::spawn(*this);
-                    newBomb->setPosition(getPlayerPosition());
-                    m_next_bbomb_spawn = (BOMB_DELAY_MS * 2) + m_dist(m_rng) * (BOMB_DELAY_MS * 2);
-                    bBombs--;
-                }
-            }
+            std::dynamic_pointer_cast<Bomber>(entity)->plantBomb();
         }
     }
 
     // Spawn new normal bombs
-    m_next_nbomb_spawn -= elapsed_ms;
-    if (m_next_nbomb_spawn < 0.f && bombs != 0) {
+    m_next_normal_bomb_spawn -= elapsed_ms;
+    if (m_next_normal_bomb_spawn < 0.f && remainingNormalBombsToSpawn != 0) {
         auto newNormalBomb = NormalBomb::spawn(*this);
         newNormalBomb->setPosition({50 + m_dist(m_rng) * (screen.x), m_dist(m_rng) * (screen.y)});
-        m_next_nbomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
-        bombs--;
+        m_next_normal_bomb_spawn = (BOMB_DELAY_MS) + m_dist(m_rng) * (BOMB_DELAY_MS);
+        remainingNormalBombsToSpawn--;
     }
 
-    // spawn oneups
-    m_next_oneup_spawn -= elapsed_ms;
-    if (MAX_POWERUP != 0 && m_next_oneup_spawn < 0.f) {
-        auto newOneUp = OneUp::spawn(*this);
-        newOneUp->setPosition({m_dist(m_rng) * m_size.x, -200.f});
-        m_next_oneup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
-    }
-
-    // spawn cityups
-    m_next_cityup_spawn -= elapsed_ms;
-    if (MAX_POWERUP != 0 && m_next_cityup_spawn < 0.f) {
-        auto newCityUp = CityUp::spawn(*this);
-        newCityUp->setPosition({m_dist(m_rng) * m_size.x, -200.f});
-        m_next_cityup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
-    }
-
-    // spawn shield
-    m_next_shield_spawn -= elapsed_ms;
-    if (MAX_POWERUP != 0 && m_next_shield_spawn < 0.f) {
-        auto newShield = Shield::spawn(*this);
-        newShield->setPosition({m_dist(m_rng) * m_size.x, -200.f});
-        m_next_shield_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
+    // Spawn powerups (random)
+    m_next_powerup_spawn -= elapsed_ms;
+    if (m_next_powerup_spawn < 0.f) {
+        auto rng = m_dist(m_rng);
+        std::shared_ptr<PowerUp> powerUp;
+        if (rng >= 0.66) {
+            powerUp = OneUp::spawn(*this);
+        } else if (rng >= 0.33) {
+            powerUp = CityUp::spawn(*this);
+        }
+        else {
+            powerUp = Shield::spawn(*this);
+        }
+        powerUp->setPosition({m_dist(m_rng) * m_size.x, -200.f});
+        m_next_powerup_spawn = (POWERUP_DELAY_MS) + m_dist(m_rng) * (POWERUP_DELAY_MS);
     }
 
     // Invincibility
@@ -442,12 +462,14 @@ vec2 World::getPlayerPosition() const {
     return (*m_entities.at(1)).getPosition();
 }
 
+
 vec2 World::getPlayerScreenPosition() const {
     return {
             getPlayerPosition().x - m_camera.getLeftBoundary(),
             getPlayerPosition().y - m_camera.getTopBoundary()
     };
 }
+
 
 std::vector<vec2> World::getBombPositions() const {
     auto positions = std::vector<vec2>();
@@ -475,6 +497,15 @@ bool World::isEntityInView(const Entity &entity) const {
     return m_camera.isEntityInView(entity);
 }
 
+bool World::isMoving() const {
+    return  playerMoving;
+}
+
+bool World::isShot() const {
+    return  is_shot;
+}
+
+
 void World::addPoints(int points) {
     m_points += points;
 }
@@ -487,8 +518,8 @@ void World::increaseCityHealth() {
     getBackground()->addHealth();
 }
 
-void World::decrementTotalEnemies() {
-    totalEnemies--;
+void World::decrementRemainingEnemies() {
+    m_remainingEnemiesInWave--;
 }
 
 vec2 World::getNearestEnemyPosToPlayer() const {
@@ -540,7 +571,7 @@ int World::getWorldHealth() const {
 }
 
 int World::getWave() const {
-    return waveNo;
+    return m_waveNo;
 }
 
 int World::getScore() const {
@@ -566,6 +597,7 @@ bool World::isPlayerCritical() const {
     return getPlayer()->isCritical();
 }
 
+
 // Private
 
 bool World::initGraphics() {
@@ -584,7 +616,9 @@ bool World::initGraphics() {
            Info::initGraphics() &&
            GameOver::initGraphics() &&
            HighScore::initGraphics() &&
+           shipParticle::initGraphics() &&
            stars::initGraphics();
+
 }
 
 std::shared_ptr<Player> World::getPlayer() const {
@@ -593,6 +627,10 @@ std::shared_ptr<Player> World::getPlayer() const {
 
 std::shared_ptr<background> World::getBackground() const {
     return std::dynamic_pointer_cast<background>(m_entities.front());
+}
+
+std::shared_ptr<shipParticle> World::getParticle() const {
+    return std::dynamic_pointer_cast<shipParticle>(m_entities.front());
 }
 
 void World::playerBounce(const NormalBomb &bomb) {
@@ -624,38 +662,66 @@ bool World::initScore() {
     return true;
 }
 
+void World::advanceWave() {
+    MAX_SHOOTERS += 10;
+    MAX_CHASER += 5;
+    MAX_BOMBER += 5;
+    MAX_BOMBS += 5;
+    if (POWERUP_DELAY_MS > MIN_POWERUP_DELAY_MS) POWERUP_DELAY_MS -= 1000;
+
+    remainingShootersToSpawn = MAX_SHOOTERS;
+    remainingChasersToSpawn = MAX_CHASER;
+    remainingBombersToSpawn = MAX_BOMBER;
+    remainingNormalBombsToSpawn = MAX_BOMBS;
+    m_remainingEnemiesInWave = remainingShootersToSpawn + remainingChasersToSpawn + remainingBombersToSpawn;
+
+    m_waveNo++;
+}
+
 // On key callback
 void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
     if (key == GLFW_KEY_W) {
+        playerMoving = true;
         if (action == GLFW_PRESS) {
+
             getPlayer()->setFlying(Player::DIRECTION::FORWARD, true);
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::FORWARD, false);
         }
     }
 
     if (key == GLFW_KEY_S) {
         if (action == GLFW_PRESS) {
+            playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::BACKWARD, true);
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::BACKWARD, false);
         }
     }
 
     if (key == GLFW_KEY_A) {
         if (action == GLFW_PRESS) {
+            playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::LEFT, true);
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::LEFT, false);
         }
     }
 
     if (key == GLFW_KEY_D) {
         if (action == GLFW_PRESS) {
+            playerMoving = true;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, true);
+            std::cout<<getPlayerPosition().x<<" ,"<<getPlayerPosition().y;
         } else if (action == GLFW_RELEASE) {
+            playerMoving = false;
             getPlayer()->setFlying(Player::DIRECTION::RIGHT, false);
         }
+
+
     }
 
     // TODO: integrate with game over
@@ -710,6 +776,8 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
 
 
 }
+
+
 
 
 void World::onMouseMove(GLFWwindow *window, double xpos, double ypos) {

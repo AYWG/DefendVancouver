@@ -3,6 +3,7 @@
 //
 
 #include "entity.hpp"
+#include "../world.hpp"
 
 Entity::Entity(World &world) : m_world(&world), m_position({0.f, 0.f}), m_rotation(0.f), m_scale({1.f, 1.f}),
                                m_isDead(false) {}
@@ -22,6 +23,11 @@ float Entity::getRotation() const {
 void Entity::setRotation(float radians) {
     m_rotation = radians;
 }
+
+vec2 Entity::getPlayerPosition() const {
+    return m_world->getPlayerPosition();
+}
+
 
 bool Entity::isCollidingWith(Entity &other) const {
     auto dx = m_position.x - other.getPosition().x;
