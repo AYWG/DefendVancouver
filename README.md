@@ -67,6 +67,8 @@ Andy Wong
 - Create vbo/vao/ibo only once per Entity type
  
 
+DISCLAIMER: Sound only works on MAC due to the SDL library issues on windows
+
 
 
 
