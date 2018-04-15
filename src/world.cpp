@@ -206,6 +206,15 @@ void World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w, (float) h};
 
+    if (m_state == 3){
+        gameOver = true;
+    } else
+        gameOver = false;
+
+    if (gameOver){
+        m_ui.init();
+        gameOver == false;
+    }
     // Resetting game
     if (getPlayer().get()->gameOver) {
         if (m_points > m_bestScore) {
@@ -216,6 +225,7 @@ void World::update(float elapsed_ms) {
         }
         m_state = 3;
         m_ui.destroy();
+
     }
     if (m_remainingEnemiesInWave <= 0) {
         advanceWave();
@@ -433,6 +443,7 @@ void World::draw() {
 
     } else {
         m_states[m_state]->draw(projection_2D);
+        m_ui.draw(projection_UI);
     }
 
     // Presenting
@@ -734,12 +745,16 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         if (action == GLFW_PRESS) {
             stateStack.push(m_state);
             m_state = 2;
+            m_ui.destroy();
+            m_ui.init();
         }
     }
 
     if (key == GLFW_KEY_B && (m_state == 2  || m_state == 4)) {
         if (action == GLFW_PRESS) {
+            m_ui.destroy();
             m_state = stateStack.top();
+            m_ui.init();
         }
     }
 
@@ -747,17 +762,23 @@ void World::onKey(GLFWwindow *, int key, int, int action, int mod) {
         if (action == GLFW_PRESS) {
             stateStack.push(m_state);
             m_state = 4;
+            m_ui.destroy();
+            m_ui.init();
         }
     }
 
     if (key == GLFW_KEY_P && m_state == 3) {
         if (action == GLFW_PRESS) {
             m_state = 1;
+            m_ui.destroy();
+            m_ui.init();
             reset();
         }
     } else if (key == GLFW_KEY_P) {
         if (action == GLFW_PRESS) {
             m_state = 1;
+            m_ui.destroy();
+            m_ui.init();
         }
     }
 

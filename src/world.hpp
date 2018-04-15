@@ -165,6 +165,7 @@ private:
     float m_next_bomber_spawn;
     float m_next_normal_bomb_spawn;
     float m_next_powerup_spawn;
+    bool gameOver;
 
     // C++ rng
     std::default_random_engine m_rng;
